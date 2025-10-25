@@ -1,4 +1,4 @@
-const CACHE_NAME = 'OMNIA App v1.3'; // 🔄 Version hochzählen bei Updates
+const CACHE_NAME = 'OMNIA App v1.4'; // 🔄 Version hochzählen bei Updates
 const ASSETS_TO_CACHE = [
   '30s_assissted.html',
   '6MWT.html',
