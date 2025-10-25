@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assessments App</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 40px;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      width: 90%;
+      max-width: 800px;
+    }
+
+    .tile {
+      flex: 1 1 300px;
+      max-width: 350px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .tile:hover {
+      transform: scale(1.03);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    .tile img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .label {
+      padding: 15px;
+      background-color: #f7f7f7;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    @media (max-width: 700px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+      .tile {
+        max-width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Assessments App</h1>
+
+  <div class="container">
+    <div class="tile" onclick="location.href='index_praxis.html'">
+      <img src="praxis.png" alt="Praxis Assessments">
+      <div class="label">Praxis Assessments</div>
+    </div>
+
+    <div class="tile" onclick="location.href='index_flying.html'">
+      <img src="domizil.png" alt="Domizil Assessments">
+      <div class="label">Domizil Assessments</div>
+    </div>
+  </div>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('Service Worker registriert'))
+        .catch(err => console.error('SW Fehler:', err));
+    }
+  </script>
+</body>
+</html>
