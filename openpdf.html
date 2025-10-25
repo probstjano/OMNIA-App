@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF Öffnen</title>
+  <script>
+    // Sobald Seite geladen ist: PDF extern öffnen
+    window.onload = function () {
+      const params = new URLSearchParams(window.location.search);
+      const file = params.get("file");
+      if (!file) return;
+      
+      // Prüfen, ob wir im iOS-Standalone-Modus sind
+      if (window.navigator.standalone) {
+        // Diese Seite läuft außerhalb der PWA -> Safari öffnet sie normal
+        window.location.href = file;
+      } else {
+        // Normaler Browser -> neues Tab
+        window.open(file, "_blank");
+      }
+
+      // Nach kurzem Delay automatisch wieder schließen (optional)
+      setTimeout(() => window.close(), 1500);
+    };
+  </script>
+</head>
+<body>
+  <p style="text-align:center;margin-top:2rem;">PDF wird geöffnet …</p>
+</body>
+</html>
