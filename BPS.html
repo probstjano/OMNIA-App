@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+
+<html lang="de">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Back Performance Scale (BPS)</title>
+<style>
+    body { font-family: sans-serif; margin: 2rem; font-size: 16px; max-width: 1000px; }
+    .item { margin-bottom: 1.5rem; border-bottom: 1px solid #ccc; padding-bottom: 1rem; }
+    .item-title { font-weight: bold; margin-bottom: 0.3rem; }
+    .item-description { margin-bottom: 0.5rem; }
+    select { padding: 5px; font-size: 16px; width: 100%; max-width: 400px; }
+    summary { font-weight: bold; cursor: pointer; margin-bottom: 0.5rem; }
+    button { margin-top: 1.5rem; padding: 10px 15px; font-size: 16px; }
+    #result { margin-top: 2rem; font-weight: bold; font-size: 18px; }
+  </style>
+</head>
+<body>
+<h1>Back Performance Scale (BPS) - Nichtvalidierte deutsche Übersetzung</h1>
+<p> Die Back Performance Scale ist eine funktionelle Testbatterie, die aus fünf weit verbreiteten Einzeltests besteht. Die Tests messen die Beweglichkeit und die Belastbarkeit in der am häufigsten 
+vorkommenden sagittalen Ebene der Wirbelsäule. </p>
+<p> Im Cenplex Behandlungsplan als <strong> Messung </strong> vorhanden. Hier eintragen und Score übertragen </p>
+<form id="bpsForm">
+<div class="item">
+<div class="item-title">Socken-Test</div>
+<div class="item-description">Der Patient sitzt auf dem (Behandlungs-)Tisch, die Füsse kommen nicht auf den Boden. Die Beine werden abwechselnd getestet – der schlechteste Score wird notiert.</div>
+<details>
+<summary>▶️ Instruktion anzeigen</summary>
+<p>Können Sie, wenn Sie Ihr Bein anziehen, mit den Fingerspitzen beider Hände Ihre Zehen umfassen?</p>
+</details>
+<label for="q1">Bewertung:</label>
+<select id="q1" name="q1"><option value="">-- Auswahl --</option><option value="0">Kann die Zehen leicht mit den Fingerspitzen beider Hände umfassen (0)</option><option value="1">Kann die Zehen kaum mit Fingerspitzen beider Hände umfassen (1)</option><option value="2">Kommt an den Malleoli vorbei, kann aber die Zehen nicht berühren (2)</option><option value="3">Kann kaum, wenn überhaupt, die Malleoli berühren (3)</option></select>
+</div>
+<div class="item">
+<div class="item-title">Langsitz-Test</div>
+<div class="item-description">Der Patient liegt auf dem Rücken (feste Unterlage).</div>
+<details>
+<summary>▶️ Instruktion anzeigen</summary>
+<p>Können Sie langsam in den Langsitz kommen (Arme entspannt)?</p>
+</details>
+<label for="q2">Bewertung:</label>
+<select id="q2" name="q2"><option value="">-- Auswahl --</option><option value="0">Kommt problemlos in den Langsitz (0)</option><option value="1">Kommt mit deutlicher Anstrengung in den halben Langsitz (1)</option><option value="2">Kann zwischen Th8–12 einrollen (2)</option><option value="3">Kann maximal bis Th8 einrollen (Angulus inferior scapulae) (3)</option></select>
+</div>
+<div class="item">
+<div class="item-title">Finger-Boden-Test</div>
+<div class="item-description">Der Patient steht barfuss am Boden, die Füsse sind hüftbreit auseinander und die Knie gestreckt.</div>
+<details>
+<summary>▶️ Instruktion anzeigen</summary>
+<p>Können Sie sich so weit wie möglich mit gestreckten Armen bücken, ohne die Knie zu beugen?</p>
+</details>
+<label for="q3">Bewertung:</label>
+<select id="q3" name="q3"><option value="">-- Auswahl --</option><option value="0">Finger-Boden-Abstand (FBA) 0 cm (0)</option><option value="1">FBA 0–20 cm (1)</option><option value="2">FBA 20–40 cm (2)</option><option value="3">FBA &gt; 40 cm (3)</option></select>
+</div>
+<div class="item">
+<div class="item-title">Aufhebe-Test</div>
+<div class="item-description">Der Patient steht aufrecht. Ein Knäuel Papier wird auf den Boden fallen gelassen.</div>
+<details>
+<summary>▶️ Instruktion anzeigen</summary>
+<p>Können Sie das Papier aufheben? Können Sie es auf verschiedene Arten tun?</p>
+</details>
+<label for="q4">Bewertung:</label>
+<select id="q4" name="q4"><option value="">-- Auswahl --</option><option value="0">Aufheben leicht und auf 3 verschiedene Arten (0)</option><option value="1">Aufheben mit etwas Mühe, auf 1–2 Arten (1)</option><option value="2">Nur mit Anstrengung oder steifem Rücken, evtl. Abstützen (2)</option><option value="3">Nicht möglich oder Hilfe benötigt (3)</option></select>
+</div>
+<div class="item">
+<div class="item-title">Hebe-Test</div>
+<div class="item-description">Der Patient steht vor einem Behandlungs­tisch (Höhe 76 cm). Kiste mit Sandsack/Gewicht von 5Kg auf dem Boden </div>
+<details>
+<summary>▶️ Instruktion anzeigen</summary>
+<p>Können Sie während 1 Minute die Kiste mit Sandsack (5 kg) so oft wie möglich vom Boden auf den Tisch stellen und wieder zurück? Sie sind frei in der Art der Ausführung.</p>
+</details>
+<label for="q5">Bewertung:</label>
+<select id="q5" name="q5"><option value="">-- Auswahl --</option><option value="0">Mehr als 15 Wiederholungen (0)</option><option value="1">10–15 Wiederholungen (1)</option><option value="2">0–10 Wiederholungen (2)</option><option value="3">Nicht möglich (0 Wiederholungen) (3)</option></select>
+</div>
+<button onclick="calculateBPS()" type="button">✅ Score berechnen</button>
+<button onclick="generatePDF()" type="button">📄 PDF exportieren</button>
+</form>
+<div id="result"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+function calculateBPS() {
+  let total = 0;
+  for (let i = 1; i <= 5; i++) {
+    const val = document.getElementById("q" + i).value;
+    if (val === "") return alert("Bitte alle Felder ausfüllen.");
+    total += parseInt(val);
+  }
+  document.getElementById("result").innerText = "Gesamtscore: " + total + " / 15 Punkte";
+}
+
+function generatePDF() {
+  const doc = new jspdf.jsPDF();
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(16);
+  doc.text("Back Performance Scale (BPS)", 10, 15);
+  doc.setFontSize(12);
+  let y = 25;
+  let total = 0;
+  for (let i = 1; i <= 5; i++) {
+    const val = document.getElementById("q" + i).value;
+    const label = document.querySelector(".item:nth-of-type(" + i + ") .item-title").innerText;
+    const score = val === "" ? "-" : val;
+    total += val === "" ? 0 : parseInt(val);
+    doc.text(i + ". " + label, 10, y);
+    doc.text(score + " Pkt", 180, y, { align: "right" });
+    y += 8;
+  }
+  y += 8;
+  doc.setFontSize(13);
+  doc.text("Gesamtscore: " + total + " / 15", 10, y);
+  doc.save("BPS_Auswertung.pdf");
+}
+</script>
+      <p><a href="index.html"> ⬅️ Zurück zur Hauptseite</a></p>
+</body>
+</html>

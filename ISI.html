@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insomnia Severity Index (ISI)</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; font-size: 16px; max-width: 900px; }
+    .question-block { margin-bottom: 2rem; }
+    .options { display: flex; gap: 10px; margin-top: 0.5rem; }
+    .option-item { display: flex; align-items: center; gap: 4px; }
+    label.question { font-weight: bold; display: block; margin-bottom: 0.5rem; }
+    button { margin-top: 15px; padding: 10px 15px; font-size: 16px; }
+    #result, #interpretation, #additional { margin-top: 20px; font-weight: bold; white-space: pre-line; }
+    .nav-buttons { margin-top: 2rem; }
+    .nav-buttons a {
+      display: inline-block;
+      margin-right: 10px;
+      padding: 10px 15px;
+      background: #eee;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #000;
+    }
+    .nav-buttons a:hover { background: #ddd; }
+  </style>
+</head>
+<body>
+  <h1>Insomnia Severity Index (ISI)</h1>
+  <p>Erfassung primäre Schlaflosigkeit und hilfreich zur Einschätzung ob weitere Abklärungen empfohlen sind.</p>
+  <p>Im Cenplex Behandlungsplan als <strong>Messung</strong> hinterlegt. Hier oder in Papierform durchführen und Score im Cenplex übertragen.</p>
+  
+  <p> <strong> Bitte kreuzen Sie für jede der folgenden Fragen die Zahl an, die am besten Ihrem Schlafmuster im letzten Monat entspricht.  </strong> </p>
+
+  <form id="isiForm"></form>
+
+  <button type="button" onclick="calculateISI()">✅ Score berechnen</button>
+
+  <div id="result"></div>
+  <div id="interpretation"></div>
+  <div id="additional"></div>
+
+  
+
+  <script>
+    const items = [
+      "1. Schwierigkeit, einzuschlafen.",
+      "2. Schwierigkeit, durchzuschlafen.",
+      "3. Das Problem, am Morgen früh aufzuwachen.",
+      "4. Wie zufrieden/unzufrieden sind Sie mit Ihrem aktuellen Schlafverhalten?",
+      "5. In welchem Ausmass beeinflussen Ihre Schlafprobleme Ihre Alltagsfunktionen (z.B. Tagesmüdigkeit, Fähigkeit auf der Arbeit/Alltag zu funktionieren, Konzentration, Erinnerung, Stimmung)?",
+      "6. In welchem Ausmass nehmen Ihre Mitmenschen Ihr Schlafproblem und die damit verbundene Beeinträchtigung Ihrer Lebensqualität wahr?",
+      "7. Wie besorgt/bedrückt sind Sie durch Ihre gegenwärtigen Schlafprobleme?"
+    ];
+
+    const options = [
+      "0 - Überhaupt nicht",
+      "1 - Wenig",
+      "2 - Etwas",
+      "3 - Stark",
+      "4 - Sehr stark"
+    ];
+
+    function renderForm() {
+      const form = document.getElementById("isiForm");
+      items.forEach((item, index) => {
+        const block = document.createElement("div");
+        block.className = "question-block";
+        block.innerHTML = `<label class="question">${item}</label>
+          <div class="options">
+            ${options.map((opt, idx) => `
+              <div class="option-item">
+                <input type="radio" name="q${index}" value="${idx}" id="q${index}_${idx}">
+                <label for="q${index}_${idx}">${opt}</label>
+              </div>
+            `).join('')}
+          </div>`;
+        form.appendChild(block);
+      });
+    }
+
+    function calculateISI() {
+      let score = 0;
+      for (let i = 0; i < items.length; i++) {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (selected) {
+          score += parseInt(selected.value);
+        }
+      }
+      document.getElementById("result").innerText = `Gesamtpunktzahl: ${score} / 28`;
+
+      let interpretation = "";
+      if (score <= 7) interpretation = "Keine Schlaflosigkeit";
+      else if (score <= 14) interpretation = "Unterschwellige Schlaflosigkeit";
+      else if (score <= 21) interpretation = "Moderate Schlaflosigkeit";
+      else interpretation = "Schwere Schlaflosigkeit";
+
+      document.getElementById("interpretation").innerText = `Einschätzung: ${interpretation}`;
+
+      const additional = document.getElementById("additional");
+      if (score >= 10) {
+        additional.innerHTML = `<p style="color: red;">⚠️ Hinweis: Nähere Abklärungen können empfohlen werden.</p>`;
+      } else {
+        additional.innerHTML = "";
+      }
+    }
+
+    renderForm();
+  </script>
+<p><a href="index.html"> ⬅️ Zurück zur Hauptseite</a></p>
+</body>
+</html>

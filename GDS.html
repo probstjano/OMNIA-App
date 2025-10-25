@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geriatrische Depressionsskala (GDS-15)</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; font-size: 16px; max-width: 900px; }
+    .question-block { margin-bottom: 2rem; }
+    .options { display: flex; gap: 20px; margin-top: 0.5rem; }
+    .option-item { display: flex; align-items: center; gap: 6px; }
+    label.question { font-weight: bold; display: block; margin-bottom: 0.5rem; }
+    button { margin-top: 15px; padding: 10px 15px; font-size: 16px; }
+    #result, #interpretation { margin-top: 20px; font-weight: bold; white-space: pre-line; }
+    .nav-buttons { margin-top: 2rem; }
+    .nav-buttons a {
+      display: inline-block; margin-right: 10px; padding: 10px 15px;
+      background: #eee; border-radius: 8px; text-decoration: none; color: #000;
+    }
+    .nav-buttons a:hover { background: #ddd; }
+  </style>
+</head>
+<body>
+  <h1>Geriatrische Depressionsskala (GDS-15)</h1>
+  <p>Screening Instrument zur Erfassung depressiver Symptome bei älteren Menschen</p>
+  <p>Im Behandlungsplan als <strong>Messung</strong> oder <strong>Assessment</strong> vorhanden. Direkt im Cenplex Assessment durchführen oder alternativ hier und Score übertragen.</p>
+  <p><strong>Bitte kreuzen Sie die entsprechende Antwort an.</strong></p>
+
+  <form id="gdsForm"></form>
+
+  <button type="button" onclick="calculateGDS()">✅ Score berechnen</button>
+  <button type="button" onclick="downloadPDF()">📄 Als PDF speichern</button>
+
+  <div id="result"></div>
+  <div id="interpretation"></div>
+
+  
+
+  <script>
+    const items = [
+      { text: "1. Sind Sie grundsätzlich mit Ihrem Leben zufrieden?", scoreJa: 0, scoreNein: 1 },
+      { text: "2. Haben Sie viele von Ihren Tätigkeiten und Interessen aufgegeben?", scoreJa: 1, scoreNein: 0 },
+      { text: "3. Haben Sie das Gefühl, Ihr Leben sei leer?", scoreJa: 1, scoreNein: 0 },
+      { text: "4. Ist Ihnen oft langweilig?", scoreJa: 1, scoreNein: 0 },
+      { text: "5. Sind Sie die meiste Zeit guter Laune?", scoreJa: 0, scoreNein: 1 },
+      { text: "6. Befürchten Sie, dass Ihnen etwas Schlechtes zustossen wird?", scoreJa: 1, scoreNein: 0 },
+      { text: "7. Fühlen Sie sich die meiste Zeit glücklich?", scoreJa: 0, scoreNein: 1 },
+      { text: "8. Fühlen Sie sich oft hilflos?", scoreJa: 1, scoreNein: 0 },
+      { text: "9. Sind Sie lieber zu Hause, statt auszugehen und etwas zu unternehmen?", scoreJa: 1, scoreNein: 0 },
+      { text: "10. Glauben Sie, dass Sie mit dem Gedächtnis mehr Schwierigkeiten haben als andere Leute?", scoreJa: 1, scoreNein: 0 },
+      { text: "11. Finden Sie, es sei schön, jetzt zu leben?", scoreJa: 0, scoreNein: 1 },
+      { text: "12. Kommen Sie sich in Ihrem jetzigen Zustand ziemlich wertlos vor?", scoreJa: 1, scoreNein: 0 },
+      { text: "13. Fühlen Sie sich voller Energie?", scoreJa: 0, scoreNein: 1 },
+      { text: "14. Finden Sie, dass Ihre Situation hoffnungslos ist?", scoreJa: 1, scoreNein: 0 },
+      { text: "15. Glauben Sie, die meisten anderen Leute haben es besser wie Sie?", scoreJa: 1, scoreNein: 0 }
+    ];
+
+    function renderForm() {
+      const form = document.getElementById("gdsForm");
+      items.forEach((item, index) => {
+        const block = document.createElement("div");
+        block.className = "question-block";
+        block.innerHTML = `<label class="question">${item.text}</label>
+          <div class="options">
+            <div class="option-item">
+              <input type="radio" name="q${index}" value="ja" id="q${index}_ja">
+              <label for="q${index}_ja">Ja</label>
+            </div>
+            <div class="option-item">
+              <input type="radio" name="q${index}" value="nein" id="q${index}_nein">
+              <label for="q${index}_nein">Nein</label>
+            </div>
+          </div>`;
+        form.appendChild(block);
+      });
+    }
+
+    function calculateGDS() {
+      let score = 0;
+      let answered = 0;
+
+      for (let i = 0; i < items.length; i++) {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (selected) {
+          answered++;
+          score += selected.value === "ja" ? items[i].scoreJa : items[i].scoreNein;
+        }
+      }
+
+      if (answered < items.length) {
+        alert("Bitte beantworten Sie alle 15 Fragen, bevor Sie den Score berechnen.");
+        return;
+      }
+
+      document.getElementById("result").innerText = `Gesamtpunktzahl: ${score} / 15`;
+
+      let interpretation = "";
+      if (score <= 5) interpretation = "Normal";
+      else if (score <= 10) interpretation = "Leichte bis mäßige Depression";
+      else interpretation = "Schwere Depression";
+
+      document.getElementById("interpretation").innerText = `Einschätzung: ${interpretation}`;
+    }
+
+    function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      let y = 10;
+      doc.setFontSize(16);
+      doc.text("Geriatrische Depressionsskala (GDS-15) - Auswertung", 10, y);
+      y += 10;
+
+      items.forEach((item, idx) => {
+        const selected = document.querySelector(`input[name="q${idx}"]:checked`);
+        if (selected) {
+          doc.setFontSize(12);
+          doc.text(`${item.text} Antwort: ${selected.value.charAt(0).toUpperCase() + selected.value.slice(1)}`, 10, y);
+          y += 8;
+        }
+      });
+
+      const result = document.getElementById("result").innerText;
+      const interp = document.getElementById("interpretation").innerText;
+
+      y += 10;
+      doc.setFontSize(14);
+      doc.text(result, 10, y);
+      y += 7;
+      doc.text(interp, 10, y);
+
+      doc.save("gds15-auswertung.pdf");
+    }
+
+    renderForm();
+  </script>
+<p><a href="index.html"> ⬅️ Zurück zur Hauptseite</a></p>
+</body>
+</html>

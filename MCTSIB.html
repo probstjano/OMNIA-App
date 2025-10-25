@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CTSIB – Modifizierter Test</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; font-size: 16px; max-width: 700px; }
+    label { display: block; margin-top: 1rem; font-weight: bold; }
+    .input-group { margin-bottom: 1rem; }
+    input[type="number"] {
+      width: 100%;
+      padding: 6px;
+      font-size: 16px;
+      margin-bottom: 0.2rem;
+    }
+    small {
+      display: block;
+      color: #555;
+      font-size: 13px;
+    }
+    button { padding: 10px 15px; font-size: 16px; margin-top: 15px; }
+    #result { margin-top: 20px; font-weight: bold; }
+    .section { margin-top: 2rem; border-top: 1px solid #ccc; padding-top: 1rem; }
+    .nav-buttons { margin-top: 2rem; }
+    .nav-buttons a {
+      display: inline-block;
+      margin-right: 10px;
+      padding: 10px 15px;
+      background: #eee;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #000;
+    }
+    .nav-buttons a:hover { background: #ddd; }
+  </style>
+</head>
+<body>
+  <h1>Modified CTSIB</h1>
+  <p>Test zur Bewertung der sensorischer Systeme fürs Gleichgewicht. Verkürzte Version des CTSIB (ohne Lampenschirm) → Ergebnisse beider Versionen sind vergleichbar!</p>
+  <p>Im Cenplex Behandlungsplan als <strong>Messung</strong> hinterlegt. Zeit/Score übertragen.</p>
+  <p>In jedem Bereich Stand mit Füßen zusammen, Arme über Brust gekreuzt.</p>
+  <p>Detailliertes Durchführungsprotokoll hier:
+    <a href="https://probstjano.github.io/OpenPdf/MCTSIB_Protokoll.pdf" target="_blank" rel="noopener">MCTSIB Protokoll (PDF)</a>
+  </p>
+
+  <form id="ctsibForm">
+    <div class="section">
+      <label for="b1">Bedingung 1: Augen offen, fester Untergrund</label>
+      <div class="input-group">
+        <input type="number" id="b1" min="0" max="30" step="0.01" placeholder="Zeit in Sekunden" />
+        <small>Max. 30 Sekunden – Bester von 3 Versuchen</small>
+      </div>
+    </div>
+
+    <div class="section">
+      <label for="b2">Bedingung 2: Augen geschlossen, fester Untergrund</label>
+      <div class="input-group">
+        <input type="number" id="b2" min="0" max="30" step="0.01" placeholder="Zeit in Sekunden" />
+        <small>Max. 30 Sekunden – Bester von 3 Versuchen</small>
+      </div>
+    </div>
+
+    <div class="section">
+      <label for="b3">Bedingung 3: Augen offen, Schaumunterlage</label>
+      <div class="input-group">
+        <input type="number" id="b3" min="0" max="30" step="0.01" placeholder="Zeit in Sekunden" />
+        <small>Max. 30 Sekunden – Bester von 3 Versuchen</small>
+      </div>
+    </div>
+
+    <div class="section">
+      <label for="b4">Bedingung 4: Augen geschlossen, Schaumunterlage</label>
+      <div class="input-group">
+        <input type="number" id="b4" min="0" max="30" step="0.01" placeholder="Zeit in Sekunden" />
+        <small>Max. 30 Sekunden – Bester von 3 Versuchen</small>
+      </div>
+    </div>
+
+    <button type="button" onclick="calculateCTSIB()">✅ Zeit berechnen</button>
+    <button type="button" onclick="downloadPDF()">📄 Als PDF speichern</button>
+  </form>
+
+  <div id="result"></div>
+
+  
+
+  <script>
+    function calculateCTSIB() {
+      const values = [1,2,3,4].map(n => parseFloat(document.getElementById("b" + n).value) || 0);
+      const total = values.reduce((a, b) => a + b, 0).toFixed(2);
+
+      document.getElementById("result").innerText =
+        `Eingetragene Zeiten (Sekunden):\n` +
+        values.map((v, i) => `Bedingung ${i+1}: ${v}`).join("\n") +
+        `\n\nGesamtdauer: ${total} Sekunden (max. 120)`;
+    }
+
+    function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      let y = 10;
+
+      doc.setFontSize(16);
+      doc.text("Modified CTSIB – Auswertung", 10, y);
+      y += 10;
+
+      for (let i = 1; i <= 4; i++) {
+        const val = document.getElementById("b" + i).value || "-";
+        doc.setFontSize(12);
+        doc.text(`Bedingung ${i}: ${val} Sekunden`, 10, y);
+        y += 7;
+      }
+
+      y += 5;
+      const output = document.getElementById("result").innerText || "Kein Ergebnis berechnet.";
+      doc.setFontSize(14);
+      output.split("\n").forEach(line => {
+        doc.text(line, 10, y);
+        y += 7;
+      });
+
+      doc.save("ctsib-ergebnis.pdf");
+    }
+  </script>
+<p><a href="index.html"> ⬅️ Zurück zur Hauptseite</a></p>
+</body>
+</html>

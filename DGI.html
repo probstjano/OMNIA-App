@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dynamic Gait Index (DGI)</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 2rem;
+      font-size: 16px;
+      max-width: 1000px;
+    }
+    .question-block { margin-bottom: 2rem; }
+    .question { font-weight: bold; margin-bottom: 0.5rem; }
+    .toggle {
+      color: #007acc;
+      cursor: pointer;
+      margin-bottom: 0.5rem;
+      display: inline-block;
+    }
+    .instruction {
+      display: none;
+      margin-bottom: 0.5rem;
+      color: #444;
+      background: #f4f4f4;
+      padding: 8px;
+      border-left: 3px solid #007acc;
+    }
+    select {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 15px;
+      font-size: 16px;
+    }
+    #result {
+      margin-top: 2rem;
+      font-weight: bold;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+  <h1>Dynamic Gait Index (DGI)</h1>
+  <p>
+    Die DGI bewertet die Fähigkeit einer Person, das Gleichgewicht beim Gehen unter äusseren Anforderungen anzupassen (Vestibuläre Störungen, MS, CVI)
+  </p>
+  <p>
+    Im Cenplex Behandlungsplan als <strong>Messung</strong> vorhanden. Hier durchführen/eintragen und Score übertragen
+  </p>
+
+  <form id="dgiForm">
+    <!-- Frage 1 -->
+    <div class="question-block">
+      <div class="question">1. Gehen auf ebener Gehstrecke (6.1 m)</div>
+      <span class="toggle" onclick="toggleInstruction(this)">📘 Instruktion anzeigen</span>
+      <div class="instruction">Gehen Sie in Ihrem normalen Tempo bis zur markierten Stelle.</div>
+      <select name="q0">
+        <option value="">-- Bewertung auswählen --</option>
+        <option value="3">0) starke Einschränkung – Kann nicht 6.1 m ohne Hilfsperson gehen, starke Gangabweichungen oder Gleichgewichtsprobleme.</option>
+        <option value="2">1) mittlere Einschränkung – 6.1 m Gehen, langsames Gehtempo, Hinkmechanismen, Gleichgewichtsprobleme.</option>
+        <option value="1">2) leichte Einschränkung – 6.1 m Gehen mit Gehhilfsmittel, Tempo verlangsamt, leichte Deviation.</option>
+        <option value="0">3) normal – 6.1 m Gehen, ohne Gehhilfsmittel, normales Tempo, keine Gleichgewichtsstörungen, normales Gangbild, kein Hinken.</option>
+      </select>
+    </div>
+
+    <!-- Frage 2 -->
+    <div class="question-block">
+      <div class="question">2. Gehen mit Tempowechsel</div>
+      <span class="toggle" onclick="toggleInstruction(this)">📘 Instruktion anzeigen</span>
+      <div class="instruction">Beginnen Sie in Ihrem normalen Gehtempo (1.5 m), beschleunigen Sie, wenn ich sage, „gehen Sie so schnell wie möglich“ (1.5 m). Wenn ich Ihnen sage „langsam“, gehen Sie so langsam wie möglich (1.5 m).</div>
+      <select name="q1">
+        <option value="">-- Bewertung auswählen --</option>
+        <option value="3">0) starke Einschränkung – Kein Tempo-Wechsel möglich oder Gleichgewichtsverlust beim Versuch.</option>
+        <option value="2">1) mittlere Einschränkung – Nur kleine Tempoveränderungen oder Gleichgewichtsprobleme beim Tempowechsel.</option>
+        <option value="1">2) leichte Einschränkung – Tempowechsel möglich, aber leichte Gangabweichung oder kein deutlicher Tempounterschied.</option>
+        <option value="0">3) normal – Fliessender Tempowechsel ohne Gleichgewichtsverlust oder Gangabweichung. Zeigt deutlichen Tempounterschied.</option>
+      </select>
+    </div>
+
+    <!-- Frage 3 -->
+    <div class="question-block">
+      <div class="question">3. Gehen mit Kopfdrehung nach rechts und links</div>
+      <span class="toggle" onclick="toggleInstruction(this)">📘 Instruktion anzeigen</span>
+      <div class="instruction">Gehen Sie in Ihrem normalen Tempo. Wenn ich sage „nach rechts“, gehen Sie weiter mit Kopf nach rechts, dann nach links usw.</div>
+      <select name="q2">
+        <option value="">-- Bewertung auswählen --</option>
+        <option value="3">0) starke Einschränkung – Muss stehen bleiben oder verliert Gleichgewicht.</option>
+        <option value="2">1) mittlere Einschränkung – Mittlere Verlangsamung, zögerlich, aber weitergehend.</option>
+        <option value="1">2) leichte Einschränkung – Leichte Veränderung der Gehgeschwindigkeit oder Nutzung Gehhilfe.</option>
+        <option value="0">3) normal – Kopfdrehung flüssig ohne Veränderung des Ganges.</option>
+      </select>
+    </div>
+
+    <!-- Frage 4 -->
+    <div class="question-block">
+      <div class="question">4. Gehen und nach oben und unten schauen</div>
+      <span class="toggle" onclick="toggleInstruction(this)">📘 Instruktion anzeigen</span>
+      <div class="instruction">Gehen Sie in normalem Tempo. Bei „nach oben“: zur Decke blicken; bei „nach unten“: auf den Boden schauen, ohne stehen zu bleiben.</div>
+      <select name="q3">
+        <option value="">-- Bewertung auswählen --</option>
+        <option value="3">0) starke Einschränkung – Muss stehen bleiben oder verliert Gleichgewicht deutlich.</option>
+        <option value="2">1) mittlere Einschränkung – Mässige Tempoveränderung oder Schwanken, aber weitergehend.</option>
+        <option value="1">2) leichte Einschränkung – Leichte Tempoveränderung oder Nutzung Gehhilfe.</option>
+        <option value="0">3) normal – Kopfbewegungen flüssig ohne Veränderungen im Gang.</option>
+      </select>
+    </div>
+
+    <!-- Frage 5 -->
+    <div class="question-block">
+      <div class="question">5. Gehen und Drehung um 180°</div>
+      <span class="toggle" onclick="toggleInstruction(this)">📘 Instruktion anzeigen</span>
+      <div class="instruction">Gehen Sie normal. Bei „Stopp und drehen“: drehen Sie sich zügig um 180° und stoppen Sie.</div>
+      <select name="q4">
+        <option value="">-- Bewertung auswählen --</option>
+        <option value="3">0) starke Einschränkung – Drehen nicht selbständig oder unsicher.</option>
+        <option value="2">1) mittlere Einschränkung – Langsam, mit Hilfe oder kleinen Korrekturschritten.</option>
+        <option value="1">2) leichte Einschränkung – Sicher, aber langsamer (>3 s).</option>
+        <option value="0">3) normal – Sicheres Drehen in <3 Sekunden ohne Gleichgewichtsverlust.</option>
+      </select>
+    </div>
+
+    <!-- Frage 6 -->
+    <div class="question-block">
+      <div class="question">6. Gehen über Hindernisse</div>
+      <span class="toggle" onclick="toggleInstruction(this)">📘 Instruktion anzeigen</span>
+      <div class="instruction">Gehen Sie normal. Wenn Sie zur Schuhschachtel kommen, steigen Sie darüber und gehen weiter.</div>
+      <select name="q5">
+        <option value="">-- Bewertung auswählen --</option>
+        <option value="3">0) starke Einschränkung – Kann Aufgabe nicht ohne Hilfe ausführen.</option>
+        <option value="2">1) mittlere Einschränkung – Muss anhalten oder braucht Hilfe.</option>
+        <option value="1">2) leichte Einschränkung – Bremst etwas, passt Schritte an.</option>
+        <option value="0">3) normal – Steigt ohne Tempoverlust oder Gleichgewichtsprobleme.</option>
+      </select>
+    </div>
+
+    <!-- Frage 7 -->
+    <div class="question-block">
+      <div class="question">7. Gehen um Hindernisse</div>
+      <span class="toggle" onclick="toggleInstruction(this)">📘 Instruktion anzeigen</span>
+      <div class="instruction">Gehen Sie geradeaus. Umgehen Sie die erste Keule rechts, die zweite links.</div>
+      <select name="q6">
+        <option value="">-- Bewertung auswählen --</option>
+        <option value="3">0) starke Einschränkung – Wirft Hindernis um oder braucht taktile Hilfe.</option>
+        <option value="2">1) mittlere Einschränkung – Muss stark abbremsen oder braucht Hilfe.</option>
+        <option value="1">2) leichte Einschränkung – Bremst, passt Schritte an.</option>
+        <option value="0">3) normal – Umrundet beide Hindernisse flüssig und sicher.</option>
+      </select>
+    </div>
+
+    <!-- Frage 8 -->
+    <div class="question-block">
+      <div class="question">8. Treppe</div>
+      <span class="toggle" onclick="toggleInstruction(this)">📘 Instruktion anzeigen</span>
+      <div class="instruction">Steigen Sie die Treppe hoch wie zuhause (mit oder ohne Geländer), oben drehen und wieder runter.</div>
+      <select name="q7">
+        <option value="">-- Bewertung auswählen --</option>
+        <option value="3">0) starke Einschränkung – Kann Aufgabe nicht sicher ausführen.</option>
+        <option value="2">1) mittlere Einschränkung – Nicht alternierend mit Geländer.</option>
+        <option value="1">2) leichte Einschränkung – Alternierend mit Geländer.</option>
+        <option value="0">3) normal – Alternierend, ohne Geländer.</option>
+      </select>
+    </div>
+
+    <button type="button" onclick="calculateScore()">✅ Score berechnen</button>
+    <button type="button" onclick="generatePDF()">📄 PDF exportieren</button>
+  </form>
+
+  <div id="result"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    function toggleInstruction(el) {
+      const box = el.nextElementSibling;
+      box.style.display = box.style.display === "block" ? "none" : "block";
+      el.innerText = box.style.display === "block"
+        ? "❌ Instruktion verbergen"
+        : "📘 Instruktion anzeigen";
+    }
+
+    function calculateScore() {
+      let total = 0;
+      for (let i = 0; i < 8; i++) {
+        const val = document.querySelector(`select[name="q${i}"]`).value;
+        if (val === "") return alert("Bitte alle Fragen beantworten.");
+        total += parseInt(val);
+      }
+      document.getElementById("result").innerText = `Gesamtscore: ${total} / 24`;
+    }
+
+    async function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(16);
+      doc.text("Dynamic Gait Index (DGI) – Auswertung", 10, 15);
+      doc.setFontSize(12);
+
+      let y = 25;
+      let total = 0;
+
+      for (let i = 0; i < 8; i++) {
+        const block = document.querySelectorAll(".question-block")[i];
+        const question = block.querySelector(".question").innerText;
+        const sel = document.querySelector(`select[name="q${i}"]`);
+        const score = sel.value;
+        total += parseInt(score);
+        doc.text(`${question}`, 10, y);
+        doc.text(`Punkte: ${score}`, 150, y);
+        y += 8;
+        if (y > 270) { doc.addPage(); y = 20; }
+      }
+
+      doc.setFontSize(14);
+      y += 10;
+      doc.text(`Gesamtscore: ${total} / 24`, 10, y);
+      doc.save("DGI_Auswertung.pdf");
+    }
+  </script>
+
+  <p><a href="index.html">⬅️ Zurück zur Hauptseite</a></p>
+</body>
+</html>

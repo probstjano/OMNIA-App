@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PRTEE – Patient-Rated Tennis Elbow Evaluation</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="robotoBase64.js"></script>
+  <style>
+    body { font-family: sans-serif; margin: 20px; font-size: 16px; max-width: 900px; }
+    h1 { margin-bottom: 10px; }
+    .section { margin-bottom: 30px; }
+    .question-block { margin-bottom: 20px; }
+    .question-text { font-weight: bold; margin-bottom: 5px; }
+    .scale-row { display: flex; align-items: center; margin-left: 30px; }
+    .options {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex: 1;
+      max-width: 500px;
+    }
+    .options label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 13px;
+    }
+    .options input { margin-bottom: 4px; }
+    button { padding: 10px 15px; font-size: 16px; margin-top: 20px; }
+    #result { margin-top: 30px; font-weight: bold; white-space: pre-line; }
+  </style>
+</head>
+<body>
+  <h1>PRTEE – Patient-Rated Tennis Elbow Evaluation</h1>
+  <p>Die folgenden Fragen werden uns helfen, zu verstehen, wie stark Sie in der letzten Woche aufgrund Ihrer Armbeschwerden beeinträchtigt waren. Bitte beschreiben Sie Ihre durchschnittlichen Beschwerden über die gesamte letzte Woche gesehen auf einer Skala von 0-10. Bitte beantworten Sie jede Frage. Falls Sie eine Aktivität in der letzten Woche nicht durchgeführt haben, schätzen Sie einfach das Ausmaß der Einschränkung, als ob Sie diese Tätigkeit durchgeführt hätten. Sofern Sie eine Aktivität gar nie durchführen konnten oder eine Schätzung nicht möglich ist, lassen Sie die Frage unbeantwortet.</p>
+ 
+  <form id="prteeForm">
+    <div class="section">
+      <h2>Schmerzskala</h2>
+      <p>Bewerten Sie den durchschnittlichen Ellbogenschmerz bei den unten genannten Tätigkeiten im betroffenen Arm in der vergangenen Woche, indem Sie die entsprechende Zahl ankreuzen. Wir bitten Sie, Ihre Schmerzen auf einer Skala von 0-10 anzugeben. 0 entspricht keinem Schmerz, 10 entspricht dem stärksten vorstellbaren Schmerz. (0=kein Schmerz, 10=stärkster vorstellbarer Schmerz)</p>
+      <div id="painQuestions"></div>
+    </div>
+
+    <div class="section">
+      <h2>Ausgewählte Tätigkeiten</h2>
+      <p>Bitte beurteilen Sie, wie schwer es für Sie war, die unten stehenden Aktivitäten während der letzten Woche mit Ihrem betroffenen Arm auszuüben. Kreuzen Sie auf der Skala von 0-10 die Zahl an, die Ihre Schwierigkeiten bei der Ausübung der folgenden Tätigkeiten am besten beschreibt. 0 bedeutet, dass Sie keine Probleme damit hatten, 10 bedeutet, dass es unmöglich war, diese Tätigkeit auszuführen. (0=keine Schwierigkeiten, 10=unmöglich)</p>
+      <div id="dailyQuestions"></div>
+    </div>
+
+    <div class="section">
+      <h2>Alltagsaktivitäten</h2>
+      <p>Bewerten Sie die durschnittlichen Schwierigkeiten bei den unten genannten alltäglichen Tätigkeiten während der letzten Woche und kreuzen Sie die entsprechende Zahl an. Mit alltäglichen Tätigkeiten sind Aktivitäten gemeint, welche Sie schon früher, das heißt schon vor dem Armproblem, durchgeführt hatten. 0 bedeutet, dass Sie keine Probleme damit hatten, 10 bedeutet, dass es unmöglich war, diese Tätigkeit auszuführen. (0=keine Schwierigkeiten, 10=unmöglich)</p>
+      <div id="activityQuestions"></div>
+    </div>
+
+    <button type="button" onclick="calculatePRTEE()">✅ Score berechnen</button>
+    <button type="button" onclick="generatePDF()">📄 Als PDF speichern</button>
+  </form>
+
+  <div id="result"></div>
+
+  <script>
+    const painItems = [
+      "In Ruhe",
+      "Bei Tätigkeiten mit sich wiederholenden Armbewegungen",
+      "Beim Tragen einer schweren Tragetasche",
+      "Wenn der Schmerz am schwächsten ist",
+      "Wenn der Schmerz am stärksten ist"
+    ];
+
+    const dailyItems = [
+      "Drehen eines Schlüssels",
+      "Tragen einer Tragetasche",
+      "Heben eines vollen Glases zum Mund",
+      "Öffnen eines Konfitürenglases",
+      "Anziehen einer Hose",
+      "Auswringen eines Waschlappens"
+    ];
+
+    const activityItems = [
+      "Körperpflege (Anziehen, Waschen)",
+      "Haushalt (z.B. Putzen, Kochen)",
+      "Bei der Ausübung der Arbeit (Beruf oder tägliche Beschäftigung)",
+      "In der Freizeit/beim Sport"
+    ];
+
+    function renderQuestions(containerId, items, prefix) {
+      const container = document.getElementById(containerId);
+      items.forEach((q, i) => {
+        const div = document.createElement("div");
+        div.className = "question-block";
+        let optionsHTML = "";
+        for (let v = 0; v <= 10; v++) {
+          optionsHTML += `
+            <label>
+              <input type="radio" name="${prefix}${i}" value="${v}">${v}
+            </label>`;
+        }
+        div.innerHTML = `<div class="question-text">${q}</div><div class="scale-row"><div class="options">${optionsHTML}</div></div>`;
+        container.appendChild(div);
+      });
+    }
+
+    renderQuestions("painQuestions", painItems, "p");
+    renderQuestions("dailyQuestions", dailyItems, "d");
+    renderQuestions("activityQuestions", activityItems, "a");
+
+    function calculatePRTEE() {
+      function calcCategory(items, prefix) {
+        let sum = 0, count = 0;
+        items.forEach((_, i) => {
+          const val = document.querySelector(`input[name="${prefix}${i}"]:checked`);
+          if (val) {
+            sum += parseInt(val.value);
+            count++;
+          }
+        });
+        if (count === 0) return null;
+        const mean = sum / count;
+        return sum + (items.length - count) * mean;
+      }
+
+      const painScore = calcCategory(painItems, "p");
+      const dailyScore = calcCategory(dailyItems, "d");
+      const activityScore = calcCategory(activityItems, "a");
+
+      if (painScore === null || dailyScore === null || activityScore === null) {
+        alert("Mindestens eine Kategorie wurde komplett nicht beantwortet. Bitte korrigieren.");
+        return;
+      }
+
+      const functionScore = (dailyScore + activityScore) / 2;
+      const total = painScore + functionScore;
+
+      prteeScores = { pain: painScore, daily: dailyScore, activity: activityScore, functionScore, total };
+
+      document.getElementById("result").innerText =
+        `Schmerz-Score: ${painScore.toFixed(1)} / 50\n` +
+        `Funktion gesamt: ${functionScore.toFixed(1)} / 50\n` +
+        `Gesamt: ${total.toFixed(1)} / 100`;
+    }
+
+    async function generatePDF() {
+      if (!prteeScores) {
+        alert("Bitte zuerst Score berechnen.");
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.addFileToVFS("Roboto-Regular.ttf", window.robotoBase64);
+      doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+      doc.setFont("Roboto", "normal");
+
+      const left = 15;
+      const right = 190;
+      const lineHeight = 8;
+      let y = 20;
+
+      doc.setFontSize(16);
+      doc.text("PRTEE – Auswertung", left, y);
+      y += lineHeight;
+
+      doc.setFontSize(12);
+      doc.line(left, y, right, y);
+      y += 5;
+
+      function addSection(title, items, prefix) {
+        doc.setFontSize(13);
+        doc.text(title, left, y); 
+        y += lineHeight;
+
+        items.forEach((q, i) => {
+          const sel = document.querySelector(`input[name="${prefix}${i}"]:checked`);
+          const val = sel ? sel.value : "-";
+          const wrapped = doc.splitTextToSize(`${i+1}. ${q}`, 160);
+          wrapped.forEach((line, idx) => {
+            doc.text(line, left, y);
+            if (idx === 0) {
+              doc.text(val.toString(), right, y, { align: "right" });
+            }
+            y += lineHeight;
+          });
+          y += 2;
+          if (y > 270) { doc.addPage(); y = 20; }
+        });
+        y += 5;
+      }
+
+      addSection("Schmerz", painItems, "p");
+      addSection("Funktion – Ausgewählte Tätigkeiten", dailyItems, "d");
+      addSection("Funktion – Alltagsaktivitäten", activityItems, "a");
+
+      doc.setFontSize(14);
+      doc.text("Gesamtergebnis:", left, y); y += lineHeight;
+      doc.setFontSize(12);
+      doc.text(`Schmerz: ${prteeScores.pain.toFixed(1)} / 50`, left, y); y += lineHeight;
+      doc.text(`Funktion (Ø Alltag + Tätigkeit): ${prteeScores.functionScore.toFixed(1)} / 50`, left, y); y += lineHeight;
+      doc.text(`Gesamt: ${prteeScores.total.toFixed(1)} / 100`, left, y); y += lineHeight;
+
+      const today = new Date().toLocaleDateString("de-CH");
+      y += 5;
+      doc.text(`Datum: ${today}`, left, y);
+
+      doc.save("PRTEE_Auswertung.pdf");
+    }
+  </script>
+
+  <p><a href="index.html">⬅️ Zurück zur Hauptseite</a></p>
+</body>
+</html>

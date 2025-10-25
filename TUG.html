@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timed Up and Go (TUG) Test</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; font-size: 16px; max-width: 700px; }
+    label { display: block; margin-top: 1rem; }
+    input, select { width: 100%; padding: 6px; font-size: 16px; margin-bottom: 10px; }
+    button { margin-top: 10px; padding: 10px 15px; font-size: 16px; }
+    #result, #normwerteTUG { font-weight: bold; margin-top: 20px; white-space: pre-line; }
+    .hidden { display: none; }
+    .nav-buttons { margin-top: 2rem; }
+    .nav-buttons a {
+      display: inline-block; margin-right: 10px; padding: 10px 15px;
+      background: #eee; border-radius: 8px; text-decoration: none; color: #000;
+    }
+    .nav-buttons a:hover { background: #ddd; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
+    th { background: #f0f0f0; }
+  </style>
+</head>
+<body>
+  <h1>Timed Up and Go (TUG)</h1>
+  <p>Test zur Einschätzung der Mobilität und des Sturzrisikos.</p>
+  <p>Im Cenplex-Plan als <strong>Messung</strong> vorhanden. Hier Werte eintragen für Interpretation und Normwerte. Score im Cenplex übertragen.</p>
+  <p><strong>Achtung:</strong> Normwerte und einige Cut-off-Werte basieren nur auf kleinen Stichproben und sind vorsichtig zu interpretieren.</p>
+
+  <form>
+    <label>Gemessene Zeit (Sekunden):</label>
+    <input type="number" id="tugzeit" min="0" step="0.01">
+
+    <label>Alter:</label>
+    <input type="number" id="age" min="60" max="90" step="1">
+
+    <label>Geschlecht:</label>
+    <select id="sex">
+      <option value="male">Männlich</option>
+      <option value="female">Weiblich</option>
+    </select>
+
+    <button type="button" onclick="calculateTUG()">📊 Normwerte & Cut-Offs anzeigen</button>
+    <button type="button" onclick="downloadPDF()">📄 Als PDF speichern</button>
+  </form>
+
+  <div id="result"></div>
+  <div id="normwerteTUG" class="hidden"></div>
+
+  
+
+  <script>
+    const tugNorms = {
+      male: {
+        60: { mean: 8, sd: 2 },
+        70: { mean: 9, sd: 3 },
+        80: { mean: 10, sd: 1 }
+      },
+      female: {
+        60: { mean: 8, sd: 2 },
+        70: { mean: 9, sd: 2 },
+        80: { mean: 11, sd: 3 }
+      }
+    };
+
+    function nearestAge(age) {
+      if (age <= 69) return 60;
+      else if (age <= 79) return 70;
+      else return 80;
+    }
+
+    function calculateTUG() {
+      const age = parseInt(document.getElementById("age").value);
+      const sex = document.getElementById("sex").value;
+      const zeit = parseFloat(document.getElementById("tugzeit").value);
+
+      if (isNaN(age) || isNaN(zeit)) {
+        alert("Bitte Alter und Zeit korrekt eingeben.");
+        return;
+      }
+
+      const nearest = nearestAge(age);
+      const norm = tugNorms[sex][nearest];
+      const mean = norm.mean;
+      const sd = norm.sd;
+
+      let resultText = `Ihre TUG-Zeit: ${zeit.toFixed(2)} Sekunden\nVergleichswert (${nearest} Jahre, ${sex === 'male' ? 'Männer' : 'Frauen'}): Mittelwert ${mean}s ± ${sd}s\n`;
+
+      if (zeit <= mean + sd && zeit >= mean - sd) {
+        resultText += "\n➡️ Innerhalb einer Standardabweichung";
+      } else if (zeit > mean + sd) {
+        resultText += "\n⬆️ Mehr als 1 Standardabweichung langsamer als der Mittelwert";
+      } else {
+        resultText += "\n⬇️ Mehr als 1 Standardabweichung schneller als der Mittelwert";
+      }
+
+      // Cut-offs – alle passenden anzeigen
+      if (zeit > 11.5) {
+        resultText += "\n\n⚠️ Sturzrisiko: Parkinson-Patienten (>11,5 Sekunden)";
+      }
+      if (zeit > 14) {
+        resultText += "\n⚠️ Sturzrisiko: ältere Schlaganfallpatienten (>14 Sekunden)";
+      }
+      if (zeit > 15) {
+        resultText += "\n⚠️ Sturzrisiko: Intermediate Risk Group World Guidelines Fall Prevention (>15 Sekunden)";
+      }
+
+      document.getElementById("result").innerText = resultText;
+
+      const norms = document.getElementById("normwerteTUG");
+      norms.innerHTML = `<h3>Weitere Cut-Offs und Normwerte</h3>
+        <table>
+          <tr><th>Alter</th><th>Geschlecht</th><th>Mittelwert</th><th>Standardabweichung</th></tr>
+          <tr><td>60-69</td><td>Männlich</td><td>8</td><td>2</td></tr>
+          <tr><td>60-69</td><td>Weiblich</td><td>8</td><td>2</td></tr>
+          <tr><td>70-79</td><td>Männlich</td><td>9</td><td>3</td></tr>
+          <tr><td>70-79</td><td>Weiblich</td><td>9</td><td>2</td></tr>
+          <tr><td>80-89</td><td>Männlich</td><td>10</td><td>1</td></tr>
+          <tr><td>80-89</td><td>Weiblich</td><td>11</td><td>3</td></tr>
+        </table>
+        <h4>Weitere Sturzrisiko-Grenzwerte:</h4>
+        <ul>
+          <li>World Guidelines Fall Prevention: Intermediate Risk Group > 15 Sekunden</li>
+          <li>Parkinson-Patienten > 11,5 Sekunden</li>
+          <li>Ältere Schlaganfallpatienten > 14 Sekunden</li>
+        </ul>`;
+      norms.classList.remove("hidden");
+    }
+
+  </script>
+<p><a href="index.html"> ⬅️ Zurück zur Hauptseite</a></p>
+</body>
+</html>
