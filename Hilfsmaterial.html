@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hilfsmaterial & Links</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 10px;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    h1 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    details {
+      margin-bottom: 12px;
+    }
+    summary {
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    a {
+      color: #0077cc;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hilfsmaterial & Links</h1>
+
+  <details>
+    <summary>🆘 Sicherheit / Notfall</summary>
+    <li><a href="Unfall_Flying.pdf" target="_blank">🔹 Unfälle mit Flying-Auto </a></li>
+  </details>
+
+  <details>
+    <summary>🩺 Sturzprävention</summary>
+    <li><a href="WGFP.html">🔹 World Guidelines Fall Prevention </a></li>
+    <li><a href="STEADI.html">🔹 CDC STEADI Algorithm for Fall Risk Screening, Assessment, and Intervention </a></li>
+  </details>
+
+  <details>
+    <summary> 🧰 APTA Home-Health Toolkits </summary>
+    <p> Die Amerikanische Physiotherapie-Verband bietet Hilfsmaterial/Leitfäden zu verschiedenen Themen im Domizilphysiotherapie-Bereich (auf englisch) </p>
+    <li><a href="pdfjs/viewer.html?file=../Schlaf_Toolkit.pdf"> 📄 Schlaf Leitfaden </a> </li>
+    <li><a href="Mentale Gesundheit_Toolkit.pdf" target="_blank">🔹 Mentale Gesundheit Leitfaden </a></li>
+    <li><a href="Inkontinenz_Toolkit.pdf" target="_blank">🔹 Inkontinenz Leitfaden </a></li>
+    <li><a href="Schmerz_Toolkit.pdf" target="_blank">🔹 Schmerz Leitfaden </a></li>
+  </details>
+
+  <details>
+    <summary>🏠 Umfeldabklärung</summary>
+    <li><a href="https://check.bfu.ch/de/osa-GIwNFWSuU8/configuration/">🔹 Wohnraumabklärung Checkliste BFU </a></li>
+    <li><a href="STEADI_Schuhe.pdf" target="_blank">🔹 STEADI Schuhwerk empfehlungen (englisch) </a></li>
+  </details>
+
+  <details>
+    <summary>🦳 Soziale und Mentale Gesundheit </summary>
+    <li><a href="Mentale Gesundheit_Toolkit.pdf" target="_blank">🔹 Mental Health Tooklit </a></li>
+  </details>
+
+  <details>
+    <summary>🤝 Sozialberatung & Finanzielles</summary>
+  </details>
+
+  <a href="index.html">⬅️ Zurück zur Übersicht</a>
+
+  <script>
+  document.querySelectorAll('a').forEach(link => {
+    const href = link.getAttribute('href');
+
+    if (href && (href.endsWith('.pdf') || href.startsWith('http'))) {
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noopener noreferrer');
+    }
+  });
+</script>
+
+</body>
+</html>
