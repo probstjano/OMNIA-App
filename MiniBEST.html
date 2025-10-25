@@ -21,10 +21,7 @@
   <p>Test dynamisches Gleichgewicht</p>
   <p>Im Cenplex Behandlungsplan als <strong>Messung</strong> vorhanden. Hier durchführen und Score übertragen.</p>
   <p>Empfehlung: Vorwiegend der Gesamt-Score verwenden! Die einzelnen Bereiche für sich alleine sind nicht validiert.</p>
-  <p>Detailliertes Durchführungsprotokoll hier: <a href="https://probstjano.github.io/OpenPdf/MiniBEST_Protokoll.pdf"
-   target="_blank" rel="noopener">
-   MiniBEST Protokoll (nur Online)
-</a></p>
+  <p>Detailliertes Durchführungsprotokoll hier: <a href="https://probstjano.github.io/OpenPdf/MineBEST_Protokoll.pdf" target="_blank" rel="noopener">MiniBEST Protokoll (PDF)</a></p>
 
   <form id="miniBESTForm">
 <div class="question-block">
@@ -268,6 +265,41 @@
     }
   </script>
 
-    <p><a href="index.html"> ⬅️ Zurück zur Hauptseite</a></p>
+    <p></p>
+<div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
+  <!-- Zurück zur letzten Seite -->
+  <button onclick="goBack()" style="
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background-color: #f0f0f0;
+    font-size: 1rem;
+    cursor: pointer;
+  ">
+    ⬅️ Zurück
+  </button>
+
+  <!-- Zurück zur Hauptseite -->
+  <button onclick="window.location.href='index.html'" style="
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background-color: #d0eaff;
+    font-size: 1rem;
+    cursor: pointer;
+  ">
+    🏠 Hauptseite
+  </button>
+</div>
+
+<script>
+function goBack() {
+  if (document.referrer && document.referrer !== window.location.href) {
+    history.back();
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+</script>
 </body>
 </html>
