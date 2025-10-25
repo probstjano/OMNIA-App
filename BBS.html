@@ -312,7 +312,7 @@ async function generatePDF() {
 }
     renderForm();
   </script>
-  <p></p>
+
 <div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
   <!-- Zurück zur letzten Seite -->
   <button onclick="goBack()" style="
@@ -341,12 +341,16 @@ async function generatePDF() {
 
 <script>
 function goBack() {
+  // Prüft, ob es eine vorherige Seite gibt
   if (document.referrer && document.referrer !== window.location.href) {
     history.back();
   } else {
+    // Falls keine History vorhanden → zur Startseite
     window.location.href = 'index.html';
   }
 }
 </script>
+
+  
 </body>
 </html>
