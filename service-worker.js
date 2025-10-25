@@ -1,5 +1,10 @@
-const CACHE_NAME = 'OMNIA App v2.4'; // 🔄 Version hochzählen bei Updates
+const CACHE_NAME = 'OMNIA-App-v2.5'; // Version hochzählen bei jedem Update
+
 const ASSETS_TO_CACHE = [
+  'index.html',
+  'manifest.json',
+  'icon.png',
+  // Assessment-Dateien
   '30s_assissted.html',
   '6MWT.html',
   '5xsit-stand.html',
@@ -25,6 +30,7 @@ const ASSETS_TO_CACHE = [
   'Braincheck.html',
   'CTSIB_full.html',
   'PRTEE.html',
+  // PDFs
   'BBS_Protokoll.pdf',
   'DEMMI_Protokoll.pdf',
   'FES_I_Deutsch.pdf',
@@ -34,50 +40,49 @@ const ASSETS_TO_CACHE = [
   'PSFS_GAS_Kurzmanual.pdf',
   'SPPB_Protokoll.pdf',
   '6MWT_Protokoll.pdf',
-  'MniBEST_Protokoll.pdf',
-  'icon.png',
-  'manifest.json',
-  'index.html'
+  'MiniBEST_Protokoll.pdf' // ✅ Tippfehler korrigiert!
 ];
 
-// Install → Cache aufbauen
+// 🔹 INSTALL: Cache aufbauen
 self.addEventListener('install', (event) => {
-  self.skipWaiting(); // Neue Version sofort aktiv
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(ASSETS_TO_CACHE))
+      .catch((err) => console.warn('Cache-Fehler:', err))
   );
+  self.skipWaiting(); // neuen SW direkt aktivieren
 });
 
-// Activate → Alte Caches löschen
+// 🔹 ACTIVATE: alte Caches löschen
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
     )
   );
-  self.clients.claim(); // Kontrolle übernehmen
+  self.clients.claim(); // Kontrolle sofort übernehmen
 });
 
-// Fetch → Hybrid-Strategie
+// 🔹 FETCH: Netzwerk-first für HTML, Cache-first für alles andere
 self.addEventListener('fetch', (event) => {
-  const url = event.request.url;
+  const req = event.request;
+  const url = new URL(req.url);
 
-  // HTML-Seiten → Netzwerk first
-  if (event.request.mode === 'navigate' || url.endsWith('.html')) {
+  // Netzwerk-First für HTML-Seiten
+  if (req.mode === 'navigate' || url.pathname.endsWith('.html')) {
     event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          // Kopie im Cache speichern
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-          return response;
+      fetch(req)
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+          return res;
         })
-        .catch(() => caches.match(event.request)) // Offline: Cache fallback
+        .catch(() => caches.match(req))
     );
   } else {
-    // Alles andere → Cache first
+    // Cache-First für statische Assets
     event.respondWith(
-      caches.match(event.request).then((response) => response || fetch(event.request))
+      caches.match(req).then((res) => res || fetch(req))
     );
   }
 });
