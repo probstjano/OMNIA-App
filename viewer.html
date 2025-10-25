@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF Viewer</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-color: #f7f7f7;
+    }
+    header {
+      background-color: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    button {
+      background-color: #f2f2f2;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    button:hover {
+      background-color: #e0e0e0;
+    }
+    #filename {
+      font-weight: 500;
+      font-size: 1rem;
+      margin-left: 10px;
+      color: #333;
+    }
+    iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background-color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <button onclick="history.back()">⬅️ Zurück</button>
+      <span id="filename"></span>
+    </div>
+    <button onclick="openExtern()">🌐 In Safari öffnen</button>
+  </header>
+  <iframe id="pdfFrame"></iframe>
+
+  <script>
+    // PDF-Datei aus URL-Parameter lesen
+    const params = new URLSearchParams(window.location.search);
+    const file = params.get("file");
+    const iframe = document.getElementById("pdfFrame");
+    const nameSpan = document.getElementById("filename");
+
+    if (file) {
+      iframe.src = file;
+      const cleanName = decodeURIComponent(file.split('/').pop());
+      nameSpan.textContent = cleanName;
+    } else {
+      iframe.srcdoc = "<p style='text-align:center;padding:2rem'>Kein PDF angegeben.</p>";
+    }
+
+    // Öffnet PDF extern in Safari (iOS) oder Standardbrowser
+    function openExtern() {
+      if (file) window.open(file, "_blank");
+    }
+  </script>
+</body>
+</html>
