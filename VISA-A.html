@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VISA-A</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="robotoBase64.js"></script>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; font-size: 16px; max-width: 900px; }
+    h1 { margin-bottom: 0.5rem; }
+    .intro { margin-bottom: 1rem; }
+    .question-block { margin-bottom: 1.4rem; }
+    .question { font-weight: bold; margin-bottom: 0.4rem; }
+    .options { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+    .options label { display: flex; align-items: center; gap: 4px; }
+    button { padding: 10px 15px; font-size: 16px; margin-top: 20px; cursor:pointer; }
+    #result { margin-top: 20px; font-weight: bold; white-space: pre-line; }
+  </style>
+</head>
+<body>
+<h1>VISA-A</h1>
+
+<p class="intro">
+Der folgende Fragebogen dient der Erfassung von Beschwerden und Problemen, die durch Ihre Achillessehne verursacht werden. Kreuzen Sie für jede Frage dasjenige Kästchen an, das Ihr derzeitiges Befinden wiedergibt.
+</p>
+
+<form id="form"></form>
+
+<button type="button" onclick="calculate()">✅ Score berechnen</button>
+<button type="button" onclick="downloadPDF()">📄 Als PDF speichern</button>
+
+<div id="result"></div>
+
+<script>
+const q01 = { text: "1. Für wie viele Minuten verspüren Sie nach dem ersten Aufstehen ein Steifigkeitsgefühl in der Achillessehnenregion?", labels: ["100","90","80","70","60","50","40","30","20","10","0"], values:[0,1,2,3,4,5,6,7,8,9,10] };
+const q02 = { text: "2. Nachdem Sie für den Tag aufgewärmt sind, haben Sie Schmerzen, wenn Sie die Achillessehne über der Kante einer Treppe dehnen (Knie gestreckt halten)?", labels: ["0","1","2","3","4","5","6","7","8","9","10"], values:[0,1,2,3,4,5,6,7,8,9,10] };
+const q03 = { text: "3. Nachdem Sie 30 Minuten auf unebenem Untergrund gegangen sind, haben Sie in den darauffolgenden 2 Stunden Schmerzen? (Wenn Sie wegen Schmerzen nicht auf unebenem Untergrund 30 Minuten gehen können, kreuzen Sie bei dieser Frage 0 an).", labels: ["0","1","2","3","4","5","6","7","8","9","10"], values:[0,1,2,3,4,5,6,7,8,9,10] };
+const q04 = { text: "4. Haben Sie Schmerzen, wenn Sie mit normaler Geschwindigkeit die Treppe heruntergehen?", labels: ["0","1","2","3","4","5","6","7","8","9","10"], values:[0,1,2,3,4,5,6,7,8,9,10] };
+const q05 = { text: "5. Haben Sie Schmerzen, während oder unmittelbar nachdem Sie 10 (einbeinige) Zehenstände auf einer flachen Unterlage ausgeführt haben?", labels: ["0","1","2","3","4","5","6","7","8","9","10"], values:[0,1,2,3,4,5,6,7,8,9,10] };
+const q06 = { text: "6. Wie oft können Sie ohne Schmerzen auf einem Bein hüpfen?", labels:["0x","1x","2x","3x","4x","5x","6x","7x","8x","9x","10x"], values:[0,1,2,3,4,5,6,7,8,9,10] };
+
+const q07 = {
+  text: "7. Üben Sie derzeit Sport oder andere körperliche Aktivitäten aus?",
+  labels: [
+    "Nein, gar nicht; wegen der Achillessehnensymptome (0)",
+    "Verändertes Trainings- und/oder Wettkampfverhalten, verglichen mit dem Zustand vor Beginn der Symptome (4)",
+    "Volle Trainings- und/oder Wettkampfbelastung, aber nicht auf dem gleichen Niveau wie vor Beginn der Symptome (7)",
+    "Voll belastbar oder Trainings- und/oder Wettkampfbelastung auf dem gleichen oder auf höherem Niveau als vor Beginn der Symptome (10)"
+  ],
+  values:[0,4,7,10]
+};
+
+const q08a = { text:"8a. Wie lange können Sie trainieren/üben, wenn Sie bei der Durchführung achillessehnen-belastender Sportarten keine Schmerzen empfinden?", labels:["0","1-10","11-20","21-30",">30"], values:[0,7,14,21,30] };
+const q08b = { text:"8b. ... Schmerzen, die Sie aber nicht zum Belastungsabbruch der Aktivität zwingen.", labels:["0","1-10","11-20","21-30",">30"], values:[0,4,10,14,20] };
+const q08c = { text:"8c. ... Schmerzen, die Sie zum Abbruch der Aktivität zwingen.", labels:["0","1-10","11-20","21-30",">30"], values:[0,2,5,7,10] };
+
+const items = [q01,q02,q03,q04,q05,q06,q07,q08a,q08b,q08c];
+
+function render(){
+  const form=document.getElementById("form");
+  items.forEach((q,i)=>{
+    const block=document.createElement("div");
+    block.className="question-block";
+    block.innerHTML=`<div class="question">${q.text}</div><div class="options">${
+      q.labels.map((l,idx)=>`<label><input type="radio" name="q${i}" value="${q.values[idx]}">${l}</label>`).join("")
+    }</div>`;
+    form.appendChild(block);
+  });
+}
+render();
+
+let totalScore=null;
+function calculate(){
+  let sum=0;
+  for(let i=0;i<items.length;i++){
+    let sel=document.querySelector(`input[name="q${i}"]:checked`);
+    sum+= sel ? Number(sel.value) : 0;
+  }
+  totalScore=sum;
+  let percent=((sum/100)*100).toFixed(1);
+  document.getElementById("result").textContent=`Gesamtpunktzahl: ${sum}/100\nProzentwert: ${percent}%`;
+}
+
+function downloadPDF(){
+  if(totalScore===null){alert("Bitte zuerst Score berechnen.");return;}
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF();
+  if(window.robotoBase64){
+    doc.addFileToVFS("Roboto-Regular.ttf", window.robotoBase64);
+    doc.addFont("Roboto-Regular.ttf","Roboto","normal");
+    doc.setFont("Roboto");
+  }
+  let y=20;
+  doc.setFontSize(16);
+  doc.text("VISA-A – Auswertung",15,y); y+=10;
+  doc.setFontSize(12);
+  items.forEach((q,i)=>{
+    const sel=document.querySelector(`input[name="q${i}"]:checked`);
+    const val=sel ? sel.value : "-";
+    const lines=doc.splitTextToSize(q.text,170);
+    lines.forEach(line=>{doc.text(line,15,y); y+=6;});
+    doc.text("Antwort: "+val,15,y); y+=10;
+    if(y>260){doc.addPage(); y=20;}
+  });
+  y+=5;
+  doc.text(`Gesamtpunktzahl: ${totalScore}/100`,15,y); y+=6;
+  let percent=((totalScore/100)*100).toFixed(1);
+  doc.text(`Prozentwert: ${percent}%`,15,y);
+  doc.save("VISA-A_Auswertung.pdf");
+}
+</script>
+
+<!-- Navigation wie in deinen anderen Dateien -->
+<div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
+  <button onclick="goBack()">⬅️ Zurück</button>
+  <button onclick="window.location.href='index.html'">🏠 Hauptseite</button>
+</div>
+<script>
+function goBack(){
+  if(document.referrer && document.referrer!==window.location.href){history.back();}
+  else{window.location.href='index.html';}
+}
+</script>
+
+</body>
+</html>
