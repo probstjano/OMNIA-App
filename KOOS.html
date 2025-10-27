@@ -237,11 +237,44 @@ function downloadPDF(){
   doc.save("KOOS_Auswertung.pdf");
 }
 
-function goBack(){
-  if(document.referrer && document.referrer !== window.location.href) history.back();
-  else window.location.href='index.html';
+<div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
+  <!-- Zurück zur letzten Seite -->
+  <button onclick="goBack()" style="
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background-color: #f0f0f0;
+    font-size: 1rem;
+    cursor: pointer;
+  ">
+    ⬅️ Zurück
+  </button>
+
+  <!-- Zurück zur Hauptseite -->
+  <button onclick="window.location.href='index.html'" style="
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background-color: #d0eaff;
+    font-size: 1rem;
+    cursor: pointer;
+  ">
+    🏠 Hauptseite
+  </button>
+</div>
+
+<script>
+function goBack() {
+  // Prüft, ob es eine vorherige Seite gibt
+  if (document.referrer && document.referrer !== window.location.href) {
+    history.back();
+  } else {
+    // Falls keine History vorhanden → zur Startseite
+    window.location.href = 'index.html';
+  }
 }
 </script>
+
 
 </body>
 </html>
