@@ -149,7 +149,11 @@ KOOS Gesamt (Mittelwert der Subskalen): ${total} %`;
 }
 
 function downloadPDF(){
-  if(!window.koosScores){ alert("Bitte erst Score berechnen."); return; }
+  if(!window.koosScores){ 
+    alert("Bitte zuerst Score berechnen."); 
+    return; 
+  }
+
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({unit:"mm", format:"a4"});
 
@@ -159,47 +163,76 @@ function downloadPDF(){
     doc.setFont("Roboto");
   }
 
+  // Datum
+  const today = new Date().toLocaleDateString("de-CH", {
+    year: "numeric", month: "2-digit", day: "2-digit"
+  });
+
   let y=20, left=15, lh=7;
+
+  // HEADER
   doc.setFontSize(16);
-  doc.text("KOOS – Auswertung", left, y); y+=lh+1;
+  doc.text("KOOS – Auswertung", left, y); 
+  y+=lh;
   doc.setFontSize(11);
+  doc.text(`Datum: ${today}`, left, y);
+  y+=lh+2;
 
   function block(title, items){
-    doc.setFontSize(13); doc.text(title,left,y); y+=lh; doc.setFontSize(11);
+    doc.setFontSize(13); 
+    doc.text(title, left, y); 
+    y+=lh;
+    doc.setFontSize(11);
+
     items.forEach(q=>{
       const sel = document.querySelector(`input[name="${q.id}"]:checked`);
       const label = sel ? q.scale[q.values.indexOf(+sel.value)] : "-";
-      const textLines = doc.splitTextToSize(q.text,170);
+      const textLines = doc.splitTextToSize(q.text, 170);
+
       textLines.forEach((l,i)=>{
-        doc.text(l,left,y);
-        if(i===0) doc.text(label,195,y,{align:"right"});
+        doc.text(l, left, y);
+        if(i===0) doc.text(label, 195, y, {align:"right"});
         y+=lh;
       });
       y+=2;
-      if(y>275){ doc.addPage(); y=20; }
+
+      if(y>275){
+        doc.addPage();
+        y=20;
+      }
     });
-    y+=3;
-    if(y>275){ doc.addPage(); y=20; }
+    y+=4;
+    if(y>275){
+      doc.addPage();
+      y=20;
+    }
   }
 
-  block("Schmerz",PAIN);
-  block("Symptome",SYMPTOMS);
-  block("ADL",ADL);
-  block("Sport/Freizeit",SPORT);
-  block("Lebensqualität",QOL);
+  block("Schmerz", PAIN);
+  block("Symptome", SYMPTOMS);
+  block("ADL", ADL);
+  block("Sport/Freizeit", SPORT);
+  block("Lebensqualität", QOL);
 
   if(y>260){ doc.addPage(); y=20; }
+
   doc.setFontSize(13);
-  doc.text("Ergebnisse:",left,y); y+=lh;
+  doc.text("Ergebnisse:", left, y); 
+  y+=lh;
   doc.setFontSize(11);
-  doc.text(`KOOS Schmerz: ${window.koosScores.pain} %`,left,y); y+=lh;
-  doc.text(`KOOS Symptome: ${window.koosScores.symp} %`,left,y); y+=lh;
-  doc.text(`KOOS ADL: ${window.koosScores.adl} %`,left,y); y+=lh;
-  doc.text(`KOOS Sport/Rec: ${window.koosScores.sport} %`,left,y); y+=lh;
-  doc.text(`KOOS Lebensqualität: ${window.koosScores.qol} %`,left,y); y+=lh;
-  y+=2; doc.line(left,y,195,y); y+=lh;
+
+  doc.text(`KOOS Schmerz: ${window.koosScores.pain} %`, left, y); y+=lh;
+  doc.text(`KOOS Symptome: ${window.koosScores.symp} %`, left, y); y+=lh;
+  doc.text(`KOOS ADL: ${window.koosScores.adl} %`, left, y); y+=lh;
+  doc.text(`KOOS Sport/Rec: ${window.koosScores.sport} %`, left, y); y+=lh;
+  doc.text(`KOOS Lebensqualität: ${window.koosScores.qol} %`, left, y); y+=lh+2;
+
+  doc.setLineWidth(0.2);
+  doc.line(left, y, 195, y); 
+  y+=lh;
+
   doc.setFontSize(13);
-  doc.text(`KOOS Gesamt: ${window.koosScores.total} %`,left,y);
+  doc.text(`KOOS Gesamt (Mittelwert): ${window.koosScores.total} %`, left, y);
 
   doc.save("KOOS_Auswertung.pdf");
 }
