@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KOOS – Knee Injury Osteoarthritis Outcome Score</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="robotoBase64.js"></script>
+
+  <style>
+    body { font-family: sans-serif; margin: 2rem; font-size: 16px; max-width: 960px; }
+    h1 { margin-bottom: .25rem; }
+    .subtitle { margin-bottom: 1rem; color:#333; }
+    .intro { margin: .9rem 0 1.3rem; }
+    .section { margin-top: 1.7rem; }
+    .qblock { margin: 1rem 0 1.25rem; }
+    .qtitle { font-weight: 600; margin-bottom: .55rem; }
+    .grid { width: 100%; border-collapse: collapse; margin-top: .3rem; }
+    .grid th, .grid td { padding: .45rem .5rem; border: 1px solid #ccc; text-align: center; }
+    .grid th:first-child, .grid td:first-child { text-align: left; white-space: nowrap; }
+    button { padding: 10px 15px; margin-top: 18px; font-size: 16px; cursor: pointer; }
+    #result { margin-top: 20px; font-weight: 700; white-space: pre-line; }
+  </style>
+</head>
+
+<body>
+
+<h1>Knee Injury Osteoarthritis Outcome Score (KOOS)</h1>
+<div class="subtitle">deutsche Version (Kessler et al. 2003)</div>
+
+<p class="intro">
+Der folgende Fragebogen dient der Erfassung von Beschwerden und Problemen, die durch Ihr Kniegelenk verursacht werden.
+Bitte jede Frage mit genau einem Kreuz beantworten, entsprechend Ihrem Zustand in der letzten Woche.
+</p>
+
+<!-- Container für Subskalen -->
+<div id="pain"     class="section"><h2>Subskala Schmerz</h2></div>
+<div id="symptoms" class="section"><h2>Subskala Symptome</h2></div>
+<div id="adl"      class="section"><h2>Subskala Aktivitäten des alltäglichen Lebens</h2></div>
+<div id="sport"    class="section"><h2>Subskala sportliche Aktivitäten/Freizeit</h2></div>
+<div id="qol"      class="section"><h2>Subskala Lebensqualität</h2></div>
+
+<button onclick="calculate()">✅ Score berechnen</button>
+<button onclick="downloadPDF()">📄 Als PDF speichern</button>
+
+<div id="result"></div>
+
+<hr style="margin: 2rem 0;">
+
+<!-- Navigation wie in deinen anderen Fragebögen -->
+<div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
+  <button onclick="goBack()" style="
+    padding: 10px 18px; border-radius: 8px; border: none;
+    background-color: #f0f0f0; font-size: 1rem; cursor: pointer;">
+    ⬅️ Zurück
+  </button>
+  <button onclick="window.location.href='index.html'" style="
+    padding: 10px 18px; border-radius: 8px; border: none;
+    background-color: #d0eaff; font-size: 1rem; cursor: pointer;">
+    🏠 Hauptseite
+  </button>
+</div>
+
+<script>
+/* ===================== Antwortskalen ===================== */
+const SCALE_FREQ = ["niemals","selten","manchmal","oft","immer"];
+const SCALE_DEG  = ["keine","schwach","mäßig","stark","sehr stark"];
+const SCALE_DIFF = ["keine","wenig","einige","große","sehr große"];
+const SCALE_LIFE = ["nicht","wenig","etwas","stark","vollständig"];
+const SCALE_STAB = ["gar nicht","wenig","einiges","schlimm","sehr schlimm"];
+
+/* ===================== ITEMS ===================== */
+const PAIN = [
+ {id:"P1",text:"1. Wie oft tut Ihnen Ihr Knie weh?",scale:SCALE_FREQ,values:[0,1,2,3,4]},
+ {id:"P2",text:"2. Schmerzen beim Drehen im Knie:",scale:SCALE_DEG,values:[0,1,2,3,4]},
+ {id:"P3",text:"3. Schmerzen beim vollständigen Ausstrecken des Knies:",scale:SCALE_DEG,values:[0,1,2,3,4]},
+ {id:"P4",text:"4. Schmerzen beim vollständigen Beugen des Knies:",scale:SCALE_DEG,values:[0,1,2,3,4]},
+ {id:"P5",text:"5. Schmerzen beim Gehen auf ebener Fläche:",scale:SCALE_DEG,values:[0,1,2,3,4]},
+ {id:"P6",text:"6. Schmerzen beim Treppensteigen (rauf oder runter):",scale:SCALE_DEG,values:[0,1,2,3,4]},
+ {id:"P7",text:"7. Schmerzen beim nächtlichen Drehen im Bett:",scale:SCALE_DEG,values:[0,1,2,3,4]},
+ {id:"P8",text:"8. Schmerzen beim Sitzen oder Liegen:",scale:SCALE_DEG,values:[0,1,2,3,4]},
+ {id:"P9",text:"9. Schmerzen beim aufrechten Stehen:",scale:SCALE_DEG,values:[0,1,2,3,4]},
+];
+
+const SYMPTOMS = [
+ {id:"S1",text:"10. Schwellungen des Knies:",scale:SCALE_FREQ,values:[0,1,2,3,4]},
+ {id:"S2",text:"11. Knacken / Reiben im Knie:",scale:SCALE_FREQ,values:[0,1,2,3,4]},
+ {id:"S3",text:"12. Knie bleibt hängen/blockiert:",scale:SCALE_FREQ,values:[0,1,2,3,4]},
+ /* invertierte Items */
+ {id:"S4",text:"13. Können Sie Ihr Knie ganz ausstrecken?",scale:["immer","oft","manchmal","selten","niemals"],values:[4,3,2,1,0]},
+ {id:"S5",text:"14. Können Sie Ihr Knie ganz beugen?",scale:["immer","oft","manchmal","selten","niemals"],values:[4,3,2,1,0]},
+ {id:"S6",text:"15. Kniesteifigkeit morgens:",scale:SCALE_DEG,values:[0,1,2,3,4]},
+ {id:"S7",text:"16. Kniesteifigkeit nach Sitzen/Liegen:",scale:SCALE_DEG,values:[0,1,2,3,4]},
+];
+
+const ADL = [];
+const ADL_TEXTS = [
+ "Treppen heruntersteigen","Treppen heraufsteigen","Vom Sitzen aufstehen","Stehen",
+ "Sich bücken um etwas aufzuheben","Gehen auf ebener Fläche","Ins Auto ein-/aussteigen",
+ "Einkaufen gehen","Strümpfe/Socken anziehen","Vom Bett aufstehen","Strümpfe/Socken ausziehen",
+ "Im Bett drehen ohne Kniebeugung","In/aus der Badewanne steigen","Sitzen",
+ "Auf Toilette setzen oder aufstehen","Schwere Hausarbeit","Leichte Hausarbeit"
+];
+ADL_TEXTS.forEach((t,i)=>ADL.push({
+ id:`A${i+1}`,text:`${17+i}. Schwierigkeiten: ${t}`,scale:SCALE_DIFF,values:[0,1,2,3,4]
+}));
+
+const SPORT = [
+ {id:"SP1",text:"34. Hocke:",scale:SCALE_DIFF,values:[0,1,2,3,4]},
+ {id:"SP2",text:"35. Rennen:",scale:SCALE_DIFF,values:[0,1,2,3,4]},
+ {id:"SP3",text:"36. Hüpfen:",scale:SCALE_DIFF,values:[0,1,2,3,4]},
+ {id:"SP4",text:"37. Drehen auf belastetem Knie:",scale:SCALE_DIFF,values:[0,1,2,3,4]},
+ {id:"SP5",text:"38. Knien:",scale:SCALE_DIFF,values:[0,1,2,3,4]},
+];
+
+const QOL = [
+ {id:"Q1",text:"39. Wie oft spüren Sie Ihr erkranktes Knie?",scale:["nie","monatlich","wöchentlich","täglich","immer"],values:[0,1,2,3,4]},
+ {id:"Q2",text:"40. Haben Sie Ihre Lebensweise geändert um Ihr Knie zu schonen?",scale:SCALE_LIFE,values:[0,1,2,3,4]},
+ {id:"Q3",text:"41. Wie sehr belastet Sie die Instabilität des Knies?",scale:SCALE_STAB,values:[0,1,2,3,4]},
+ {id:"Q4",text:"42. Gesamte Schwierigkeit durch das Knie:",scale:SCALE_DIFF,values:[0,1,2,3,4]},
+];
+
+/* ===================== Rendering ===================== */
+function renderBlock(containerId, items){
+  const wrap=document.getElementById(containerId);
+  items.forEach(q=>{
+    const rowLabels = `<tr><th>Antwort</th>${q.scale.map(l=>`<td>${l}</td>`).join("")}</tr>`;
+    const rowInputs = `<tr><th>Auswahl</th>${q.values.map(v=>`<td><input type="radio" name="${q.id}" value="${v}"></td>`).join("")}</tr>`;
+    wrap.innerHTML += `<div class="qblock"><div class="qtitle">${q.text}</div><table class="grid">${rowLabels}${rowInputs}</table></div>`;
+  });
+}
+
+renderBlock("pain",PAIN);
+renderBlock("symptoms",SYMPTOMS);
+renderBlock("adl",ADL);
+renderBlock("sport",SPORT);
+renderBlock("qol",QOL);
+
+/* ===================== Scoring ===================== */
+function val(id){ let e=document.querySelector(`input[name="${id}"]:checked`); return e?+e.value:0; }
+function mean(arr){ return arr.reduce((a,b)=>a+b,0)/arr.length; }
+function score(list){ return +(100 - mean(list.map(val))*25).toFixed(1); }
+
+function calculate(){
+  const pain = score(PAIN.map(i=>i.id));
+  const symp = score(SYMPTOMS.map(i=>i.id));
+  const adl  = score(ADL.map(i=>i.id));
+  const sport = score(SPORT.map(i=>i.id));
+  const qol = score(QOL.map(i=>i.id));
+  const total = +((pain+symp+adl+sport+qol)/5).toFixed(1);
+
+  document.getElementById("result").textContent =
+`KOOS Schmerz: ${pain} %
+KOOS Symptome: ${symp} %
+KOOS ADL: ${adl} %
+KOOS Sport/Rec: ${sport} %
+KOOS Lebensqualität: ${qol} %
+
+KOOS Gesamt (Mittelwert der 5 Subskalen): ${total} %`;
+
+  window.koosScores={pain,symp,adl,sport,qol,total};
+}
+
+/* ===================== PDF ===================== */
+function downloadPDF(){
+  if(!window.koosScores){ alert("Bitte zuerst Score berechnen."); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  if(window.robotoBase64){
+    doc.addFileToVFS("Roboto-Regular.ttf",window.robotoBase64);
+    doc.addFont("Roboto-Regular.ttf","Roboto","normal");
+    doc.setFont("Roboto");
+  }
+  doc.setFontSize(16); doc.text("KOOS – Auswertung",15,20);
+  doc.setFontSize(12);
+  let y=35;
+  ["pain","symp","adl","sport","qol","total"].forEach(k=>{
+    doc.text(`${k.toUpperCase()}: ${window.koosScores[k]} %`,15,y);
+    y+=7;
+  });
+  doc.save("KOOS_Auswertung.pdf");
+}
+
+/* ===================== Navigation ===================== */
+function goBack(){
+  if(document.referrer && document.referrer !== window.location.href) history.back();
+  else window.location.href='index.html';
+}
+</script>
+
+</body>
+</html>
