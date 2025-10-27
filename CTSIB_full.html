@@ -92,38 +92,41 @@
     function calculateCTSIB() {
       let totalTime = 0;
       let swayCode = "";
-      let error = false;
+      let missingSway = false;
 
       for (let i = 0; i < 6; i++) {
         const time = parseInt(document.getElementById(`time${i}`).value);
         const sway = parseInt(document.getElementById(`sway${i}`).value);
 
-        if (isNaN(time) || isNaN(sway)) {
-          error = true;
+        if (isNaN(sway)) {
+          missingSway = true;
           break;
         }
 
-        totalTime += time;
+        if (!isNaN(time)) totalTime += time;
         swayCode += (sway <= 2 ? "N" : "A");
       }
 
-      if (error) {
-        document.getElementById("result").innerText = "Bitte alle Felder korrekt ausfüllen.";
+      if (missingSway) {
+        document.getElementById("result").innerText = "Bitte alle Schwankungswerte (1–4) auswählen.";
         return;
       }
 
       const interpretation = interpretationMatrix[swayCode] || "Unauffällig / Keine eindeutige Interpretation";
 
-      document.getElementById("result").innerText =
-        `Gesamte Standzeit: ${totalTime} Sekunden\n` +
-        `Interpretation: ${interpretation}`;
+      // Wenn keine Zeitwerte angegeben wurden → nur Interpretation anzeigen
+      if (totalTime === 0) {
+        document.getElementById("result").innerText = `Interpretation: ${interpretation}`;
+      } else {
+        document.getElementById("result").innerText =
+          `Gesamte Standzeit: ${totalTime} Sekunden\nInterpretation: ${interpretation}`;
+      }
     }
 
     async function generatePDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
 
-      // ✅ Roboto einbinden
       doc.addFileToVFS("Roboto-Regular.ttf", window.robotoBase64);
       doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
       doc.setFont("Roboto", "normal");
@@ -166,7 +169,11 @@
       y += 5;
       doc.line(left, y, right, y); y += lineHeight;
       doc.setFontSize(13);
-      doc.text(`Gesamte Standzeit: ${totalTime} Sekunden`, left, y); y += lineHeight;
+
+      if (totalTime > 0) {
+        doc.text(`Gesamte Standzeit: ${totalTime} Sekunden`, left, y); y += lineHeight;
+      }
+
       doc.text(`Interpretation: ${interpretation}`, left, y); y += lineHeight;
 
       const today = new Date().toLocaleDateString("de-CH");
@@ -177,40 +184,36 @@
   </script>
 
   <p></p>
-<div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
-  <!-- Zurück zur letzten Seite -->
-  <button onclick="goBack()" style="
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: none;
-    background-color: #f0f0f0;
-    font-size: 1rem;
-    cursor: pointer;
-  ">
-    ⬅️ Zurück
-  </button>
+  <div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
+    <button onclick="goBack()" style="
+      padding:10px 18px;
+      border-radius:8px;
+      border:none;
+      background-color:#f0f0f0;
+      font-size:1rem;
+      cursor:pointer;">
+      ⬅️ Zurück
+    </button>
 
-  <!-- Zurück zur Hauptseite -->
-  <button onclick="window.location.href='index.html'" style="
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: none;
-    background-color: #d0eaff;
-    font-size: 1rem;
-    cursor: pointer;
-  ">
-    🏠 Hauptseite
-  </button>
-</div>
+    <button onclick="window.location.href='index.html'" style="
+      padding:10px 18px;
+      border-radius:8px;
+      border:none;
+      background-color:#d0eaff;
+      font-size:1rem;
+      cursor:pointer;">
+      🏠 Hauptseite
+    </button>
+  </div>
 
-<script>
-function goBack() {
-  if (document.referrer && document.referrer !== window.location.href) {
-    history.back();
-  } else {
-    window.location.href = 'index.html';
+  <script>
+  function goBack() {
+    if (document.referrer && document.referrer !== window.location.href) {
+      history.back();
+    } else {
+      window.location.href = 'index.html';
+    }
   }
-}
-</script>
+  </script>
 </body>
 </html>
