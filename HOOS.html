@@ -51,7 +51,6 @@ Bitte beantworten Sie alle Fragen gemäß Ihrem aktuellen Zustand. Sollten Sie m
 
 <hr style="margin:2rem 0;">
 
-<!-- Standard-Buttons (immer diese) -->
 <div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
   <!-- Zurück zur letzten Seite -->
   <button onclick="goBack()" style="
@@ -77,6 +76,17 @@ Bitte beantworten Sie alle Fragen gemäß Ihrem aktuellen Zustand. Sollten Sie m
     🏠 Hauptseite
   </button>
 </div>
+
+<script>
+function goBack() {
+  if (document.referrer && document.referrer !== window.location.href) {
+    history.back();
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+</script>
+
 
 <script>
 /* ===== Skalen ===== */
@@ -268,14 +278,6 @@ function downloadPDF(){
   doc.save("HOOS_Auswertung.pdf");
 }
 
-/* ===== Navigation (immer diese Buttons) ===== */
-function goBack() {
-  if (document.referrer && document.referrer !== window.location.href) {
-    history.back();
-  } else {
-    window.location.href = 'index.html';
-  }
-}
 </script>
 
 </body>
