@@ -36,9 +36,7 @@ Knie geht und wie gut Sie in der Lage sind, Ihre üblichen Aktivitäten zu verri
 Beantworten Sie bitte jede Frage durch Ankreuzen des zugehörigen Kästchens.
 Bitte nur ein Kästchen pro Frage Ankreuzen. Wenn Sie sich unsicher sind, wie Sie die Frage beantworten sollen, wählen Sie die Antwort aus, die Ihnen am zutreffendsten erscheint.
 Bitte beantworten Sie alle Fragen gemäß Ihrem aktuellen Zustand. Sollten Sie momentan keine Beschwerden haben, dann bewerten Sie die Fragen entsprechend Ihrem Zustand in der vergangenen
-Woche. 
-
-</p>
+Woche. </p>
 
 <div id="pain"     class="section"><h2>Subskala Schmerz</h2></div>
 <div id="symptoms" class="section"><h2>Subskala Symptome</h2></div>
@@ -242,45 +240,5 @@ function downloadPDF(){
 
   doc.save("KOOS_Auswertung.pdf");
 }
-
-<div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
-  <!-- Zurück zur letzten Seite -->
-  <button onclick="goBack()" style="
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: none;
-    background-color: #f0f0f0;
-    font-size: 1rem;
-    cursor: pointer;
-  ">
-    ⬅️ Zurück
-  </button>
-
-  <!-- Zurück zur Hauptseite -->
-  <button onclick="window.location.href='index.html'" style="
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: none;
-    background-color: #d0eaff;
-    font-size: 1rem;
-    cursor: pointer;
-  ">
-    🏠 Hauptseite
-  </button>
-</div>
-
-<script>
-function goBack() {
-  // Prüft, ob es eine vorherige Seite gibt
-  if (document.referrer && document.referrer !== window.location.href) {
-    history.back();
-  } else {
-    // Falls keine History vorhanden → zur Startseite
-    window.location.href = 'index.html';
-  }
-}
-</script>
-
-
 </body>
 </html>
