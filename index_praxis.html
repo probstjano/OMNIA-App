@@ -151,6 +151,9 @@
       <h2>Orthopädie </h2>
       <ul class="assessment-list">
         <li><a href="BPS.html">Back Performance Scale </a></li>
+        <li><a href="HOOS.html">Hip Osteoarthritis Outcome Score (HOOS) </a></li>
+        <li><a href="KOOS.html">Knee Osteoarthritis Outcome Score (KOOS) </a></li>
+        <li><a href="VISA-A.html">VISA-A Achilles Fragebogen </a></li>
         <li><a href="PRTEE.html">Patient-Rated Tennis Elbow Evaluation (PRTEE) </a></li>
       </ul>
     </div>
@@ -171,32 +174,35 @@
 
   <script>
     const files = [
-      { name: 'ISI', file: 'ISI.html', tags: ['schlaf', 'insomnie', 'geriatrie'] },
-      { name: 'Braincheck', file: 'Braincheck.html', tags: ['kognition', 'demenz', 'screening', 'geriatrie'] },
-      { name: 'GDS', file: 'GDS.html', tags: ['depression', 'psyche', 'geriatrie', 'mental'] },
-      { name: 'SPPB', file: 'sppb.html', tags: ['mobilität', 'kraft', 'geriatrie', 'neurologie', 'innere', 'pneumologie', 'kardiologie'] },
-      { name: 'DEMMI', file: 'DEMMI.html', tags: ['mobilität', 'geriatrie', 'neurologie'] },
-      { name: 'Gaitspeed', file: 'Gaitspeed.html', tags: ['gang', 'mobilität', 'geriatrie', 'neurologie', 'sturz'] },
-      { name: 'Tinetti', file: 'tinetti.html', tags: ['gleichgewicht', 'sturz', 'geriatrie'] },
-      { name: '5x sit-stand', file: '5xsit-stand.html', tags: ['kraft', 'aufstehen', 'sturz', 'geriatrie', 'neurologie'] },
-      { name: '30s assisted sit-stand', file: '30s_assissted.html', tags: ['kraft', 'mobilität', 'geriatrie'] },
-      { name: 'FSMC', file: 'FSMC.html', tags: ['fatigue', 'neurologie'] },
-      { name: 'SARA', file: 'SARA.html', tags: ['ataxie', 'koordination', 'neurologie'] },
-      { name: 'Trunk Impairment Scale', file: 'trunk_impairment_scale.html', tags: ['rumpf', 'gleichgewicht', 'neurologie', 'schlaganfall', 'CVI'] },
-      { name: 'FiST', file: 'FiST.html', tags: ['balance', 'neurologie', 'Gleichgewicht', 'CVI' ] },
-      { name: 'TUG', file: 'TUG.html', tags: ['mobilität', 'gleichgewicht', 'sturz','geriatrie', 'neurologie'] },
-      { name: 'BBS', file: 'BBS.html', tags: ['gleichgewicht', 'sturz', 'geriatrie', 'neurologie'] },
-      { name: 'FSST', file: 'FSST.html', tags: ['balance', 'koordination', 'sturz', 'gleichgewicht', 'schritte'] },
-      { name: '2MST', file: '2MST.html', tags: ['ausdauer', 'step', 'herz', 'geriatrie'] },
-      { name: '1MSST', file: '1MSST.html', tags: ['ausdauer', 'kraft', 'innere', 'pneumologie', 'kardiologie', 'herz', 'lunge'] },
-      { name: 'FOG', file: 'FOG.html', tags: ['gang', 'neurologie', 'parkinsons', 'freezing'] },
-      { name: 'DGI', file: 'DGI.html', tags: ['gang', 'neurologie', 'schwindel', 'vestibulär', 'sturz', 'dynamic', 'gait index'] },
-      { name: 'DHI', file: 'DHI.html', tags: ['schwindel', 'neurologie', 'vestibulär', 'diziness', 'handicap inventory'] },
-      { name: 'MiniBEST', file: 'MiniBEST.html', tags: ['gleichgewicht', 'neurologie', 'sturz', 'geriatrie', 'mini best'] },
-      { name: 'CTSIB', file: 'CTSIB_full.html', tags: ['gleichgewicht', 'sensorik', 'vestibulär', 'CTSIB'] };
-      { name: 'MCTSIB', file: 'MCTSIB.html', tags: ['gleichgewicht', 'sensorik', 'vestibulär', 'CTSIB'] }
-      { name: 'PRTEE', file: 'PRTEE.html', tags: ['Schmerzen', 'Ellbogen', 'Tendinopathie', 'Tennisellbogen'] }
-    ];
+  { name: 'ISI', file: 'ISI.html', tags: ['schlaf', 'insomnie', 'geriatrie'] },
+  { name: 'Braincheck', file: 'Braincheck.html', tags: ['kognition', 'demenz', 'screening', 'geriatrie'] },
+  { name: 'GDS', file: 'GDS.html', tags: ['depression', 'psyche', 'geriatrie', 'mental'] },
+  { name: 'SPPB', file: 'sppb.html', tags: ['mobilität', 'kraft', 'geriatrie', 'neurologie', 'innere', 'pneumologie', 'kardiologie'] },
+  { name: 'DEMMI', file: 'DEMMI.html', tags: ['mobilität', 'geriatrie', 'neurologie'] },
+  { name: 'Gaitspeed', file: 'Gaitspeed.html', tags: ['gang', 'mobilität', 'geriatrie', 'neurologie', 'sturz'] },
+  { name: 'Tinetti', file: 'tinetti.html', tags: ['gleichgewicht', 'sturz', 'geriatrie'] },
+  { name: '5x sit-stand', file: '5xsit-stand.html', tags: ['kraft', 'aufstehen', 'sturz', 'geriatrie', 'neurologie'] },
+  { name: '30s assisted sit-stand', file: '30s_assissted.html', tags: ['kraft', 'mobilität', 'geriatrie'] },
+  { name: 'FSMC', file: 'FSMC.html', tags: ['fatigue', 'neurologie'] },
+  { name: 'SARA', file: 'SARA.html', tags: ['ataxie', 'koordination', 'neurologie'] },
+  { name: 'Trunk Impairment Scale', file: 'trunk_impairment_scale.html', tags: ['rumpf', 'gleichgewicht', 'neurologie', 'schlaganfall', 'CVI'] },
+  { name: 'FiST', file: 'FiST.html', tags: ['balance', 'neurologie', 'gleichgewicht', 'CVI'] },
+  { name: 'TUG', file: 'TUG.html', tags: ['mobilität', 'gleichgewicht', 'sturz','geriatrie', 'neurologie'] },
+  { name: 'BBS', file: 'BBS.html', tags: ['gleichgewicht', 'sturz', 'geriatrie', 'neurologie'] },
+  { name: 'FSST', file: 'FSST.html', tags: ['balance', 'koordination', 'sturz', 'gleichgewicht', 'schritte'] },
+  { name: '2MST', file: '2MST.html', tags: ['ausdauer', 'step', 'herz', 'geriatrie'] },
+  { name: '1MSST', file: '1MSST.html', tags: ['ausdauer', 'kraft', 'innere', 'pneumologie', 'kardiologie', 'herz', 'lunge'] },
+  { name: 'FOG', file: 'FOG.html', tags: ['gang', 'neurologie', 'parkinson', 'freezing'] },
+  { name: 'DGI', file: 'DGI.html', tags: ['gang', 'neurologie', 'schwindel', 'vestibulär', 'sturz'] },
+  { name: 'DHI', file: 'DHI.html', tags: ['schwindel', 'neurologie', 'vestibulär'] },
+  { name: 'MiniBEST', file: 'MiniBEST.html', tags: ['gleichgewicht', 'neurologie', 'sturz', 'geriatrie'] },
+  { name: 'CTSIB', file: 'CTSIB_full.html', tags: ['gleichgewicht', 'sensorik', 'vestibulär'] },
+  { name: 'MCTSIB', file: 'MCTSIB.html', tags: ['gleichgewicht', 'sensorik', 'vestibulär'] },
+  { name: 'PRTEE', file: 'PRTEE.html', tags: ['schmerzen', 'ellbogen', 'tendinopathie', 'tennisellbogen'] },
+  { name: 'HOOS', file: 'HOOS.html', tags: ['hüfte', 'arthrose', 'orthopädie'] },
+  { name: 'KOOS', file: 'KOOS.html', tags: ['knie', 'arthrose', 'orthopädie'] },
+  { name: 'VISA-A', file: 'VISA-A.html', tags: ['achillessehne', 'tendinopathie', 'sport', 'Fuss' ] }
+];
 
     const input = document.getElementById('searchInput');
     const suggestionsBox = document.getElementById('suggestions');
@@ -212,7 +218,7 @@
 
       const matches = files.filter(item =>
         item.name.toLowerCase().includes(query) ||
-        item.tags.some(tag => tag.includes(query))
+        item.tags.some(tag => tag.toLowerCase().includes(query))
       );
 
       if (matches.length === 0) {
@@ -243,6 +249,40 @@
       navigator.serviceWorker.register('service-worker.js');
     }
   </script>
- <p><a href="index.html"> ⬅️ Zurück zur Hauptseite </a></p>
+<div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
+  <!-- Zurück zur letzten Seite -->
+  <button onclick="goBack()" style="
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background-color: #f0f0f0;
+    font-size: 1rem;
+    cursor: pointer;
+  ">
+    ⬅️ Zurück
+  </button>
+
+  <!-- Zurück zur Hauptseite -->
+  <button onclick="window.location.href='index.html'" style="
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background-color: #d0eaff;
+    font-size: 1rem;
+    cursor: pointer;
+  ">
+    🏠 Hauptseite
+  </button>
+</div>
+
+<script>
+function goBack() {
+  if (document.referrer && document.referrer !== window.location.href) {
+    history.back();
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+</script>
 </body>
 </html>

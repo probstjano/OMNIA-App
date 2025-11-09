@@ -40,6 +40,39 @@
     <li><a href="FiST.html">🔹 FiST (Function in Sitting Test)</a></li>
     <li><a href="PSFS_GAS.html">🔹 PSFS / GAS (Zielsetzung)</a></li>
   </ul>
-  <a href="index.html">🏠 Zur Startseite</a>
+    </script>
+
+  <p></p>
+  <div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
+    <button onclick="goBack()" style="
+      padding:10px 18px;
+      border-radius:8px;
+      border:none;
+      background-color:#f0f0f0;
+      font-size:1rem;
+      cursor:pointer;">
+      ⬅️ Zurück
+    </button>
+
+    <button onclick="window.location.href='index.html'" style="
+      padding:10px 18px;
+      border-radius:8px;
+      border:none;
+      background-color:#d0eaff;
+      font-size:1rem;
+      cursor:pointer;">
+      🏠 Hauptseite
+    </button>
+  </div>
+
+  <script>
+  function goBack() {
+    if (document.referrer && document.referrer !== window.location.href) {
+      history.back();
+    } else {
+      window.location.href = 'index.html';
+    }
+  }
+  </script>
 </body>
 </html>
