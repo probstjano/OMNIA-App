@@ -5,33 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>1-Minute Sit-to-Stand Test (1MSTS)</title>
 
-  <!-- Zentrale Styles -->
+  <!-- Zentraler Stil -->
   <link rel="stylesheet" href="app-style.css">
 
-  <!-- Bibliotheken für PDF -->
+  <!-- Bibliotheken -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="robotoBase64.js"></script>
 </head>
+
 <body class="assessment-page">
-
-  <!-- HEADER -->
   <h1>1-Minute Sit-to-Stand Test (1MSTS)</h1>
-  <p class="subtitle">
-    Test zur Erfassung der kardiovaskulären und muskulären Ausdauer. 
-    In der Inneren Medizin, speziell in der pulmonalen Rehabilitation, sehr gut validiert.
-  </p>
-  <p>
-    Durchführung: Wenn möglich Stuhl ca. 46 cm hoch. 
-    So oft wie möglich innerhalb 1 Minute aufstehen / absitzen, ohne die Arme zu benutzen. 
-    Arme auf der Hüfte oder frei neben dem Körper. Nach 30 s und 45 s Zeit ansagen.
-  </p>
-  <p>
-    Im Cenplex-Behandlungsplan als <strong>Messung</strong> dokumentieren. 
-    Hier eintragen für Normwerte:
-  </p>
+  <p>Test zur Erfassung der Kardiovaskulären und Muskulären Ausdauer. In der Innereren Medizin, speziell Pulmonale Rehabilitation, sehr gut validiert.</p>
+  <p>Durchführung: Wenn möglich Stuhl ca 46 cm hoch. So oft wie möglich innerhalb 1 min aufstehen–absitzen ohne Arme zur Hilfe zu nehmen. Arme auf der Hüfte oder frei neben dem Körper. Nach 30 s und 45 s die Zeit durchgeben.</p>
+  <p>Im Cenplex-Behandlungsplan als <strong>Messung</strong> dokumentieren. Hier eintragen für Normwerte.</p>
 
-  <!-- CONTENT -->
-  <form id="form1msts">
+  <form>
     <label>Wiederholungen in 1 Minute:</label>
     <input type="number" id="reps" step="1" />
 
@@ -41,10 +29,10 @@
     <label>Herzfrequenz nach:</label>
     <input type="number" id="HFnach"/>
 
-    <label>SpO₂ vor:</label>
+    <label>SP02 vor:</label>
     <input type="number" id="SPO2vor"/>
 
-    <label>SpO₂ nach:</label>
+    <label>SP02 nach:</label>
     <input type="number" id="SPO2nach"/>
 
     <label>BORG (0-10):</label>
@@ -66,79 +54,148 @@
     <button type="button" class="secondary" onclick="generatePDF()">📄 Als PDF speichern</button>
   </form>
 
-  <!-- NORMWERTE -->
   <div id="normwerte1MSTS" class="hidden"></div>
 
-  <!-- RESULT & NAVIGATION -->
-  <div id="result"></div>
+  <!-- CONTENT-LOCK START: Original Normwerte & Logik -->
+  <script>
+    let normVisible = false;
+
+    const normsCH = {
+      men: {
+        20: [27, 41, 50, 57, 72],
+        25: [29, 40, 48, 56, 74],
+        30: [28, 40, 47, 56, 72],
+        35: [27, 38, 47, 58, 72],
+        40: [25, 37, 45, 53, 69],
+        45: [25, 35, 44, 52, 70],
+        50: [24, 35, 42, 53, 67],
+        55: [22, 33, 41, 48, 63],
+        60: [20, 31, 37, 46, 63],
+        65: [20, 29, 35, 44, 60],
+        70: [19, 27, 32, 40, 59],
+        75: [16, 25, 30, 37, 56]
+      },
+      women: {
+        20: [31, 39, 47, 55, 70],
+        25: [30, 40, 47, 54, 68],
+        30: [27, 37, 45, 51, 68],
+        35: [25, 37, 42, 50, 63],
+        40: [26, 35, 41, 48, 65],
+        45: [25, 35, 41, 50, 63],
+        50: [23, 33, 39, 47, 60],
+        55: [21, 30, 36, 43, 61],
+        60: [20, 28, 34, 40, 55],
+        65: [19, 27, 33, 40, 53],
+        70: [17, 25, 30, 36, 51],
+        75: [13, 22, 27, 30, 43]
+      }
+    };
+
+    function getNearestAgeGroup(age) {
+      const ageGroups = [20,25,30,35,40,45,50,55,60,65,70,75];
+      return ageGroups.reduce((a, b) =>
+        Math.abs(b - age) < Math.abs(a - age) ? b : a
+      );
+    }
+
+    function toggleNorms1MSTS() {
+      const btn = document.getElementById("toggleBtn1MSTS");
+      const div = document.getElementById("normwerte1MSTS");
+
+      if (normVisible) {
+        div.classList.add("hidden");
+        btn.innerText = "📊 Normwerte anzeigen";
+        normVisible = false;
+        return;
+      }
+
+      const reps = parseInt(document.getElementById("reps").value);
+      const age = parseInt(document.getElementById("age").value);
+      const sex = document.getElementById("sex").value;
+
+      div.innerHTML = "";
+
+      if (isNaN(reps) || isNaN(age)) {
+        div.innerText = "Bitte gültige Werte eingeben.";
+        div.classList.remove("hidden");
+        return;
+      }
+
+      let ageGroup = getNearestAgeGroup(age);
+      if (age > 79) ageGroup = 75;
+
+      const P = normsCH[sex][ageGroup];
+      const percentiles = [2.5, 25, 50, 75, 97.5];
+      let faster = "-";
+
+      if (!P) {
+        div.innerText = "Keine Normdaten vorhanden.";
+        div.classList.remove("hidden");
+        return;
+      }
+
+      if (reps <= P[0]) faster = 2;
+      else if (reps >= P[4]) faster = 98;
+      else {
+        for (let i = 0; i < P.length - 1; i++) {
+          if (reps >= P[i] && reps <= P[i + 1]) {
+            const p0 = percentiles[i], p1 = percentiles[i + 1];
+            const v0 = P[i], v1 = P[i + 1];
+            const frac = (reps - v0) / (v1 - v0);
+            faster = Math.round(p0 + frac * (p1 - p0));
+            break;
+          }
+        }
+      }
+
+      if (age > 79) {
+        div.innerHTML += `<p><em>Keine Normwerte verfügbar für dieses Alter. Angezeigt sind Werte für 75–79 Jahre.</em></p>`;
+      }
+
+      div.innerHTML += `
+        <h3>Schweizer Normwerte Allgemeinbevölkerung (${ageGroup} J. – ${sex === "men" ? "Männer" : "Frauen"})</h3>
+        <table><tr><th>Perzentil</th><th>Wiederholungen</th></tr>
+        ${percentiles.map((p, i) => `<tr><td>P${p}</td><td>${P[i]}</td></tr>`).join("")}
+        </table>
+        <p>→ Diese Wiederholungszahl liegt über dem Wert von <strong>${faster}%</strong> der Vergleichsgruppe.</p>
+      `;
+
+      div.classList.remove("hidden");
+      btn.innerText = "📉 Normwerte verbergen";
+      normVisible = true;
+    }
+
+    async function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text("1-Minute Sit-to-Stand Test", 10, 15);
+      doc.setFontSize(12);
+
+      const reps = document.getElementById("reps").value;
+      const HFvor = document.getElementById("HFvor").value;
+      const HFnach = document.getElementById("HFnach").value;
+      const SPO2vor = document.getElementById("SPO2vor").value;
+      const SPO2nach = document.getElementById("SPO2nach").value;
+      const BORG = document.getElementById("BORG").value;
+      const BORGD = document.getElementById("BORGD").value;
+      doc.text(`Wiederholungen: ${reps}`, 10, 30);
+      doc.text(`Herzfrequenz vor Test: ${HFvor} bpm`, 10, 38);
+      doc.text(`Herzfrequenz nach Test: ${HFnach} bpm`, 10, 46);
+      doc.text(`SPO2 vor Test: ${SPO2vor}%`, 10, 54);
+      doc.text(`SPO2 nach Test: ${SPO2nach}%`, 10, 62);
+      doc.text(`BORG Anstrengung: ${BORG}/10`, 10, 70);
+      doc.text(`BORG Dyspnoe: ${BORGD}/10`, 10, 78);
+      window.open(doc.output("bloburl"), "_blank");
+    }
+  </script>
+  <!-- CONTENT-LOCK END -->
 
   <div class="footer-nav">
     <button class="secondary" onclick="goBack()">⬅️ Zurück</button>
     <button class="primary" onclick="goHome()">🏠 Hauptseite</button>
   </div>
 
-  <!-- LOGIK -->
-  <script>
-    let normVisible = false;
-    const normsCH = {
-      men: {20:[27,41,50,57,72],25:[29,40,48,56,74],30:[28,40,47,56,72],35:[27,38,47,58,72],40:[25,37,45,53,69],45:[25,35,44,52,70],50:[24,35,42,53,67],55:[22,33,41,48,63],60:[20,31,37,46,63],65:[20,29,35,44,60],70:[19,27,32,40,59],75:[16,25,30,37,56]},
-      women:{20:[31,39,47,55,70],25:[30,40,47,54,68],30:[27,37,45,51,68],35:[25,37,42,50,63],40:[26,35,41,48,65],45:[25,35,41,50,63],50:[23,33,39,47,60],55:[21,30,36,43,61],60:[20,28,34,40,55],65:[19,27,33,40,53],70:[17,25,30,36,51],75:[13,22,27,30,43]}
-    };
-
-    function getNearestAgeGroup(age){
-      const g=[20,25,30,35,40,45,50,55,60,65,70,75];
-      return g.reduce((a,b)=>Math.abs(b-age)<Math.abs(a-age)?b:a);
-    }
-
-    function toggleNorms1MSTS(){
-      const btn=document.getElementById("toggleBtn1MSTS");
-      const div=document.getElementById("normwerte1MSTS");
-      if(normVisible){div.classList.add("hidden");btn.innerText="📊 Normwerte anzeigen";normVisible=false;return;}
-      const reps=parseInt(document.getElementById("reps").value);
-      const age=parseInt(document.getElementById("age").value);
-      const sex=document.getElementById("sex").value;
-      div.innerHTML="";
-      if(isNaN(reps)||isNaN(age)){div.innerText="Bitte gültige Werte eingeben.";div.classList.remove("hidden");return;}
-      let ageGroup=getNearestAgeGroup(age);if(age>79)ageGroup=75;
-      const P=normsCH[sex][ageGroup];const percentiles=[2.5,25,50,75,97.5];let faster="-";
-      if(!P){div.innerText="Keine Normdaten vorhanden.";div.classList.remove("hidden");return;}
-      if(reps<=P[0])faster=2;else if(reps>=P[4])faster=98;else{
-        for(let i=0;i<P.length-1;i++){if(reps>=P[i]&&reps<=P[i+1]){const p0=percentiles[i],p1=percentiles[i+1];const v0=P[i],v1=P[i+1];const frac=(reps-v0)/(v1-v0);faster=Math.round(p0+frac*(p1-p0));break;}}
-      }
-      if(age>79){div.innerHTML+=`<p><em>Keine Normwerte verfügbar für dieses Alter – angezeigt sind Werte für 75–79 Jahre.</em></p>`;}
-      div.innerHTML+=`
-        <h3>Schweizer Normwerte Allgemeinbevölkerung (${ageGroup} J., ${sex==="men"?"Männer":"Frauen"})</h3>
-        <table><tr><th>Perzentil</th><th>Wiederholungen</th></tr>
-        ${percentiles.map((p,i)=>`<tr><td>P${p}</td><td>${P[i]}</td></tr>`).join("")}</table>
-        <p>→ Diese Wiederholungszahl liegt über dem Wert von <strong>${faster}%</strong> der Vergleichsgruppe.</p>`;
-      div.classList.remove("hidden");btn.innerText="📉 Normwerte verbergen";normVisible=true;
-    }
-
-    async function generatePDF(){
-      const { jsPDF }=window.jspdf;
-      const doc=new jsPDF();
-      doc.setFontSize(16);
-      doc.text("1-Minute Sit-to-Stand Test",10,15);
-      doc.setFontSize(12);
-      const reps=document.getElementById("reps").value;
-      const HFvor=document.getElementById("HFvor").value;
-      const HFnach=document.getElementById("HFnach").value;
-      const SPO2vor=document.getElementById("SPO2vor").value;
-      const SPO2nach=document.getElementById("SPO2nach").value;
-      const BORG=document.getElementById("BORG").value;
-      const BORGD=document.getElementById("BORGD").value;
-      doc.text(`Wiederholungen: ${reps}`,10,30);
-      doc.text(`Herzfrequenz vor Test: ${HFvor} bpm`,10,38);
-      doc.text(`Herzfrequenz nach Test: ${HFnach} bpm`,10,46);
-      doc.text(`SpO₂ vor Test: ${SPO2vor}%`,10,54);
-      doc.text(`SpO₂ nach Test: ${SPO2nach}%`,10,62);
-      doc.text(`BORG Anstrengung: ${BORG}/10`,10,70);
-      doc.text(`BORG Dyspnoe: ${BORGD}/10`,10,78);
-      window.open(doc.output("bloburl"),"_blank");
-    }
-  </script>
-
-  <!-- ZENTRALES JS -->
   <script src="app-core.js"></script>
 </body>
 </html>
