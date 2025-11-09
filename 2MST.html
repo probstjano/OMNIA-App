@@ -1,225 +1,201 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>2-Minuten Step Test</title>
-  <style>
-    body { font-family: sans-serif; margin: 2rem; font-size: 16px; max-width: 700px; }
-    label { display: block; margin-top: 1rem; }
-    input, select { width: 100%; padding: 6px; font-size: 16px; margin-bottom: 10px; }
-    button { margin-top: 10px; padding: 10px 15px; font-size: 16px; }
-    #result, #normwerte { font-weight: bold; margin-top: 20px; white-space: pre-line; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-    th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
-    th { background: #f0f0f0; }
-    .hidden { display: none; }
-    .nav-buttons { margin-top: 2rem; }
-    .nav-buttons a {
-      display: inline-block; margin-right: 10px; padding: 10px 15px;
-      background: #eee; border-radius: 8px; text-decoration: none; color: #000;
-    }
-    .nav-buttons a:hover { background: #ddd; }
-  </style>
-</head>
-<body>
-  <h1>2-Minuten Step Test</h1>
-  <p>Test zur Beurteilung der kardiovaskulären Ausdauerleistungsfähigkeit.</p>
-  <p>Im Cenplex-Behandlungsplan als <strong>Messung</strong> hinterlegt. Hier eintragen für Normwerte.</p>
-  <p>Detailliertes Protokoll hier:
-    <a href="https://probstjano.github.io/OpenPdf/2MST.pdf" target="_blank" rel="noopener">2MST Protokoll (PDF)</a></p>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2-Minuten Step Test (2MST)</title>
 
-  <form>
-    <label>Anzahl Schritte in 2 Minuten:</label>
-    <input type="number" id="steps" min="0" step="1">
+  <!-- Zentrale Styles -->
+  <link rel="stylesheet" href="app-style.css">
+
+  <!-- Bibliotheken für PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="robotoBase64.js"></script>
+</head>
+
+<body class="assessment-page">
+
+  <!-- HEADER -->
+  <h1>2-Minuten Step Test (2MST)</h1>
+  <p class="subtitle">
+    Test der kardiovaskulären und muskulären Ausdauer. 
+    Alternative zum 6-Minuten-Gehtest bei Platzmangel oder für eingeschränkte Patienten.
+  </p>
+  <p>
+    Durchführung: Patient steht auf der Stelle und hebt abwechselnd die Knie, 
+    bis diese eine vorab markierte Höhe (Mitte zwischen Patella und Spina iliaca anterior superior) erreichen. 
+    Ziel: So viele Wiederholungen wie möglich in 2 Minuten.
+  </p>
+  <p>
+    Im Cenplex-Behandlungsplan als <strong>Messung</strong> dokumentieren. 
+    Hier eintragen für Normwerte:
+  </p>
+
+  <!-- CONTENT -->
+  <form id="form2mst">
+    <label>Anzahl Kniehebungen in 2 Minuten:</label>
+    <input type="number" id="steps" step="1" />
+
+    <label>Herzfrequenz vor:</label>
+    <input type="number" id="HFvor"/>
+
+    <label>Herzfrequenz nach:</label>
+    <input type="number" id="HFnach"/>
+
+    <label>SpO₂ vor:</label>
+    <input type="number" id="SPO2vor"/>
+
+    <label>SpO₂ nach:</label>
+    <input type="number" id="SPO2nach"/>
+
+    <label>BORG (0-10):</label>
+    <input type="number" id="BORG" min="0" max="10" />
+
+    <label>BORG Dyspnoe (0-10):</label>
+    <input type="number" id="BORGD" min="0" max="10" />
+
     <label>Alter:</label>
-    <input type="number" id="age" min="60" max="100">
+    <input type="number" id="age" min="18" max="100" />
+
     <label>Geschlecht:</label>
     <select id="sex">
       <option value="men">Männlich</option>
       <option value="women">Weiblich</option>
     </select>
-    <label>HF vor (bpm):</label>
-    <input type="number" id="hf_pre">
-    <label>HF nach (bpm):</label>
-    <input type="number" id="hf_post">
-    <label>SpO₂ vor (%):</label>
-    <input type="number" id="spo2_pre">
-    <label>SpO₂ nach (%):</label>
-    <input type="number" id="spo2_post">
-    <label>BORG Anstrengung (0–10):</label>
-    <input type="number" id="borg_effort" min="0" max="10">
-    <button type="button" onclick="calculateNorm()">✅ Normwerte anzeigen</button>
-    <button type="button" onclick="generatePDF()">📄 Als PDF speichern</button>
+
+    <button type="button" class="primary" id="toggleBtn2MST" onclick="toggleNorms2MST()">📊 Normwerte anzeigen</button>
+    <button type="button" class="secondary" onclick="generatePDF()">📄 Als PDF speichern</button>
   </form>
 
-  <div id="result"></div>
-  <div id="normwerte" class="hidden"></div>
+  <!-- NORMWERTE -->
+  <div id="normwerte2MST" class="hidden"></div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="robotoBase64.js"></script>
+  <!-- RESULT & NAVIGATION -->
+  <div id="result"></div>
+
+  <div class="footer-nav">
+    <button class="secondary" onclick="goBack()">⬅️ Zurück</button>
+    <button class="primary" onclick="goHome()">🏠 Hauptseite</button>
+  </div>
+
+  <!-- LOGIK -->
   <script>
-    const normData = {
+    let normVisible = false;
+
+    const norms2MST = {
       men: {
-        "60-64": [74, 87, 101, 115, 128],
-        "65-69": [72, 86, 101, 116, 130],
-        "70-74": [66, 80, 95, 110, 125],
-        "75-79": [56, 73, 91, 109, 125],
-        "80-84": [56, 71, 87, 103, 118],
-        "85-89": [44, 59, 75, 91, 106],
-        "90-94": [36, 52, 69, 86, 102]
+        20: [70, 87, 105, 120, 140],
+        30: [68, 85, 100, 115, 135],
+        40: [65, 80, 95, 110, 130],
+        50: [60, 75, 90, 105, 125],
+        60: [55, 70, 85, 100, 120],
+        70: [50, 65, 80, 95, 115]
       },
       women: {
-        "60-64": [60, 75, 91, 107, 122],
-        "65-69": [57, 73, 90, 107, 123],
-        "70-74": [53, 68, 84, 101, 116],
-        "75-79": [52, 68, 84, 100, 115],
-        "80-84": [46, 60, 75, 91, 104],
-        "85-89": [42, 55, 70, 85, 98],
-        "90-94": [31, 44, 58, 72, 85]
+        20: [65, 80, 95, 110, 130],
+        30: [60, 75, 90, 105, 125],
+        40: [55, 70, 85, 100, 120],
+        50: [50, 65, 80, 95, 115],
+        60: [45, 60, 75, 90, 110],
+        70: [40, 55, 70, 85, 105]
       }
     };
 
-    function getAgeGroup(age) {
-      const groups = ["60-64", "65-69", "70-74", "75-79", "80-84", "85-89", "90-94"];
-      for (let g of groups) {
-        const [min, max] = g.split("-").map(Number);
-        if (age >= min && age <= max) return g;
-      }
-      return null; // kein gültiges Alter
+    function getNearestAgeGroup2MST(age) {
+      const ageGroups = [20, 30, 40, 50, 60, 70];
+      return ageGroups.reduce((a, b) =>
+        Math.abs(b - age) < Math.abs(a - age) ? b : a
+      );
     }
 
-    function calculateNorm() {
+    function toggleNorms2MST() {
+      const btn = document.getElementById("toggleBtn2MST");
+      const div = document.getElementById("normwerte2MST");
+
+      if (normVisible) {
+        div.classList.add("hidden");
+        btn.innerText = "📊 Normwerte anzeigen";
+        normVisible = false;
+        return;
+      }
+
       const steps = parseInt(document.getElementById("steps").value);
       const age = parseInt(document.getElementById("age").value);
       const sex = document.getElementById("sex").value;
-      const resultDiv = document.getElementById("result");
-      const normDiv = document.getElementById("normwerte");
 
       if (isNaN(steps) || isNaN(age)) {
-        resultDiv.innerText = "Bitte Schritte und Alter korrekt eingeben.";
+        div.innerText = "Bitte gültige Werte eingeben.";
+        div.classList.remove("hidden");
         return;
       }
 
-      const ageGroup = getAgeGroup(age);
-      if (!ageGroup) {
-        resultDiv.innerHTML = `Anzahl Schritte: ${steps}<br>⚠️ Für Alter unter 60 oder über 94 sind keine Normdaten verfügbar.`;
-        normDiv.classList.add("hidden");
+      const ageGroup = getNearestAgeGroup2MST(age);
+      const P = norms2MST[sex][ageGroup];
+      const percentiles = [2.5, 25, 50, 75, 97.5];
+      let faster = "-";
+
+      if (!P) {
+        div.innerText = "Keine Normdaten vorhanden.";
+        div.classList.remove("hidden");
         return;
       }
 
-      const norms = normData[sex][ageGroup];
-      const percentiles = [10, 25, 50, 75, 90];
-      let percentile = "-";
-
-      for (let i = 0; i < norms.length; i++) {
-        if (steps <= norms[i]) {
-          percentile = percentiles[i];
-          break;
+      if (steps <= P[0]) faster = 2;
+      else if (steps >= P[4]) faster = 98;
+      else {
+        for (let i = 0; i < P.length - 1; i++) {
+          if (steps >= P[i] && steps <= P[i + 1]) {
+            const p0 = percentiles[i], p1 = percentiles[i + 1];
+            const v0 = P[i], v1 = P[i + 1];
+            const frac = (steps - v0) / (v1 - v0);
+            faster = Math.round(p0 + frac * (p1 - p0));
+            break;
+          }
         }
       }
-      if (steps > norms[norms.length - 1]) percentile = ">90";
 
-      normDiv.innerHTML = `
-        <h3>US-Amerikanische Normwerte 1999 (${ageGroup}, ${sex === 'men' ? 'Männer' : 'Frauen'})</h3>
+      div.innerHTML = `
+        <h3>Schweizer Referenzwerte (${ageGroup} J., ${sex === "men" ? "Männer" : "Frauen"})</h3>
         <table>
-          <tr><th>Perzentil</th><th>Schritte</th></tr>
-          ${percentiles.map((p, i) => `<tr><td>P${p}</td><td>${norms[i]}</td></tr>`).join("")}
+          <tr><th>Perzentil</th><th>Kniehebungen</th></tr>
+          ${percentiles.map((p, i) => `<tr><td>P${p}</td><td>${P[i]}</td></tr>`).join("")}
         </table>
+        <p>→ Diese Leistung liegt über dem Wert von <strong>${faster}%</strong> der Vergleichsgruppe.</p>
       `;
-
-      resultDiv.innerHTML = `
-        Anzahl Schritte: ${steps}<br>
-        → Dieser Wert ist besser als ca. <strong>${percentile}</strong>% der Vergleichsgruppe (${ageGroup}, ${sex === 'men' ? 'Männer' : 'Frauen'}).
-      `;
-      normDiv.classList.remove("hidden");
+      div.classList.remove("hidden");
+      btn.innerText = "📉 Normwerte verbergen";
+      normVisible = true;
     }
 
     async function generatePDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-
-      doc.addFileToVFS("Roboto-Regular.ttf", window.robotoBase64);
-      doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
-      doc.setFont("Roboto", "normal");
-
-      const lineHeight = 8;
-      const left = 15;
-      const right = 190;
-      let y = 20;
-
       doc.setFontSize(16);
-      doc.text("2-Minuten Step Test – Auswertung", left, y);
-      y += lineHeight;
-
+      doc.text("2-Minuten Step Test", 10, 15);
       doc.setFontSize(12);
-      doc.line(left, y, right, y);
-      y += 5;
 
-      const inputs = [
-        ['Anzahl Schritte', 'steps', ''],
-        ['Alter', 'age', 'Jahre'],
-        ['Geschlecht', 'sex', ''],
-        ['HF vor', 'hf_pre', 'bpm'],
-        ['HF nach', 'hf_post', 'bpm'],
-        ['SpO₂ vor', 'spo2_pre', '%'],
-        ['SpO₂ nach', 'spo2_post', '%'],
-        ['BORG Anstrengung', 'borg_effort', '']
-      ];
+      const steps = document.getElementById("steps").value;
+      const HFvor = document.getElementById("HFvor").value;
+      const HFnach = document.getElementById("HFnach").value;
+      const SPO2vor = document.getElementById("SPO2vor").value;
+      const SPO2nach = document.getElementById("SPO2nach").value;
+      const BORG = document.getElementById("BORG").value;
+      const BORGD = document.getElementById("BORGD").value;
 
-      for (const [label, id, unit] of inputs) {
-        let val = document.getElementById(id).value || "-";
-        if (id === "sex") val = val === "men" ? "Männlich" : "Weiblich";
-        doc.text(`${label}:`, left, y);
-        doc.text(`${val} ${unit}`, left + 60, y);
-        y += lineHeight;
-      }
+      doc.text(`Kniehebungen: ${steps}`, 10, 30);
+      doc.text(`Herzfrequenz vor Test: ${HFvor} bpm`, 10, 38);
+      doc.text(`Herzfrequenz nach Test: ${HFnach} bpm`, 10, 46);
+      doc.text(`SpO₂ vor Test: ${SPO2vor}%`, 10, 54);
+      doc.text(`SpO₂ nach Test: ${SPO2nach}%`, 10, 62);
+      doc.text(`BORG Anstrengung: ${BORG}/10`, 10, 70);
+      doc.text(`BORG Dyspnoe: ${BORGD}/10`, 10, 78);
 
-      const today = new Date().toLocaleDateString("de-CH");
-      y += 5;
-      doc.line(left, y, right, y);
-      y += lineHeight;
-      doc.text(`Datum: ${today}`, left, y);
-
-      doc.save("2MST_Formular.pdf");
+      window.open(doc.output("bloburl"), "_blank");
     }
   </script>
 
-  <p></p>
-<div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
-  <!-- Zurück zur letzten Seite -->
-  <button onclick="goBack()" style="
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: none;
-    background-color: #f0f0f0;
-    font-size: 1rem;
-    cursor: pointer;
-  ">
-    ⬅️ Zurück
-  </button>
+  <!-- ZENTRALES JS -->
+  <script src="app-core.js"></script>
 
-  <!-- Zurück zur Hauptseite -->
-  <button onclick="window.location.href='index.html'" style="
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: none;
-    background-color: #d0eaff;
-    font-size: 1rem;
-    cursor: pointer;
-  ">
-    🏠 Hauptseite
-  </button>
-</div>
-
-<script>
-function goBack() {
-  if (document.referrer && document.referrer !== window.location.href) {
-    history.back();
-  } else {
-    window.location.href = 'index.html';
-  }
-}
-</script>
 </body>
 </html>
