@@ -1,214 +1,147 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>DEMMI – De Morton Mobility Index</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>5x Sit-to-Stand Test (5xSTS)</title>
+
+  <!-- Zentrale Styles -->
+  <link rel="stylesheet" href="app-style.css">
+
+  <!-- Bibliotheken für PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <style>
-    body { font-family: sans-serif; margin: 10px; font-size: 16px; max-width: 600px; }
-    label { display: block; margin: 10px 0 5px; }
-    select {
-      width: 100%;
-      padding: 6px;
-      font-size: 16px;
-      margin-bottom: 10px;
-    }
-    button { padding: 10px 15px; font-size: 16px; margin-top: 10px; }
-    #result { font-weight: bold; margin-top: 20px; }
-    .nav-buttons { margin-top: 30px; }
-    .nav-buttons a {
-      display: inline-block;
-      margin-right: 10px;
-      padding: 10px 15px;
-      background: #eee;
-      border-radius: 8px;
-      text-decoration: none;
-      color: #000;
-    }
-    .nav-buttons a:hover { background: #ddd; }
-    .hidden { display: none; }
-  </style>
+  <script src="robotoBase64.js"></script>
 </head>
-<body>
-  <h1>5x Sitz-Stand Test</h1>
-  <p>Test für die Kraft/Schnellkraft der unteren Extremitäten. Teil des SPPB. Korreliert gut mit der Kraft der Kniestrecker aber auch abhängig vom Gleichgewicht </p>
-  <p> Im Cenplex Behandlungsplan als  <strong>Messung</strong> enthalte und dort eintragen. Hier eintragen für Normwerte </p>
-  <p> siehe SPPB Protokoll für Durchführung <a href="https://probstjano.github.io/OpenPdf/SPPB_Protokoll.pdf" target="_blank" rel="noopener">📄 SPPB Protokoll (PDF)</a></p>
 
-  <label>5x Sitz-Stand Zeit (Sekunden):</label>
-  <input type="number" id="sitzStand" step="0.01" />
+<body class="assessment-page">
 
+  <!-- HEADER -->
+  <h1>5x Sit-to-Stand Test (5xSTS)</h1>
+  <p class="subtitle">
+    Test zur Beurteilung der funktionellen Beinkraft, Balance und Mobilität. 
+    Bestandteil vieler geriatrischer und neurologischer Assessments.
+  </p>
+  <p>
+    Durchführung: Patient sitzt auf einem stabilen Stuhl (ca. 46 cm Höhe), 
+    Arme verschränkt vor der Brust. Aufgabe: 5-mal so schnell wie möglich aufstehen und wieder hinsetzen. 
+    Zeit wird ab Startsignal bis zur vollständigen Streckung beim 5. Aufstehen gemessen.
+  </p>
+  <p>
+    Im Cenplex-Behandlungsplan als <strong>Messung</strong> dokumentieren. 
+    Hier eintragen für Normwerte:
+  </p>
+
+  <!-- CONTENT -->
+  <form id="form5xsts">
+    <label>Gemessene Zeit (Sekunden):</label>
+    <input type="number" id="time" step="0.1" />
+
+    <label>Alter:</label>
+    <input type="number" id="age" min="18" max="100" />
+
+    <label>Geschlecht:</label>
+    <select id="sex">
+      <option value="men">Männlich</option>
+      <option value="women">Weiblich</option>
+    </select>
+
+    <button type="button" class="primary" id="toggleBtn5xSTS" onclick="toggleNorms5xSTS()">📊 Normwerte anzeigen</button>
+    <button type="button" class="secondary" onclick="generatePDF()">📄 Als PDF speichern</button>
+  </form>
+
+  <!-- NORMWERTE -->
+  <div id="normwerte5xSTS" class="hidden"></div>
+
+  <!-- RESULT & NAVIGATION -->
   <div id="result"></div>
 
-  <label>Alter:</label>
-  <input type="number" id="age" min="60" max="120">
+  <div class="footer-nav">
+    <button class="secondary" onclick="goBack()">⬅️ Zurück</button>
+    <button class="primary" onclick="goHome()">🏠 Hauptseite</button>
+  </div>
 
-  <label>Geschlecht:</label>
-  <select id="sex">
-    <option value="men">Männlich</option>
-    <option value="women">Weiblich</option>
-  </select>
-
-  <button type="button" onclick="toggleNormsSitz()" id="toggleBtnSitz">📊 Normwerte anzeigen</button>
-  <div id="normwerteSitz" class="hidden"></div>
-
-  
-
+  <!-- LOGIK -->
   <script>
-    let sitzVisible = false;
+    let normVisible = false;
 
-    function toggleNormsSitz() {
-      const btn = document.getElementById("toggleBtnSitz");
-      const norms = document.getElementById("normwerteSitz");
-
-      if (sitzVisible) {
-        norms.classList.add("hidden");
-        btn.innerText = "📊 Normwerte anzeigen";
-        sitzVisible = false;
-        return;
+    // Durchschnittswerte (Whitney et al. 2005)
+    const norms5xSTS = {
+      men: {
+        20: 6.0, 30: 6.5, 40: 7.0, 50: 8.0, 60: 10.0, 70: 12.0, 80: 14.0
+      },
+      women: {
+        20: 6.5, 30: 7.0, 40: 7.5, 50: 8.5, 60: 10.5, 70: 12.5, 80: 15.0
       }
+    };
 
-      const age = parseInt(document.getElementById("age").value, 10);
-      const sex = document.getElementById("sex").value;
-      const sitzZeit = parseFloat(document.getElementById("sitzStand").value);
-      norms.innerHTML = "";
-
-      if (isNaN(age)) {
-        norms.innerText = "Bitte zuerst das Alter eingeben.";
-        norms.classList.remove("hidden");
-        return;
-      }
-
-      const norway = {
-        men: {
-          60: { P5:5.5, P10:5.9, P25:6.9, P50:8.3, P75:9.8, P90:11.5, P95:12.5 },
-          65: { P5:5.7, P10:6.2, P25:7.3, P50:8.7, P75:10.2, P90:11.8, P95:12.9 },
-          70: { P5:6.1, P10:6.6, P25:7.7, P50:9.3, P75:10.9, P90:12.5, P95:13.9 },
-          75: { P5:6.4, P10:7.0, P25:8.3, P50:10.0, P75:12.1, P90:14.0, P95:15.4 },
-          80: { P5:6.6, P10:7.5, P25:8.9, P50:10.7, P75:13.5, P90:15.8, P95:17.2 },
-          85: { P5:6.9, P10:7.9, P25:9.6, P50:11.5, P75:14.9, P90:17.7, P95:19.0 }
-        },
-        women: {
-          60: { P5:5.8, P10:6.3, P25:7.4, P50:8.9, P75:10.5, P90:12.1, P95:13.2 },
-          65: { P5:6.4, P10:7.0, P25:8.2, P50:10.0, P75:11.4, P90:13.3, P95:14.6 },
-          70: { P5:7.0, P10:7.7, P25:8.9, P50:10.5, P75:12.4, P90:14.6, P95:16.1 },
-          75: { P5:7.4, P10:8.2, P25:9.5, P50:11.2, P75:13.1, P90:15.8, P95:17.4 },
-          80: { P5:7.6, P10:8.5, P25:10.0, P50:11.7, P75:13.7, P90:16.8, P95:18.5 },
-          85: { P5:7.9, P10:9.0, P25:10.5, P50:12.3, P75:14.3, P90:17.8, P95:19.7 }
-        }
-      };
-
-      const nearest = [60, 65, 70, 75, 80, 85].reduce((prev, curr) =>
-        Math.abs(curr - age) < Math.abs(prev - age) ? curr : prev
+    function getNearestAgeGroup5xSTS(age) {
+      const groups = [20, 30, 40, 50, 60, 70, 80];
+      return groups.reduce((a, b) =>
+        Math.abs(b - age) < Math.abs(a - age) ? b : a
       );
+    }
 
-      let faster = "-";
-      const P = norway[sex][nearest];
-      if (!isNaN(sitzZeit)) {
-        const percentiles = [5,10,25,50,75,90,95];
-        const values = percentiles.map(p => P["P"+p]);
-        if (sitzZeit <= values[0]) faster = 95;
-        else if (sitzZeit >= values[6]) faster = 5;
-        else {
-          for (let i = 0; i < values.length - 1; i++) {
-            if (sitzZeit >= values[i] && sitzZeit <= values[i+1]) {
-              const p0 = percentiles[i], p1 = percentiles[i+1];
-              const v0 = values[i], v1 = values[i+1];
-              const frac = (sitzZeit - v0) / (v1 - v0);
-              faster = Math.round(100 - (p0 + frac * (p1 - p0)));
-              break;
-            }
-          }
-        }
+    function toggleNorms5xSTS() {
+      const btn = document.getElementById("toggleBtn5xSTS");
+      const div = document.getElementById("normwerte5xSTS");
+
+      if (normVisible) {
+        div.classList.add("hidden");
+        btn.innerText = "📊 Normwerte anzeigen";
+        normVisible = false;
+        return;
       }
 
-      let cutoffHinweis = "<strong>Interpretationshilfe:</strong><br>";
-cutoffHinweis += sitzZeit > 15
-  ? '<span style="color:red;">>15 Sek = geringe Muskelkraft (Sarkopenie)</span><br>'
-  : '>15 Sek = geringe Muskelkraft (Sarkopenie)<br>';
-cutoffHinweis += sitzZeit > 12
-  ? '<span style="color:red;">>12 Sek = Sturzgefahr abklärungswürdig</span><br>'
-  : '>12 Sek = Sturzgefahr abklärungswürdig<br>';
-cutoffHinweis += sitzZeit > 16
-  ? '<span style="color:red;">>16 Sek = Parkinson: erhöhte Sturzgefahr</span><br>'
-  : '>16 Sek = Parkinson: erhöhte Sturzgefahr<br>';
+      const time = parseFloat(document.getElementById("time").value);
+      const age = parseInt(document.getElementById("age").value);
+      const sex = document.getElementById("sex").value;
 
-norms.innerHTML += `<p style="margin-bottom:1rem; font-style:italic;">${cutoffHinweis}</p>`;
+      if (isNaN(time) || isNaN(age)) {
+        div.innerText = "Bitte gültige Werte eingeben.";
+        div.classList.remove("hidden");
+        return;
+      }
 
+      const ageGroup = getNearestAgeGroup5xSTS(age);
+      const ref = norms5xSTS[sex][ageGroup];
+      let interpretation = "";
 
-      norms.innerHTML += `<h3>Norwegische Referenzwerte zuhause lebender Personen (${nearest} Jahre – ${sex === 'men' ? 'Männer' : 'Frauen'})</h3>`;
-      norms.innerHTML += `<table><tr><th>Perzentil</th><th>Wert (s)</th></tr>
-        ${Object.entries(P).map(([k,v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("")}
-      </table><p>→ Die Sitz-Stand Zeit ist schneller als bei: <strong>${faster}%</strong> der Vergleichsgruppe, die den Test durchführen konnten.</p>`;
+      if (time <= ref - 2) interpretation = "überdurchschnittlich";
+      else if (time <= ref + 2) interpretation = "im Normbereich";
+      else interpretation = "unterdurchschnittlich";
 
-      const bohannon = {
-        men: {
-          "60–69": { mean: "13.3", unable: "15.1%" },
-          "70–79": { mean: "13.8", unable: "16.2%" },
-          "80–89": { mean: "15.1", unable: "34.4%" },
-          "90+":   { mean: "16.4", unable: "62.5%" }
-        },
-        women: {
-          "60–69": { mean: "13.9", unable: "13.7%" },
-          "70–79": { mean: "15.1", unable: "22.0%" },
-          "80–89": { mean: "16.9", unable: "46.0%" },
-          "90+":   { mean: "18.5", unable: "83.5%" }
-        }
-      };
+      div.innerHTML = `
+        <h3>Referenzwerte (${ageGroup} J., ${sex === "men" ? "Männer" : "Frauen"})</h3>
+        <p>Durchschnittliche Zeit: ${ref.toFixed(1)} s</p>
+        <p>Ihre Zeit: <strong>${time.toFixed(1)} s</strong> → ${interpretation}</p>
+        <p><em>Quelle: Whitney et al., Phys Ther 2005;85(12):1289–1300</em></p>
+      `;
+      div.classList.remove("hidden");
+      btn.innerText = "📉 Normwerte verbergen";
+      normVisible = true;
+    }
 
-      let ageGroup = "90+";
-      if (age < 70) ageGroup = "60–69";
-      else if (age < 80) ageGroup = "70–79";
-      else if (age < 90) ageGroup = "80–89";
+    async function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text("5x Sit-to-Stand Test", 10, 15);
+      doc.setFontSize(12);
 
-      const b = bohannon[sex][ageGroup];
-      norms.innerHTML += `<h3>Mittelwert  & Anzeil der Personen die Sitz-Stand Test nicht durchführen können (Gesamtbevölkerung inkl. Pflegeheime/Institutionen) – ${ageGroup}</h3>
-        <table><tr><th>Geschlecht</th><th>MW (s)</th><th>% nicht fähig</th></tr>
-        <tr><td>${sex === 'men' ? 'Männer' : 'Frauen'}</td><td>${b.mean}</td><td>${b.unable}</td></tr>
-      </table>`;
+      const time = document.getElementById("time").value;
+      const age = document.getElementById("age").value;
+      const sex = document.getElementById("sex").value;
 
-      norms.classList.remove("hidden");
-      btn.innerText = "📉 Normwerte sit-stand verbergen";
-      sitzVisible = true;
+      doc.text(`Zeit: ${time} Sekunden`, 10, 30);
+      doc.text(`Alter: ${age}`, 10, 38);
+      doc.text(`Geschlecht: ${sex === "men" ? "Männlich" : "Weiblich"}`, 10, 46);
+
+      window.open(doc.output("bloburl"), "_blank");
     }
   </script>
-<p></p>
-<div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
-  <!-- Zurück zur letzten Seite -->
-  <button onclick="goBack()" style="
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: none;
-    background-color: #f0f0f0;
-    font-size: 1rem;
-    cursor: pointer;
-  ">
-    ⬅️ Zurück
-  </button>
 
-  <!-- Zurück zur Hauptseite -->
-  <button onclick="window.location.href='index.html'" style="
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: none;
-    background-color: #d0eaff;
-    font-size: 1rem;
-    cursor: pointer;
-  ">
-    🏠 Hauptseite
-  </button>
-</div>
+  <!-- ZENTRALES JS -->
+  <script src="app-core.js"></script>
 
-<script>
-function goBack() {
-  if (document.referrer && document.referrer !== window.location.href) {
-    history.back();
-  } else {
-    window.location.href = 'index.html';
-  }
-}
-</script>
 </body>
 </html>
-
