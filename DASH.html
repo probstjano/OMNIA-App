@@ -68,7 +68,6 @@ Im Arbeits- und Berufs-Modul sowie im Sport- und Musik-Modul darf jeweils keine 
     <th>nicht möglich</th>
   </tr>
 
-  <!-- ITEMS 1–6 -->
   <tr><td>1. Ein festverschlossenes Glas öffnen</td>
     <td><input type="radio" name="q1" value="1"></td>
     <td><input type="radio" name="q1" value="2"></td>
@@ -281,21 +280,23 @@ Im Arbeits- und Berufs-Modul sowie im Sport- und Musik-Modul darf jeweils keine 
 </div>
 
 <button type="button" class="primary" onclick="calculateQD()">✅ Score berechnen</button>
+<button type="button" class="secondary" onclick="generatePDF()">📄 PDF erstellen</button>
 
 <div id="result"></div>
 
-<!-- CONTENT-LOCK START: vollständige QuickDASH-Logik -->
+<!-- ============================================================= -->
+<!-- ==================== CONTENT-LOCK START ===================== -->
+<!-- ============================================================= -->
+
 <script>
 function calculateScale(values) {
   const answered = values.filter(v => v !== null);
-  if (answered.length < values.length - 1) return null; 
+  if (answered.length < values.length - 1) return null;
   const sum = answered.reduce((a,b)=>a+b,0);
   return ((sum/answered.length - 1) * 25).toFixed(1);
 }
 
 function calculateQD() {
-
-  // MAIN 11 ITEMS
   let main = [];
   for (let i = 1; i <= 11; i++) {
     const el = document.querySelector("input[name='q"+i+"']:checked");
@@ -309,7 +310,6 @@ function calculateQD() {
     return;
   }
 
-  // WORK MODULE
   let workScore = null;
   if (!document.getElementById("workNone").checked) {
     let w = [];
@@ -317,12 +317,9 @@ function calculateQD() {
       const el = document.querySelector("input[name='w"+i+"']:checked");
       w.push(el ? parseInt(el.value) : null);
     }
-    if (w.every(v => v !== null)) {
-      workScore = calculateScale(w);
-    }
+    if (w.every(v => v !== null)) workScore = calculateScale(w);
   }
 
-  // SPORT MODULE
   let sportScore = null;
   if (!document.getElementById("sportNone").checked) {
     let s = [];
@@ -330,9 +327,7 @@ function calculateQD() {
       const el = document.querySelector("input[name='s"+i+"']:checked");
       s.push(el ? parseInt(el.value) : null);
     }
-    if (s.every(v => v !== null)) {
-      sportScore = calculateScale(s);
-    }
+    if (s.every(v => v !== null)) sportScore = calculateScale(s);
   }
 
   let html = `<p><strong>QuickDASH Score:</strong> ${quickdash} / 100</p>`;
@@ -341,16 +336,144 @@ function calculateQD() {
 
   document.getElementById("result").innerHTML = html;
 }
-</script>
-<!-- CONTENT-LOCK END -->
 
-<!-- EINHEITLICHER FOOTER -->
+function generatePDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  doc.addFileToVFS("Roboto-Regular.ttf", window.robotoBase64);
+  doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+  doc.setFont("Roboto", "normal");
+  doc.setFontSize(12);
+
+  let y = 15;
+  const left = 15;
+  const right = 190;
+  const lineHeight = 8;
+
+  function addSectionTitle(title) {
+    doc.setFontSize(14);
+    doc.setFont(undefined, "bold");
+    doc.text(title, left, y);
+    y += lineHeight;
+    doc.setFontSize(12);
+    doc.setFont(undefined, "normal");
+  }
+
+  function ensureSpace() {
+    if (y > 270) { doc.addPage(); y = 20; }
+  }
+
+  function addQuestion(label, value) {
+    const wrapped = doc.splitTextToSize(label, 150);
+    wrapped.forEach((line, idx) => {
+      doc.text(line, left, y);
+      if (idx === 0) doc.text(String(value), right, y, { align: "right" });
+      y += lineHeight;
+      ensureSpace();
+    });
+    y += 2;
+    ensureSpace();
+  }
+
+  // HEADER
+  doc.setFontSize(16);
+  doc.setFont(undefined, "bold");
+  doc.text("QuickDASH – Auswertung", left, y);
+  y += 12;
+  doc.setFontSize(12);
+  doc.setFont(undefined, "normal");
+
+  // MAIN ITEMS
+  addSectionTitle("Hauptskala (QuickDASH)");
+
+  const questionsMain = {
+    q1: "1. Ein festverschlossenes Glas öffnen",
+    q2: "2. Schwere Hausarbeit",
+    q3: "3. Eine Einkaufstasche / Aktenkoffer tragen",
+    q4: "4. Rücken waschen",
+    q5: "5. Messer benutzen",
+    q6: "6. Freizeitaktivitäten mit Stoß/Druck",
+    q7: "7. Beeinträchtigung sozialer Aktivitäten",
+    q8: "8. Einschränkung in Arbeit/Alltag",
+    q9: "9. Schmerzen in Schulter / Arm / Hand",
+    q10:"10. Kribbeln in Schulter / Arm / Hand",
+    q11:"11. Schlafstörungen wegen Schmerzen"
+  };
+
+  for (let k in questionsMain) {
+    const el = document.querySelector(`input[name='${k}']:checked`);
+    const v = el ? parseInt(el.value) : "-";
+    addQuestion(questionsMain[k], v);
+  }
+
+  y += 6; ensureSpace();
+
+  // WORK MODULE
+  if (!document.getElementById("workNone").checked) {
+    addSectionTitle("Arbeits- / Berufs-Modul");
+
+    const workQs = {
+      w12: "12. Arbeiten wie üblich",
+      w13: "13. Schmerzen beeinflussen die Arbeit",
+      w14: "14. So gut arbeiten wie gewünscht",
+      w15: "15. Gewohnte Zeit arbeiten"
+    };
+
+    for (let k in workQs) {
+      const el = document.querySelector(`input[name='${k}']:checked`);
+      const v = el ? parseInt(el.value) : "-";
+      addQuestion(workQs[k], v);
+    }
+
+    y += 6; ensureSpace();
+  }
+
+  // SPORT MODULE
+  if (!document.getElementById("sportNone").checked) {
+    addSectionTitle("Sport- / Musik-Modul");
+
+    const sportQs = {
+      s16: "16. Instrument/Sport ausüben",
+      s17: "17. Schmerzen beim Instrument/Sport",
+      s18: "18. So gut wie gewünscht ausüben",
+      s19: "19. Gewohnte Zeit verbringen"
+    };
+
+    for (let k in sportQs) {
+      const el = document.querySelector(`input[name='${k}']:checked`);
+      const v = el ? parseInt(el.value) : "-";
+      addQuestion(sportQs[k], v);
+    }
+
+    y += 6; ensureSpace();
+  }
+
+  // SCORES
+  addSectionTitle("Ergebnisse");
+
+  const resultLines = document.getElementById("result").innerText.split("\n");
+  resultLines.forEach(line => {
+    doc.text(line, left, y);
+    y += lineHeight;
+    ensureSpace();
+  });
+
+  y += 8;
+  doc.setFont(undefined, "bold");
+  const today = new Date().toLocaleDateString("de-CH");
+  doc.text("Datum: " + today, left, y);
+
+  doc.save("QuickDASH_Auswertung.pdf");
+}
+</script>
+
+<!-- ====================== CONTENT-LOCK END ====================== -->
+
 <div class="footer-nav">
   <button class="secondary" onclick="goBack()">⬅️ Zurück</button>
   <button class="primary" onclick="goHome()">🏠 Hauptseite</button>
 </div>
 
-<!-- Zentrales Verhalten -->
 <script src="app-core.js"></script>
 
 </body>
