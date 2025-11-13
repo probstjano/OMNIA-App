@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QuickDASH – Fragebogen</title>
+
+  <!-- Zentrale Dateien -->
+  <link rel="stylesheet" href="app-style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="robotoBase64.js"></script>
+
+  <style>
+    .table-scroll {
+      overflow-x: auto;
+      margin: 14px 0;
+    }
+    table {
+      border-collapse: collapse;
+      min-width: 700px;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      text-align: center;
+      vertical-align: middle;
+    }
+    th {
+      background: #f0f0f0;
+    }
+    .section-title {
+      margin-top: 24px;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body class="assessment-page">
+
+<h1>Quick-Disabilities of the Arm, Shoulder and Hand (QuickDASH)</h1>
+
+<p>
+Bitte beantworten Sie alle Fragen gemäß Ihrem Zustand in der vergangenen Woche, indem Sie das entsprechende Feld ankreuzen.  
+Wenn Sie in der vergangenen Woche keine Gelegenheit gehabt haben, eine der aufgeführten Tätigkeiten durchzuführen,  
+wählen Sie die Antwort aus, die Ihrer Meinung nach am ehesten zutreffen würde. Es ist nicht entscheidend, mit welchem Arm oder welcher Hand  
+Sie diese Tätigkeiten ausüben. Antworten Sie Ihrer Fähigkeit entsprechend, ungeachtet, wie Sie die Aufgaben durchführen konnten.
+</p>
+
+<p><strong>Wichtig:</strong> Im QuickDASH darf maximal eine Antwort fehlen.  
+Im Arbeits- und Berufs-Modul sowie im Sport- und Musik-Modul darf jeweils keine Antwort fehlen.</p>
+
+<p>Bitte schätzen Sie Ihre Fähigkeit ein, wie Sie folgende Tätigkeiten in der vergangenen Woche durchgeführt haben:</p>
+
+<form id="qdForm">
+
+<!-- ================= MAIN 11 ITEMS ================= -->
+
+<div class="table-scroll">
+<table>
+  <tr>
+    <th></th>
+    <th>überhaupt nicht eingeschränkt</th>
+    <th>ein wenig eingeschränkt</th>
+    <th>mäßig eingeschränkt</th>
+    <th>sehr eingeschränkt</th>
+    <th>nicht möglich</th>
+  </tr>
+
+  <!-- ITEMS 1–6 -->
+  <tr><td>1. Ein festverschlossenes Glas öffnen</td>
+    <td><input type="radio" name="q1" value="1"></td>
+    <td><input type="radio" name="q1" value="2"></td>
+    <td><input type="radio" name="q1" value="3"></td>
+    <td><input type="radio" name="q1" value="4"></td>
+    <td><input type="radio" name="q1" value="5"></td>
+  </tr>
+
+  <tr><td>2. Schwere Hausarbeit (z. B. Wände abwaschen, Boden putzen)</td>
+    <td><input type="radio" name="q2" value="1"></td>
+    <td><input type="radio" name="q2" value="2"></td>
+    <td><input type="radio" name="q2" value="3"></td>
+    <td><input type="radio" name="q2" value="4"></td>
+    <td><input type="radio" name="q2" value="5"></td>
+  </tr>
+
+  <tr><td>3. Eine Einkaufstasche oder einen Aktenkoffer tragen</td>
+    <td><input type="radio" name="q3" value="1"></td>
+    <td><input type="radio" name="q3" value="2"></td>
+    <td><input type="radio" name="q3" value="3"></td>
+    <td><input type="radio" name="q3" value="4"></td>
+    <td><input type="radio" name="q3" value="5"></td>
+  </tr>
+
+  <tr><td>4. Ihren Rücken waschen</td>
+    <td><input type="radio" name="q4" value="1"></td>
+    <td><input type="radio" name="q4" value="2"></td>
+    <td><input type="radio" name="q4" value="3"></td>
+    <td><input type="radio" name="q4" value="4"></td>
+    <td><input type="radio" name="q4" value="5"></td>
+  </tr>
+
+  <tr><td>5. Ein Messer benutzen, um Lebensmittel zu schneiden</td>
+    <td><input type="radio" name="q5" value="1"></td>
+    <td><input type="radio" name="q5" value="2"></td>
+    <td><input type="radio" name="q5" value="3"></td>
+    <td><input type="radio" name="q5" value="4"></td>
+    <td><input type="radio" name="q5" value="5"></td>
+  </tr>
+
+  <tr><td>6. Freizeitaktivitäten mit Druck/ Stoß auf Arm/Schulter/Hand (z. B. Golf, Hämmern, Tennis)</td>
+    <td><input type="radio" name="q6" value="1"></td>
+    <td><input type="radio" name="q6" value="2"></td>
+    <td><input type="radio" name="q6" value="3"></td>
+    <td><input type="radio" name="q6" value="4"></td>
+    <td><input type="radio" name="q6" value="5"></td>
+  </tr>
+</table>
+</div>
+
+<div class="table-scroll">
+<table>
+  <tr>
+    <th></th>
+    <th>keine Schwierigkeiten</th>
+    <th>geringe Schwierigkeiten</th>
+    <th>mäßige Schwierigkeiten</th>
+    <th>erhebliche Schwierigkeiten</th>
+    <th>nicht möglich</th>
+  </tr>
+
+  <tr><td>7. Beeinträchtigung normaler sozialer Aktivitäten?</td>
+    <td><input type="radio" name="q7" value="1"></td>
+    <td><input type="radio" name="q7" value="2"></td>
+    <td><input type="radio" name="q7" value="3"></td>
+    <td><input type="radio" name="q7" value="4"></td>
+    <td><input type="radio" name="q7" value="5"></td>
+  </tr>
+
+  <tr><td>8. Einschränkung in Arbeit/anderen Aktivitäten?</td>
+    <td><input type="radio" name="q8" value="1"></td>
+    <td><input type="radio" name="q8" value="2"></td>
+    <td><input type="radio" name="q8" value="3"></td>
+    <td><input type="radio" name="q8" value="4"></td>
+    <td><input type="radio" name="q8" value="5"></td>
+  </tr>
+
+  <tr><td>9. Schmerzen in Schulter/Arm/Hand</td>
+    <td><input type="radio" name="q9" value="1"></td>
+    <td><input type="radio" name="q9" value="2"></td>
+    <td><input type="radio" name="q9" value="3"></td>
+    <td><input type="radio" name="q9" value="4"></td>
+    <td><input type="radio" name="q9" value="5"></td>
+  </tr>
+
+  <tr><td>10. Kribbeln (Nadelstiche) in Schulter/Arm/Hand</td>
+    <td><input type="radio" name="q10" value="1"></td>
+    <td><input type="radio" name="q10" value="2"></td>
+    <td><input type="radio" name="q10" value="3"></td>
+    <td><input type="radio" name="q10" value="4"></td>
+    <td><input type="radio" name="q10" value="5"></td>
+  </tr>
+
+  <tr><td>11. Schlafstörungen wegen Schmerzen</td>
+    <td><input type="radio" name="q11" value="1"></td>
+    <td><input type="radio" name="q11" value="2"></td>
+    <td><input type="radio" name="q11" value="3"></td>
+    <td><input type="radio" name="q11" value="4"></td>
+    <td><input type="radio" name="q11" value="5"></td>
+  </tr>
+</table>
+</div>
+
+<!-- ================== OPTIONAL MODULE: WORK ================== -->
+
+<h2 class="section-title">Arbeits- und Berufs-Modul (optional)</h2>
+
+<p>Bitte geben Sie Ihre/n Arbeit/Beruf hier an:</p>
+<input type="text" id="workText">
+
+<label><input type="checkbox" id="workNone"> Ich bin nicht berufstätig.</label>
+
+<div class="table-scroll">
+<table>
+  <tr>
+    <th></th>
+    <th>keine Schwierigkeiten</th>
+    <th>geringe Schwierigkeiten</th>
+    <th>mäßige Schwierigkeiten</th>
+    <th>erhebliche Schwierigkeiten</th>
+    <th>nicht möglich</th>
+  </tr>
+
+  <tr><td>12. in der üblichen Art und Weise zu arbeiten?</td>
+    <td><input type="radio" name="w12" value="1"></td>
+    <td><input type="radio" name="w12" value="2"></td>
+    <td><input type="radio" name="w12" value="3"></td>
+    <td><input type="radio" name="w12" value="4"></td>
+    <td><input type="radio" name="w12" value="5"></td>
+  </tr>
+
+  <tr><td>13. aufgrund von Schmerzen Ihre übliche Arbeit?</td>
+    <td><input type="radio" name="w13" value="1"></td>
+    <td><input type="radio" name="w13" value="2"></td>
+    <td><input type="radio" name="w13" value="3"></td>
+    <td><input type="radio" name="w13" value="4"></td>
+    <td><input type="radio" name="w13" value="5"></td>
+  </tr>
+
+  <tr><td>14. so gut zu arbeiten, wie Sie es möchten?</td>
+    <td><input type="radio" name="w14" value="1"></td>
+    <td><input type="radio" name="w14" value="2"></td>
+    <td><input type="radio" name="w14" value="3"></td>
+    <td><input type="radio" name="w14" value="4"></td>
+    <td><input type="radio" name="w14" value="5"></td>
+  </tr>
+
+  <tr><td>15. die bisher gewohnte Zeit mit Arbeit zu verbringen?</td>
+    <td><input type="radio" name="w15" value="1"></td>
+    <td><input type="radio" name="w15" value="2"></td>
+    <td><input type="radio" name="w15" value="3"></td>
+    <td><input type="radio" name="w15" value="4"></td>
+    <td><input type="radio" name="w15" value="5"></td>
+  </tr>
+</table>
+</div>
+
+<!-- ================== OPTIONAL MODULE: SPORT ================== -->
+
+<h2 class="section-title">Sport- und Musik-Modul (optional)</h2>
+
+<p>Bitte geben Sie Ihre Sportart oder Ihr Musikinstrument an:</p>
+<input type="text" id="sportText">
+
+<label><input type="checkbox" id="sportNone"> Ich treibe keinen Sport oder spiele kein Instrument.</label>
+
+<div class="table-scroll">
+<table>
+  <tr>
+    <th></th>
+    <th>keine Schwierigkeiten</th>
+    <th>geringe Schwierigkeiten</th>
+    <th>mäßige Schwierigkeiten</th>
+    <th>erhebliche Schwierigkeiten</th>
+    <th>nicht möglich</th>
+  </tr>
+
+  <tr><td>16. Ihr Instrument spielen / Sport treiben</td>
+    <td><input type="radio" name="s16" value="1"></td>
+    <td><input type="radio" name="s16" value="2"></td>
+    <td><input type="radio" name="s16" value="3"></td>
+    <td><input type="radio" name="s16" value="4"></td>
+    <td><input type="radio" name="s16" value="5"></td>
+  </tr>
+
+  <tr><td>17. aufgrund von Schmerzen Ihr Instrument/Sport</td>
+    <td><input type="radio" name="s17" value="1"></td>
+    <td><input type="radio" name="s17" value="2"></td>
+    <td><input type="radio" name="s17" value="3"></td>
+    <td><input type="radio" name="s17" value="4"></td>
+    <td><input type="radio" name="s17" value="5"></td>
+  </tr>
+
+  <tr><td>18. so gut, wie Sie möchten</td>
+    <td><input type="radio" name="s18" value="1"></td>
+    <td><input type="radio" name="s18" value="2"></td>
+    <td><input type="radio" name="s18" value="3"></td>
+    <td><input type="radio" name="s18" value="4"></td>
+    <td><input type="radio" name="s18" value="5"></td>
+  </tr>
+
+  <tr><td>19. die bisher gewohnte Zeit dabei verbringen</td>
+    <td><input type="radio" name="s19" value="1"></td>
+    <td><input type="radio" name="s19" value="2"></td>
+    <td><input type="radio" name="s19" value="3"></td>
+    <td><input type="radio" name="s19" value="4"></td>
+    <td><input type="radio" name="s19" value="5"></td>
+  </tr>
+</table>
+</div>
+
+<button type="button" class="primary" onclick="calculateQD()">✅ Score berechnen</button>
+
+<div id="result"></div>
+
+<!-- CONTENT-LOCK START: vollständige QuickDASH-Logik -->
+<script>
+function calculateScale(values) {
+  const answered = values.filter(v => v !== null);
+  if (answered.length < values.length - 1) return null; 
+  const sum = answered.reduce((a,b)=>a+b,0);
+  return ((sum/answered.length - 1) * 25).toFixed(1);
+}
+
+function calculateQD() {
+
+  // MAIN 11 ITEMS
+  let main = [];
+  for (let i = 1; i <= 11; i++) {
+    const el = document.querySelector("input[name='q"+i+"']:checked");
+    main.push(el ? parseInt(el.value) : null);
+  }
+  const quickdash = calculateScale(main);
+
+  if (quickdash === null) {
+    document.getElementById("result").innerHTML =
+      "<p><strong>QuickDASH:</strong> Es darf maximal eine Antwort fehlen.</p>";
+    return;
+  }
+
+  // WORK MODULE
+  let workScore = null;
+  if (!document.getElementById("workNone").checked) {
+    let w = [];
+    for (let i = 12; i <= 15; i++) {
+      const el = document.querySelector("input[name='w"+i+"']:checked");
+      w.push(el ? parseInt(el.value) : null);
+    }
+    if (w.every(v => v !== null)) {
+      workScore = calculateScale(w);
+    }
+  }
+
+  // SPORT MODULE
+  let sportScore = null;
+  if (!document.getElementById("sportNone").checked) {
+    let s = [];
+    for (let i = 16; i <= 19; i++) {
+      const el = document.querySelector("input[name='s"+i+"']:checked");
+      s.push(el ? parseInt(el.value) : null);
+    }
+    if (s.every(v => v !== null)) {
+      sportScore = calculateScale(s);
+    }
+  }
+
+  let html = `<p><strong>QuickDASH Score:</strong> ${quickdash} / 100</p>`;
+  if (workScore !== null) html += `<p><strong>Arbeits-/Berufs-Score:</strong> ${workScore} / 100</p>`;
+  if (sportScore !== null) html += `<p><strong>Sport-/Musik-Score:</strong> ${sportScore} / 100</p>`;
+
+  document.getElementById("result").innerHTML = html;
+}
+</script>
+<!-- CONTENT-LOCK END -->
+
+<!-- EINHEITLICHER FOOTER -->
+<div class="footer-nav">
+  <button class="secondary" onclick="goBack()">⬅️ Zurück</button>
+  <button class="primary" onclick="goHome()">🏠 Hauptseite</button>
+</div>
+
+<!-- Zentrales Verhalten -->
+<script src="app-core.js"></script>
+
+</body>
+</html>
