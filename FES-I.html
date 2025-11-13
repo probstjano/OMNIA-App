@@ -1,57 +1,30 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>FES-I – Falls Efficacy Scale – International</title>
+
+  <!-- Zentrale Dateien -->
+  <link rel="stylesheet" href="app-style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="robotoBase64.js"></script>
-  <style>
-    body {
-      font-family: sans-serif;
-      margin: 2rem;
-      font-size: 16px;
-      max-width: 800px;
-    }
-    .question-block { margin-bottom: 1.5rem; }
-    .options { display: flex; gap: 10px; margin-top: 0.5rem; }
-    .option-item { display: flex; align-items: center; gap: 4px; }
-    label.question { font-weight: bold; display: block; margin-bottom: 0.5rem; }
-    button { margin-top: 15px; padding: 10px 15px; font-size: 16px; }
-    #result { margin-top: 20px; font-weight: bold; white-space: pre-line; }
-    .nav-buttons { margin-top: 2rem; }
-    .nav-buttons a {
-      display: inline-block;
-      margin-right: 10px;
-      padding: 10px 15px;
-      background: #eee;
-      border-radius: 8px;
-      text-decoration: none;
-      color: #000;
-    }
-    .nav-buttons a:hover { background: #ddd; }
-  </style>
 </head>
-<body>
+
+<body class="assessment-page">
+
   <h1>FES-I – Falls Efficacy Scale – International</h1>
-  <p>Die FES-I erfasst in 10 Items die Selbstwirksamkeit bei Stürzen. Die Skala umfasst 16 Fragen und kann als Selbstauskunftsbogen oder als strukturiertes Interview durchgeführt wer
-den.</p>
-  <p> Im Cenplex als <strong> Messung </strong> vorhanden </p>
 
-  <p> <strong> Anleitung: </strong>  
-Wir würden Ihnen gerne einige Fragen darüber stellen, welche Bedenken Sie haben hinzufallen, wenn Sie bestimmte Aktivitäten ausführen. Bitte denken Sie darüber nach, wie Sie diese Aktivität 
-normalerweise ausführen. Wenn Sie die Aktivität zur Zeit nicht ausführen (z.B. wenn jemand Ihren  Einkauf erledigt), geben Sie bitte (trotzdem) eine Antwort um anzuzeigen, ob Sie Bedenken hätten zu stürzen, wenn Sie die Aktivität ausführen würden. 
-Markieren Sie bitte diejenige Angabe, die am ehesten Ihrem eigenen Empfinden entspricht. </p>
+  <p>Die FES-I erfasst in 10 Items die Selbstwirksamkeit bei Stürzen. Die Skala umfasst 16 Fragen und kann als Selbstauskunftsbogen oder als strukturiertes Interview durchgeführt werden.</p>
+  <p>Im Cenplex als <strong>Messung</strong> vorhanden.</p>
 
+  <p><strong>Anleitung:</strong><br>
+  Wir würden Ihnen gerne einige Fragen darüber stellen, welche Bedenken Sie haben hinzufallen, wenn Sie bestimmte Aktivitäten ausführen. Bitte denken Sie darüber nach, wie Sie diese Aktivität normalerweise ausführen. Wenn Sie die Aktivität zur Zeit nicht ausführen (z.B. wenn jemand Ihren Einkauf erledigt), geben Sie trotzdem eine Antwort, um anzuzeigen, ob Sie Bedenken hätten zu stürzen, wenn Sie die Aktivität ausführen würden. Markieren Sie bitte diejenige Angabe, die am ehesten Ihrem eigenen Empfinden entspricht.
+  </p>
+
+  <!-- ORIGINAL-INHALT 1:1 -->
+  <!-- CONTENT-LOCK START -->
   <form id="fesiForm"></form>
-
-  <button type="button" onclick="calculateFESI()">✅ Score berechnen</button>
-  <button type="button" onclick="downloadPDF()">📄 Als PDF speichern</button>
-
-  <div id="result"></div>
-
-  
 
   <script>
     const items = [
@@ -70,7 +43,7 @@ Markieren Sie bitte diejenige Angabe, die am ehesten Ihrem eigenen Empfinden ent
       "13. In einer Menschenmenge gehen",
       "14. Auf unebenem Boden gehen (Kopfsteinpflaster, Waldweg)",
       "15. Steigung hinauf oder Gefälle hinunter gehen",
-      "16. Eine Veranstaltung besuchen (z. B. Gottesdienst, Sportveranstalung)"
+      "16. Eine Veranstaltung besuchen (z. B. Gottesdienst, Sportveranstalung)"
     ];
 
     const options = [
@@ -85,7 +58,8 @@ Markieren Sie bitte diejenige Angabe, die am ehesten Ihrem eigenen Empfinden ent
       items.forEach((item, index) => {
         const block = document.createElement("div");
         block.className = "question-block";
-        block.innerHTML = `<label class="question">${item}</label>
+        block.innerHTML = `
+          <label class="question">${item}</label>
           <div class="options">
             ${options.map((opt, idx) => `
               <div class="option-item">
@@ -93,133 +67,116 @@ Markieren Sie bitte diejenige Angabe, die am ehesten Ihrem eigenen Empfinden ent
                 <label for="q${index}_${idx}">${opt}</label>
               </div>
             `).join('')}
-          </div>`;
+          </div>
+        `;
         form.appendChild(block);
       });
     }
 
-function calculateFESI() {
-  let score = 0;
-  let allAnswered = true;
-  for (let i = 0; i < items.length; i++) {
-    const selected = document.querySelector(`input[name="q${i}"]:checked`);
-    if (selected) {
-      score += parseInt(selected.value);
-    } else {
-      allAnswered = false;
-    }
-  }
+    let fesiScore = null;
 
-  fesiScore = allAnswered ? score : null;
-
-  document.getElementById("result").innerText =
-    `Gesamtpunktzahl: ${score} / 64` + (allAnswered ? "" : "\n⚠️ Einige Fragen wurden nicht beantwortet.");
-}
-
-
- function downloadPDF() {
-  if (fesiScore === null) {
-    alert("Bitte zuerst auf 'Score berechnen' klicken.");
-    return;
-  }
-
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  doc.addFileToVFS("Roboto-Regular.ttf", window.robotoBase64);
-  doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
-  doc.setFont("Roboto", "normal");
-
-  const left = 15;
-  const right = 190;
-  const lineHeight = 8;
-  let y = 15;
-
-  doc.setFontSize(16);
-  doc.text("FES-I – Falls Efficacy Scale – International", left, y);
-  y += lineHeight;
-
-  doc.setFontSize(12);
-  doc.line(left, y, right, y);
-  y += 5;
-
-  let questionNumber = 1;
-
-  for (let i = 0; i < items.length; i++) {
-    const selected = document.querySelector(`input[name="q${i}"]:checked`);
-    if (!selected) continue;
-
-    const question = `${questionNumber}. ${items[i]}`;
-    const answer = options[selected.value - 1];
-    const wrapped = doc.splitTextToSize(question, 160);
-
-    wrapped.forEach((line, idx) => {
-      doc.text(line, left, y);
-      if (idx === 0) {
-        doc.text(`${answer}`, right, y, { align: "right" });
+    function calculateFESI() {
+      let score = 0;
+      let allAnswered = true;
+      for (let i = 0; i < items.length; i++) {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (selected) {
+          score += parseInt(selected.value);
+        } else {
+          allAnswered = false;
+        }
       }
-      y += lineHeight;
-    });
 
-    y += 2;
-    questionNumber++;
+      fesiScore = allAnswered ? score : null;
 
-    if (y > 270) {
-      doc.addPage();
-      y = 20;
+      document.getElementById("result").innerText =
+        `Gesamtpunktzahl: ${score} / 64` + (allAnswered ? "" : "\n⚠️ Einige Fragen wurden nicht beantwortet.");
     }
-  }
 
-  y += 5;
-  doc.setFontSize(13);
-  doc.setFont(undefined, "bold");
-  doc.text("Gesamtergebnis:", left, y); y += lineHeight;
+    function downloadPDF() {
+      if (fesiScore === null) {
+        alert("Bitte zuerst auf 'Score berechnen' klicken.");
+        return;
+      }
 
-  doc.setFont(undefined, "normal");
-  doc.setFontSize(12);
-  const today = new Date().toLocaleDateString("de-CH");
-  doc.text(`Gesamtpunktzahl: ${fesiScore} / 64`, left, y); y += lineHeight;
-  doc.text(`Datum: ${today}`, left, y);
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.addFileToVFS("Roboto-Regular.ttf", window.robotoBase64);
+      doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+      doc.setFont("Roboto", "normal");
 
-  doc.save("FES-I_Auswertung.pdf");
-}
+      const left = 15;
+      const right = 190;
+      const lineHeight = 8;
+      let y = 15;
+
+      doc.setFontSize(16);
+      doc.text("FES-I – Falls Efficacy Scale – International", left, y);
+      y += lineHeight;
+
+      doc.setFontSize(12);
+      doc.line(left, y, right, y);
+      y += 5;
+
+      let questionNumber = 1;
+
+      for (let i = 0; i < items.length; i++) {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (!selected) continue;
+
+        const question = `${questionNumber}. ${items[i]}`;
+        const answer = options[selected.value - 1];
+        const wrapped = doc.splitTextToSize(question, 160);
+
+        wrapped.forEach((line, idx) => {
+          doc.text(line, left, y);
+          if (idx === 0) {
+            doc.text(`${answer}`, right, y, { align: "right" });
+          }
+          y += lineHeight;
+        });
+
+        y += 2;
+        questionNumber++;
+
+        if (y > 270) {
+          doc.addPage();
+          y = 20;
+        }
+      }
+
+      y += 5;
+      doc.setFontSize(13);
+      doc.setFont(undefined, "bold");
+      doc.text("Gesamtergebnis:", left, y); 
+      y += lineHeight;
+
+      doc.setFont(undefined, "normal");
+      doc.setFontSize(12);
+      const today = new Date().toLocaleDateString("de-CH");
+      doc.text(`Gesamtpunktzahl: ${fesiScore} / 64`, left, y); 
+      y += lineHeight;
+      doc.text(`Datum: ${today}`, left, y);
+
+      doc.save("FES-I_Auswertung.pdf");
+    }
 
     renderForm();
   </script>
-<p></p>
-<div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
-  <!-- Zurück zur letzten Seite -->
-  <button onclick="goBack()" style="
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: none;
-    background-color: #f0f0f0;
-    font-size: 1rem;
-    cursor: pointer;
-  ">
-    ⬅️ Zurück
-  </button>
+  <!-- CONTENT-LOCK END -->
 
-  <!-- Zurück zur Hauptseite -->
-  <button onclick="window.location.href='index.html'" style="
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: none;
-    background-color: #d0eaff;
-    font-size: 1rem;
-    cursor: pointer;
-  ">
-    🏠 Hauptseite
-  </button>
-</div>
+  <button class="primary" type="button" onclick="calculateFESI()">Score berechnen</button>
+  <button class="secondary" type="button" onclick="downloadPDF()">PDF erstellen</button>
 
-<script>
-function goBack() {
-  if (document.referrer && document.referrer !== window.location.href) {
-    history.back();
-  } else {
-    window.location.href = 'index.html';
-  }
-}
-</script>
+  <div id="result"></div>
+
+  <!-- Einheitlicher Footer -->
+  <div class="footer-nav">
+    <button class="secondary" onclick="goBack()">⬅️ Zurück</button>
+    <button class="primary" onclick="goHome()">🏠 Hauptseite</button>
+  </div>
+
+  <!-- Zentrales Verhalten -->
+  <script src="app-core.js"></script>
 </body>
 </html>
