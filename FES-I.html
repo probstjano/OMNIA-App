@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>FES-I – Falls Efficacy Scale – International</title>
 
-  <link rel="stylesheet" href="app-style.css">
+  <!-- Zentrale Dateien -->
+  <link rel="stylesheet" href="app-style.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="robotoBase64.js"></script>
 </head>
@@ -14,9 +15,10 @@
   <h1>FES-I – Falls Efficacy Scale – International</h1>
 
   <p>Die FES-I erfasst in 10 Items die Selbstwirksamkeit bei Stürzen. Die Skala umfasst 16 Fragen und kann als Selbstauskunftsbogen oder als strukturiertes Interview durchgeführt werden.</p>
-  <p>Im Cenplex als <strong>Messung</strong> vorhanden</p>
-  <p><strong>Anleitung:</strong>  
-    Wir würden Ihnen gerne einige Fragen darüber stellen, welche Bedenken Sie haben hinzufallen, wenn Sie bestimmte Aktivitäten ausführen …
+  <p>Im Cenplex als <strong>Messung</strong> vorhanden.</p>
+
+  <p><strong>Anleitung:</strong><br>
+    Wir würden Ihnen gerne einige Fragen darüber stellen, welche Bedenken Sie haben hinzufallen, wenn Sie bestimmte Aktivitäten ausführen. Bitte denken Sie darüber nach, wie Sie diese Aktivität normalerweise ausführen. Wenn Sie die Aktivität zur Zeit nicht ausführen, geben Sie trotzdem eine Antwort, um anzuzeigen, ob Sie Bedenken hätten, wenn Sie die Aktivität ausführen würden. Markieren Sie bitte diejenige Angabe, die am ehesten Ihrem eigenen Empfinden entspricht.
   </p>
 
   <form id="fesiForm"></form>
@@ -59,15 +61,17 @@
       items.forEach((item, index) => {
         const block = document.createElement("div");
         block.className = "question-block";
-        block.innerHTML = `<label class="question">${item}</label>
+        block.innerHTML = `
+          <label class="question">${item}</label>
           <div class="options">
             ${options.map((opt, idx) => `
               <div class="option-item">
                 <input type="radio" name="q${index}" value="${idx + 1}" id="q${index}_${idx}">
                 <label for="q${index}_${idx}">${opt}</label>
               </div>
-            `).join('')}
-          </div>`;
+            `).join("")}
+          </div>
+        `;
         form.appendChild(block);
       });
     }
@@ -78,12 +82,15 @@
     function calculateFESI() {
       let score = 0;
       let allAnswered = true;
+
       for (let i = 0; i < items.length; i++) {
         const selected = document.querySelector(`input[name="q${i}"]:checked`);
-        if (selected) score += parseInt(selected.value);
-        else allAnswered = false;
+        if (!selected) { allAnswered = false; continue; }
+        score += parseInt(selected.value);
       }
+
       fesiScore = allAnswered ? score : null;
+
       document.getElementById("result").innerText =
         `Gesamtpunktzahl: ${score} / 64` + (allAnswered ? "" : "\n⚠️ Einige Fragen wurden nicht beantwortet.");
     }
@@ -96,6 +103,7 @@
 
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
+
       doc.addFileToVFS("Roboto-Regular.ttf", window.robotoBase64);
       doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
       doc.setFont("Roboto", "normal");
@@ -103,6 +111,7 @@
       const left = 15;
       const right = 190;
       const lineHeight = 8;
+
       let y = 15;
 
       doc.setFontSize(16);
@@ -119,13 +128,14 @@
         const selected = document.querySelector(`input[name="q${i}"]:checked`);
         if (!selected) continue;
 
-        const question = `${questionNumber}. ${items[i]}`;
-        const answer = options[selected.value - 1];
-        const wrapped = doc.splitTextToSize(question, 160);
+        const qText = `${questionNumber}. ${items[i]}`;
+        const aText = options[selected.value - 1];
+
+        const wrapped = doc.splitTextToSize(qText, 160);
 
         wrapped.forEach((line, idx) => {
           doc.text(line, left, y);
-          if (idx === 0) doc.text(`${answer}`, right, y, { align: "right" });
+          if (idx === 0) doc.text(aText, right, y, { align: "right" });
           y += lineHeight;
         });
 
@@ -136,13 +146,17 @@
       }
 
       y += 5;
+
       doc.setFontSize(13);
       doc.setFont(undefined, "bold");
-      doc.text("Gesamtergebnis:", left, y); y += lineHeight;
+      doc.text("Gesamtergebnis:", left, y);
+      y += lineHeight;
 
       doc.setFont(undefined, "normal");
       doc.setFontSize(12);
+
       const today = new Date().toLocaleDateString("de-CH");
+
       doc.text(`Gesamtpunktzahl: ${fesiScore} / 64`, left, y); y += lineHeight;
       doc.text(`Datum: ${today}`, left, y);
 
