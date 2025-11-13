@@ -1,24 +1,24 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>FOG-Q – Freezing of Gait Questionnaire</title>
-  <style>
-    body { font-family: sans-serif; margin: 2rem; font-size: 16px; max-width: 900px; }
-    label { display: block; margin: 4px 0; }
-    .question-block { margin-bottom: 1.5rem; }
-    .question { font-weight: bold; margin-bottom: 0.5rem; }
-    button { margin-top: 20px; padding: 10px 15px; font-size: 16px; }
-    #result { margin-top: 2rem; font-weight: bold; white-space: pre-line; }
-  </style>
+
+  <!-- Zentrale Dateien -->
+  <link rel="stylesheet" href="app-style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="robotoBase64.js"></script>
 </head>
-<body>
+
+<body class="assessment-page">
+
   <h1>Freezing of Gait Questionnaire (FOG-Q)</h1>
   <p>Zur Selbsteinschätzung von Gangstörungen und Freezing bei Parkinson.</p>
 
+  <!-- CONTENT-LOCK START (Original 1:1 unverändert) -->
   <form id="fogForm">
+
     <div class="question-block">
       <div class="question">1. In Ihrem schlechtesten Zustand gehen Sie:</div>
       <label><input type="radio" name="q0" value="0"> 0) Normal</label>
@@ -79,7 +79,6 @@
 
   <div id="result"></div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
     function calculateScore() {
       let total = 0;
@@ -90,105 +89,83 @@
       }
       document.getElementById("result").innerText = `Gesamtscore: ${total} / 24`;
     }
-async function generatePDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
 
-  // Roboto einbinden, wenn verfügbar
-  if (window.robotoBase64) {
-    doc.addFileToVFS("Roboto-Regular.ttf", window.robotoBase64);
-    doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
-    doc.setFont("Roboto", "normal");
-  }
+    async function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
 
-  const lineHeight = 8;
-  const left = 15;
-  const right = 190;
-  let y = 20;
+      if (window.robotoBase64) {
+        doc.addFileToVFS("Roboto-Regular.ttf", window.robotoBase64);
+        doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+        doc.setFont("Roboto", "normal");
+      }
 
-  doc.setFontSize(16);
-  doc.text("FOG-Q – Freezing of Gait Questionnaire", left, y);
-  y += lineHeight;
+      const lineHeight = 8;
+      const left = 15;
+      const right = 190;
+      let y = 20;
 
-  doc.setFontSize(12);
-  doc.line(left, y, right, y); y += 5;
-
-  for (let i = 0; i < 6; i++) {
-    const questionEl = document.querySelectorAll(".question-block")[i];
-    const questionText = questionEl.querySelector(".question").innerText;
-    const selected = document.querySelector(`input[name="q${i}"]:checked`);
-    if (!selected) continue;
-
-    const answerText = selected.parentElement.innerText.trim();
-
-    const wrapped = doc.splitTextToSize(`${i + 1}. ${questionText}`, 160);
-    wrapped.forEach((line, idx) => {
-      doc.text(line, left, y);
-      if (idx === 0) doc.text(answerText, right, y, { align: "right" });
+      doc.setFontSize(16);
+      doc.text("FOG-Q – Freezing of Gait Questionnaire", left, y);
       y += lineHeight;
-    });
-    y += 2;
 
-    if (y > 270) {
-      doc.addPage();
-      y = 20;
+      doc.setFontSize(12);
+      doc.line(left, y, right, y); 
+      y += 5;
+
+      for (let i = 0; i < 6; i++) {
+        const block = document.querySelectorAll(".question-block")[i];
+        const questionText = block.querySelector(".question").innerText;
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (!selected) continue;
+
+        const answerText = selected.parentElement.innerText.trim();
+        const wrapped = doc.splitTextToSize(`${i + 1}. ${questionText}`, 160);
+
+        wrapped.forEach((line, idx) => {
+          doc.text(line, left, y);
+          if (idx === 0) doc.text(answerText, right, y, { align: "right" });
+          y += lineHeight;
+        });
+
+        y += 2;
+
+        if (y > 270) {
+          doc.addPage();
+          y = 20;
+        }
+      }
+
+      const scoreText = document.getElementById("result").innerText;
+      if (scoreText) {
+        y += 5;
+        doc.setFont(undefined, "bold");
+        doc.setFontSize(13);
+        doc.text("Gesamtergebnis:", left, y);
+        y += lineHeight;
+
+        doc.setFont(undefined, "normal");
+        doc.setFontSize(12);
+        doc.text(scoreText, left, y);
+      }
+
+      const today = new Date().toLocaleDateString("de-CH");
+      y += 12;
+      doc.text(`Datum: ${today}`, left, y);
+
+      doc.save("FOGQ_Auswertung.pdf");
     }
-  }
-
-  // Gesamtscore übernehmen aus bereits berechneter Anzeige
-  const scoreText = document.getElementById("result").innerText;
-  if (scoreText) {
-    y += 5;
-    doc.setFont(undefined, "bold");
-    doc.setFontSize(13);
-    doc.text("Gesamtergebnis:", left, y); y += lineHeight;
-    doc.setFont(undefined, "normal");
-    doc.setFontSize(12);
-    doc.text(scoreText, left, y); y += lineHeight;
-  }
-
-  const today = new Date().toLocaleDateString("de-CH");
-  y += 5;
-  doc.text(`Datum: ${today}`, left, y);
-
-  doc.save("FOGQ_Auswertung.pdf");
-}
-
   </script>
-<div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
-  <!-- Zurück zur letzten Seite -->
-  <button onclick="goBack()" style="
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: none;
-    background-color: #f0f0f0;
-    font-size: 1rem;
-    cursor: pointer;
-  ">
-    ⬅️ Zurück
-  </button>
+  <!-- CONTENT-LOCK END -->
 
-  <!-- Zurück zur Hauptseite -->
-  <button onclick="window.location.href='index.html'" style="
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: none;
-    background-color: #d0eaff;
-    font-size: 1rem;
-    cursor: pointer;
-  ">
-    🏠 Hauptseite
-  </button>
-</div>
+  <!-- Einheitlicher Footer -->
+  <div class="footer-nav">
+    <button class="secondary" onclick="goBack()">⬅️ Zurück</button>
+    <button class="primary" onclick="goHome()">🏠 Hauptseite</button>
+  </div>
 
-<script>
-function goBack() {
-  if (document.referrer && document.referrer !== window.location.href) {
-    history.back();
-  } else {
-    window.location.href = 'index.html';
-  }
-}
-</script>
+  <!-- Zentrales Verhalten -->
+  <script src="app-core.js"></script>
+
 </body>
 </html>
