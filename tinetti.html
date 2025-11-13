@@ -1,40 +1,37 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tinetti POMA – Gleichgewicht und Gang</title>
+
+  <!-- Zentrale Dateien -->
+  <link rel="stylesheet" href="app-style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="robotoBase64.js"></script>
-  <style>
-    body { font-family: sans-serif; margin: 10px; font-size: 16px; max-width: 700px; }
-    h1 { text-align: center; }
-    label { display: block; margin: 10px 0 5px; }
-    select {
-      width: 100%;
-      padding: 6px;
-      font-size: 16px;
-      margin-bottom: 10px;
-    }
-    button { padding: 10px 15px; font-size: 16px; margin-top: 10px; }
-    #result { font-weight: bold; margin-top: 20px; }
-  </style>
 </head>
-<body>
-  <h1>Tinetti POMA</h1>
-  <p>Assessment für Gleichgewicht und Gang – v. a. bei älteren Menschen/Geriatrie validiert. Empfohlen als Teil von Sturzrisiko-Assessments, weniger geeignet zur Verlaufsbeobachtung.</p>
-  <p>Im Cenplex-Behandlungsplan als <strong>Messung</strong> hinterlegt. Hier durchführen und Summenscore übertragen.</p>
-  <p>Ausführliches Protokoll hier: <a href="https://probstjano.github.io/OpenPdf/Tinetti_Protokoll.pdf" target="_blank" rel="noopener">Tinetti Protokoll (PDF)</a></p>
 
-  <form id="Tinettiform">
-    <div id="questions"></div>
-    <button type="button" onclick="calculateTINETTI()">✅ Score berechnen</button>
-    <button type="button" onclick="generatePDF()">📄 Als PDF speichern</button>
-  </form>
+<body class="assessment-page">
 
-  <div id="result"></div>
+<h1>Tinetti POMA</h1>
+<p>Assessment für Gleichgewicht und Gang – v. a. bei älteren Menschen/Geriatrie validiert. Empfohlen als Teil von Sturzrisiko-Assessments, weniger geeignet zur Verlaufsbeobachtung.</p>
+<p>Im Cenplex-Behandlungsplan als <strong>Messung</strong> hinterlegt. Hier durchführen und Summenscore übertragen.</p>
+<p>Ausführliches Protokoll hier: 
+  <a href="https://probstjano.github.io/OpenPdf/Tinetti_Protokoll.pdf" target="_blank" rel="noopener">
+    Tinetti Protokoll (PDF)
+  </a>
+</p>
 
-  <script>
+<form id="Tinettiform">
+  <div id="questions"></div>
+  <button type="button" class="primary" onclick="calculateTINETTI()">✅ Score berechnen</button>
+  <button type="button" class="secondary" onclick="generatePDF()">📄 Als PDF speichern</button>
+</form>
+
+<div id="result"></div>
+
+<!-- CONTENT-LOCK START: Original JS, Normwerte, PDF-Logik -->
+<script>
     const questions = [
       { 
         text: "Sitzbalance", 
@@ -186,26 +183,17 @@
     }
 
     renderForm();
-  </script>
+</script>
+<!-- CONTENT-LOCK END -->
 
-  <div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
-    <button onclick="goBack()" style="
-      padding:10px 18px; border-radius:8px; border:none;
-      background-color:#f0f0f0; font-size:1rem; cursor:pointer;">
-      ⬅️ Zurück
-    </button>
-    <button onclick="window.location.href='index.html'" style="
-      padding:10px 18px; border-radius:8px; border:none;
-      background-color:#d0eaff; font-size:1rem; cursor:pointer;">
-      🏠 Hauptseite
-    </button>
-  </div>
+<!-- Einheitlicher Footer -->
+<div class="footer-nav">
+  <button class="secondary" onclick="goBack()">⬅️ Zurück</button>
+  <button class="primary" onclick="goHome()">🏠 Hauptseite</button>
+</div>
 
-  <script>
-  function goBack() {
-    if (document.referrer && document.referrer !== window.location.href) history.back();
-    else window.location.href = 'index.html';
-  }
-  </script>
+<!-- Zentrales Verhalten -->
+<script src="app-core.js"></script>
+
 </body>
 </html>
