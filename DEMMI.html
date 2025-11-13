@@ -1,36 +1,17 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>DEMMI – De Morton Mobility Index</title>
+
+  <!-- Zentrale Dateien -->
+  <link rel="stylesheet" href="app-style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <style>
-    body { font-family: sans-serif; margin: 10px; font-size: 16px; max-width: 600px; }
-    label { display: block; margin: 10px 0 5px; }
-    select {
-      width: 100%;
-      padding: 6px;
-      font-size: 16px;
-      margin-bottom: 10px;
-    }
-    button { padding: 10px 15px; font-size: 16px; margin-top: 10px; }
-    #result { font-weight: bold; margin-top: 20px; }
-    .nav-buttons { margin-top: 30px; }
-    .nav-buttons a {
-      display: inline-block;
-      margin-right: 10px;
-      padding: 10px 15px;
-      background: #eee;
-      border-radius: 8px;
-      text-decoration: none;
-      color: #000;
-    }
-    .nav-buttons a:hover { background: #ddd; }
-    .hidden { display: none; }
-  </style>
+  <script src="robotoBase64.js"></script>
 </head>
-<body>
+
+<body class="assessment-page">
   <h1>DEMMI – De Morton Mobility Index</h1>
   <p>Mobilität von Bett bis Springen.</p>
   <p>Direkt im Cenplex Behandlungsplan als <strong>Assessment</strong> "DEMMI" eintragen/durchführen.</p>
@@ -39,8 +20,10 @@
     <a href="https://probstjano.github.io/OpenPdf/DEMMI_Protokoll.pdf" target="_blank" rel="noopener">DEMMI Protokoll (PDF)</a>
   </p>
 
+  <!-- Originaler Form-/Inhaltsbereich -->
   <form id="demmiForm">
     <div id="questions"></div>
+
     <div id="hilfsmittelSelect" class="hidden">
       <label>Hilfsmittel beim Gehen (item 11/12):</label>
       <select id="hilfsmittel">
@@ -51,15 +34,14 @@
         <option value="Andere">Andere</option>
       </select>
     </div>
+
     <button type="button" onclick="calculateDEMMI()">✅ Score berechnen</button>
     <button type="button" onclick="downloadPDF()">📄 Als PDF speichern</button>
   </form>
+
   <p id="result"></p>
 
-  <div class="nav-buttons">
-    <a href="index.html">⬅️ Zurück zur Startseite </a>
-  </div>
-
+  <!-- CONTENT-LOCK START -->
   <script>
     const questions = [
       { text: "1. Gesäß anheben im Bett", options: [ { value: 0, label: "Nicht möglich" }, { value: 1, label: "Möglich" } ] },
@@ -91,7 +73,6 @@
       q.options.forEach(opt => {
         optionsHTML += `<option value="${opt.value}">${opt.label}</option>`;
       });
-
       const html = `<label>${q.text}<select name="q${i}" onchange="checkGehilfe(${i})">${optionsHTML}</select></label>`;
       container.innerHTML += html;
     });
@@ -118,103 +99,74 @@
       document.getElementById("result").innerText = `Rohscore: ${score}/20 → DEMMI-Score: ${scaled}/100`;
     }
 
-    
+    async function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const form = document.forms["demmiForm"];
+      const lineHeight = 8;
+      const left = 10;
+      const right = 180;
+      let y = 20;
 
-async function downloadPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  const form = document.forms["demmiForm"];
-  const lineHeight = 8;
-  const left = 10;
-  const right = 180;
-  let y = 20;
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(16);
-  doc.text("DEMMI – Auswertung", left, y);
-  y += lineHeight;
-
-  doc.setFontSize(12);
-  doc.line(left, y, 200, y);
-  y += 5;
-
-  let rawScore = 0;
-  for (let i = 0; i < questions.length; i++) {
-    const selectedValue = form["q" + i].value;
-    if (selectedValue === "") continue;
-    rawScore += parseInt(selectedValue);
-    const text = questions[i].text;
-    doc.text(`${i + 1}. ${text}`, left, y);
-    doc.text(`${selectedValue}`, right, y, { align: "right" });
-    y += lineHeight;
-    if (i === 11 && selectedValue === "1") {
-      const hilfsmittel = document.getElementById("hilfsmittel").value || "–";
-      doc.text("Hilfsmittel:", left + 10, y);
-      doc.text(hilfsmittel, right, y, { align: "right" });
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(16);
+      doc.text("DEMMI – Auswertung", left, y);
       y += lineHeight;
+
+      doc.setFontSize(12);
+      doc.line(left, y, 200, y);
+      y += 5;
+
+      let rawScore = 0;
+      for (let i = 0; i < questions.length; i++) {
+        const selectedValue = form["q" + i].value;
+        if (selectedValue === "") continue;
+        rawScore += parseInt(selectedValue);
+        const text = questions[i].text;
+        doc.text(`${i + 1}. ${text}`, left, y);
+        doc.text(`${selectedValue}`, right, y, { align: "right" });
+        y += lineHeight;
+        if (i === 11 && selectedValue === "1") {
+          const hilfsmittel = document.getElementById("hilfsmittel").value || "–";
+          doc.text("Hilfsmittel:", left + 10, y);
+          doc.text(hilfsmittel, right, y, { align: "right" });
+          y += lineHeight;
+        }
+        if (y > 270) {
+          doc.addPage();
+          y = 20;
+        }
+      }
+
+      y += 10;
+      const scaled = rawScore <= 20 ? conversion[rawScore] : "Ungültig";
+
+      doc.setFontSize(12);
+      doc.setFont(undefined, "bold");
+      doc.text("Gesamtergebnis:", left, y);
+      y += lineHeight;
+
+      doc.setFont(undefined, "normal");
+      doc.text(`Rohscore: ${rawScore} / 20`, left, y);
+      y += lineHeight;
+      doc.text(`DEMMI-Score: ${scaled} / 100`, left, y);
+      y += lineHeight;
+
+      const today = new Date().toLocaleDateString("de-CH");
+      doc.text(`Datum: ${today}`, left, y);
+
+      doc.save("DEMMI_Auswertung.pdf");
     }
-    if (y > 270) {
-      doc.addPage();
-      y = 20;
-    }
-  }
-
-  y += 10;
-  const scaled = rawScore <= 20 ? conversion[rawScore] : "Ungültig";
-
-  doc.setFontSize(12);
-  doc.setFont(undefined, "bold");
-  doc.text("Gesamtergebnis:", left, y);
-  y += lineHeight;
-
-  doc.setFont(undefined, "normal");
-  doc.text(`Rohscore: ${rawScore} / 20`, left, y);
-  y += lineHeight;
-  doc.text(`DEMMI-Score: ${scaled} / 100`, left, y);
-  y += lineHeight;
-
-  const today = new Date().toLocaleDateString("de-CH");
-  doc.text(`Datum: ${today}`, left, y);
-
-  doc.save("DEMMI_Auswertung.pdf");
-}
-
-
   </script>
-<div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
-  <!-- Zurück zur letzten Seite -->
-  <button onclick="goBack()" style="
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: none;
-    background-color: #f0f0f0;
-    font-size: 1rem;
-    cursor: pointer;
-  ">
-    ⬅️ Zurück
-  </button>
+  <!-- CONTENT-LOCK END -->
 
-  <!-- Zurück zur Hauptseite -->
-  <button onclick="window.location.href='index.html'" style="
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: none;
-    background-color: #d0eaff;
-    font-size: 1rem;
-    cursor: pointer;
-  ">
-    🏠 Hauptseite
-  </button>
-</div>
+  <!-- Einheitlicher Footer -->
+  <div class="footer-nav">
+    <button class="secondary" onclick="goBack()">⬅️ Zurück</button>
+    <button class="primary" onclick="goHome()">🏠 Hauptseite</button>
+  </div>
 
-<script>
-function goBack() {
-  if (document.referrer && document.referrer !== window.location.href) {
-    history.back();
-  } else {
-    window.location.href = 'index.html';
-  }
-}
-</script>
+  <!-- Zentrales Verhalten -->
+  <script src="app-core.js"></script>
 </body>
 </html>
