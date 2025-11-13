@@ -6,24 +6,22 @@
   <title>Dizziness Handicap Inventory (DHI)</title>
 
   <!-- Zentrale Dateien -->
-  <link rel="stylesheet" href="app-style.css">
+  <link rel="stylesheet" href="app-style.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="robotoBase64.js"></script>
 </head>
 
 <body class="assessment-page">
+
   <h1>Dizziness Handicap Inventory (DHI)</h1>
+  <p>Der DHI ist ein Selbstbeurteilungsfragebogen s, der dazu dient, die subjektiv wahrgenommenen Beeinträchtigungen durch Schwindel zu erfassen. Vom Patienten hier ausfüllen lassen und Score als <strong>Messung</strong> im Cenplex Behandlungsplan hinterlegen.</p>
 
-  <p>Der DHI ist ein Selbstbeurteilungsfragebogen ..., Score als <strong>Messung</strong> im Cenplex Behandlungsplan hinterlegen.</p>
+  <p><strong>Anleitung:</strong> Dieser Fragebogen dient dazu, die Probleme herauszufinden, die Sie wegen Ihres Schwindels oder Ihrer Gleichgewichtsprobleme haben können. Beantworten Sie bitte jede Frage entweder mit „ja“, „manchmal“ oder „nein“. Nur bezogen auf Ihr Schwindel- oder Gleichgewichtsproblem.</p>
 
-  <p><strong>Anleitung:</strong> Dieser Fragebogen dient dazu ...</p>
-
-  <!-- ORIGINALER FORM-/INHALTSBEREICH (1:1) -->
+  <!-- ORIGINALE FORMULARELEMENTE (1:1) -->
   <form id="dhiForm">
 
-    <!-- ALLE 25 FRAGEN: 1:1 aus der Datei (NICHT verändert) -->
-    <!-- Ich übernehme deinen gesamten HTML-Block ohne irgendeine Umsortierung -->
-
+    <!-- ALLE 25 FRAGEN – 1:1 ÜBERNOMMEN -->
     <div class="question-block">
       <div class="question-line">
         <div class="question-text">P1 Verstärken sich Ihre Probleme, wenn Sie nach oben schauen?</div>
@@ -35,19 +33,278 @@
       </div>
     </div>
 
-    <!-- … (ALLE WEITEREN FRAGEN q1–q24 EXAKT AUS DEM ORIGINAL) … -->
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">E2 Fühlen Sie sich wegen Ihrer Probleme frustriert?</div>
+        <div class="response-row">
+          <label><input name="q1" type="radio" value="4"/> Ja</label>
+          <label><input name="q1" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q1" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
 
-    <!-- Ich kopiere deinen kompletten DHI-Fragenblock 1:1 hier rein,
-         keine Änderung an Reihenfolge / Namen / Text / Struktur -->
-    <!-- Wenn du willst, kann ich die 25 Fragen nochmal sichtbar vollständig einfügen. -->
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">F3 Schränken Sie wegen Ihrer Probleme geschäftliche oder private Reisen ein?</div>
+        <div class="response-row">
+          <label><input name="q2" type="radio" value="4"/> Ja</label>
+          <label><input name="q2" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q2" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">P4 Verstärken sich Ihre Probleme, wenn Sie einen Gang im Supermarkt entlang gehen?</div>
+        <div class="response-row">
+          <label><input name="q3" type="radio" value="4"/> Ja</label>
+          <label><input name="q3" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q3" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">F5 Haben Sie Schwierigkeiten beim ins Bett gehen oder beim Aufstehen?</div>
+        <div class="response-row">
+          <label><input name="q4" type="radio" value="4"/> Ja</label>
+          <label><input name="q4" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q4" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">F6 Einschränkung bei gesellschaftlichen Aktivitäten?</div>
+        <div class="response-row">
+          <label><input name="q5" type="radio" value="4"/> Ja</label>
+          <label><input name="q5" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q5" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">F7 Haben Sie wegen Ihrer Probleme Schwierigkeiten beim Lesen?</div>
+        <div class="response-row">
+          <label><input name="q6" type="radio" value="4"/> Ja</label>
+          <label><input name="q6" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q6" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">P8 Verstärken sich Ihre Probleme bei Sport, Tanzen oder Hausarbeiten?</div>
+        <div class="response-row">
+          <label><input name="q7" type="radio" value="4"/> Ja</label>
+          <label><input name="q7" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q7" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">E9 Angst, das Haus ohne Begleitung zu verlassen?</div>
+        <div class="response-row">
+          <label><input name="q8" type="radio" value="4"/> Ja</label>
+          <label><input name="q8" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q8" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">E10 Schon einmal in eine peinliche Situation geraten?</div>
+        <div class="response-row">
+          <label><input name="q9" type="radio" value="4"/> Ja</label>
+          <label><input name="q9" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q9" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">P11 Verstärken schnelle Kopfbewegungen Ihre Probleme?</div>
+        <div class="response-row">
+          <label><input name="q10" type="radio" value="4"/> Ja</label>
+          <label><input name="q10" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q10" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">F12 Meiden Sie Höhe (z. B. Berge, Hochhaus, Leiter)?</div>
+        <div class="response-row">
+          <label><input name="q11" type="radio" value="4"/> Ja</label>
+          <label><input name="q11" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q11" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">P13 Verstärken sich Ihre Probleme beim Drehen im Bett?</div>
+        <div class="response-row">
+          <label><input name="q12" type="radio" value="4"/> Ja</label>
+          <label><input name="q12" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q12" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">F14 Schwierigkeiten bei Haus-/Gartenarbeit?</div>
+        <div class="response-row">
+          <label><input name="q13" type="radio" value="4"/> Ja</label>
+          <label><input name="q13" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q13" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">E15 Denken andere, Sie seien betrunken?</div>
+        <div class="response-row">
+          <label><input name="q14" type="radio" value="4"/> Ja</label>
+          <label><input name="q14" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q14" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">F16 Schwierigkeiten, alleine spazieren zu gehen?</div>
+        <div class="response-row">
+          <label><input name="q15" type="radio" value="4"/> Ja</label>
+          <label><input name="q15" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q15" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">P17 Verstärken sich Ihre Probleme auf dem Bürgersteig?</div>
+        <div class="response-row">
+          <label><input name="q16" type="radio" value="4"/> Ja</label>
+          <label><input name="q16" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q16" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">E18 Ist es schwierig, sich zu konzentrieren?</div>
+        <div class="response-row">
+          <label><input name="q17" type="radio" value="4"/> Ja</label>
+          <label><input name="q17" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q17" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">F19 Schwierigkeiten, sich im Dunkeln zu bewegen?</div>
+        <div class="response-row">
+          <label><input name="q18" type="radio" value="4"/> Ja</label>
+          <label><input name="q18" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q18" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">E20 Angst, alleine zu Hause zu bleiben?</div>
+        <div class="response-row">
+          <label><input name="q19" type="radio" value="4"/> Ja</label>
+          <label><input name="q19" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q19" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">E21 Fühlen Sie sich eingeschränkt oder behindert?</div>
+        <div class="response-row">
+          <label><input name="q20" type="radio" value="4"/> Ja</label>
+          <label><input name="q20" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q20" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">E22 Belasten Ihre Probleme Ihre Beziehungen?</div>
+        <div class="response-row">
+          <label><input name="q21" type="radio" value="4"/> Ja</label>
+          <label><input name="q21" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q21" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">E23 Fühlen Sie sich depressiv aufgrund der Probleme?</div>
+        <div class="response-row">
+          <label><input name="q22" type="radio" value="4"/> Ja</label>
+          <label><input name="q22" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q22" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">F24 Werden Sie bei Arbeit/Haushalt beeinträchtigt?</div>
+        <div class="response-row">
+          <label><input name="q23" type="radio" value="4"/> Ja</label>
+          <label><input name="q23" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q23" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-line">
+        <div class="question-text">P25 Verstärken sich Ihre Probleme beim nach vorne Beugen?</div>
+        <div class="response-row">
+          <label><input name="q24" type="radio" value="4"/> Ja</label>
+          <label><input name="q24" type="radio" value="2"/> Manchmal</label>
+          <label><input name="q24" type="radio" value="0"/> Nein</label>
+        </div>
+      </div>
+    </div>
 
     <button class="primary" type="button" onclick="calculateDHI()">✅ Score berechnen</button>
     <button class="secondary" type="button" onclick="generatePDF()">📄 PDF exportieren</button>
+
   </form>
 
   <div id="result"></div>
 
-  <!-- CONTENT-LOCK START (Original JS, unverändert) -->
+  <!-- CONTENT-LOCK START -->
   <script>
     function calculateDHI() {
       let total = 0, physical = 0, functional = 0, emotional = 0;
@@ -60,6 +317,7 @@
       for (let i = 0; i < 25; i++) {
         const selected = document.querySelector(`input[name="q${i}"]:checked`);
         if (!selected) return alert("Bitte alle Fragen beantworten.");
+
         const val = parseInt(selected.value);
         total += val;
 
@@ -83,7 +341,6 @@
       doc.setFont("helvetica", "normal");
       doc.setFontSize(16);
       doc.text("Dizziness Handicap Inventory (DHI)", 10, 15);
-
       doc.setFontSize(12);
 
       let y = 25, total = 0, physical = 0, functional = 0, emotional = 0;
@@ -97,6 +354,7 @@
       for (let i = 0; i < 25; i++) {
         const selected = document.querySelector(`input[name="q${i}"]:checked`);
         const val = selected ? parseInt(selected.value) : 0;
+
         total += val;
 
         const domain = mapping[`q${i}`];
@@ -107,7 +365,11 @@
         doc.text(`${i + 1}.`, 10, y);
         doc.text(`${val} Pkt`, 180, y, { align: "right" });
         y += 7;
-        if (y > 270) { doc.addPage(); y = 20; }
+
+        if (y > 270) {
+          doc.addPage();
+          y = 20;
+        }
       }
 
       y += 10;
