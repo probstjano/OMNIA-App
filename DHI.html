@@ -1,32 +1,27 @@
-
 <!DOCTYPE html>
-
 <html lang="de">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Dizziness Handicap Inventory (DHI)</title>
-<style>
-    body { font-family: sans-serif; margin: 2rem; font-size: 16px; max-width: 1000px; }
-    .question-block { margin-bottom: 1.2rem; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem; }
-    .question { margin-bottom: 0.5rem; font-weight: bold; }
-    .options { display: flex; gap: 2rem; margin-bottom: 0.5rem; }
-    label { display: flex; align-items: center; gap: 0.3rem; }
-    button { margin-top: 2rem; padding: 10px 15px; font-size: 16px; }
-    #result { margin-top: 2rem; font-weight: bold; font-size: 18px; }
-  
-.question-line { display: flex; align-items: flex-start; margin-bottom: 1rem; }
-.question-text { flex: 1; padding-right: 2rem; }
-.response-column { display: flex; flex-direction: column; gap: 0.5rem; min-width: 120px; }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dizziness Handicap Inventory (DHI)</title>
 
-.response-row { display: flex; flex-direction: row; gap: 2rem; }
-</style>
+  <!-- Zentrale Dateien -->
+  <link rel="stylesheet" href="app-style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="robotoBase64.js"></script>
 </head>
-<body>
-<h1>Dizziness Handicap Inventory (DHI)</h1>
-<p> Der DHI ist ein Selbstbeurteilungsfragebogen s, der dazu dient, die subjektiv wahrgenommenen Beeinträchtigungen durch Schwindel zu erfassen. Vom Patienten hier ausfüllen lassen und Score als <strong> Messung </strong> im Cenplex Behandlungsplan hinterlegen</p>
-<p><strong>Anleitung:</strong> Dieser Fragebogen dient dazu, die Probleme herauszufinden, die Sie wegen Ihres Schwindels oder Ihrer Gleichgewichtsprobleme haben können. Beantworten Sie bitte jede Frage entweder mit „ja“, „manchmal“ oder „nein“. Nur bezogen auf Ihr Schwindel- oder Gleichgewichtsproblem.</p>
-<form id="dhiForm">
+
+<body class="assessment-page">
+
+  <h1>Dizziness Handicap Inventory (DHI)</h1>
+
+  <p>Der DHI ist ein Selbstbeurteilungsfragebogen, der dazu dient, die subjektiv wahrgenommenen Beeinträchtigungen durch Schwindel zu erfassen. Vom Patienten hier ausfüllen lassen und Score als <strong>Messung</strong> im Cenplex Behandlungsplan hinterlegen.</p>
+
+  <p><strong>Anleitung:</strong> Dieser Fragebogen dient dazu, die Probleme herauszufinden, die Sie wegen Ihres Schwindels oder Ihrer Gleichgewichtsprobleme haben können. Beantworten Sie bitte jede Frage entweder mit „ja“, „manchmal“ oder „nein“. Nur bezogen auf Ihr Schwindel- oder Gleichgewichtsproblem.</p>
+
+  <!-- CONTENT-LOCK START (Original unverändert) -->
+  <form id="dhiForm">
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">P1 Verstärken sich Ihre Probleme, wenn Sie nach oben schauen?</div>
@@ -37,6 +32,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">E2 Fühlen Sie sich wegen Ihrer Probleme frustriert?</div>
@@ -47,6 +43,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">F3 Schränken Sie wegen Ihrer Probleme geschäftliche oder private Reisen ein?</div>
@@ -57,6 +54,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">P4 Verstärken sich Ihre Probleme, wenn Sie einen Gang im Supermarkt entlang gehen?</div>
@@ -67,6 +65,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">F5 Haben Sie Schwierigkeiten beim ins Bett gehen oder beim Aufstehen?</div>
@@ -77,6 +76,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">F6 Einschränkung bei gesellschaftlichen Aktivitäten?</div>
@@ -87,6 +87,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">F7 Haben Sie wegen Ihrer Probleme Schwierigkeiten beim Lesen?</div>
@@ -97,6 +98,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">P8 Verstärken sich Ihre Probleme bei Sport, Tanzen oder Hausarbeiten?</div>
@@ -107,6 +109,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">E9 Angst, das Haus ohne Begleitung zu verlassen?</div>
@@ -117,6 +120,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">E10 Schon einmal in eine peinliche Situation geraten?</div>
@@ -127,6 +131,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">P11 Verstärken schnelle Kopfbewegungen Ihre Probleme?</div>
@@ -137,9 +142,10 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
-<div class="question-text">F12 Meiden Sie Höhe (z. B. Berge, Hochhaus, Leiter)?</div>
+<div class="question-text">F12 Meiden Sie Höhe (z. B. Berge, Hochhaus, Leiter)?</div>
 <div class="response-row">
 <label><input name="q11" type="radio" value="4"/> Ja</label>
 <label><input name="q11" type="radio" value="2"/> Manchmal</label>
@@ -147,6 +153,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">P13 Verstärken sich Ihre Probleme beim Drehen im Bett?</div>
@@ -157,6 +164,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">F14 Schwierigkeiten bei Haus-/Gartenarbeit?</div>
@@ -167,6 +175,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">E15 Denken andere, Sie seien betrunken?</div>
@@ -177,6 +186,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">F16 Schwierigkeiten, alleine spazieren zu gehen?</div>
@@ -187,6 +197,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">P17 Verstärken sich Ihre Probleme auf dem Bürgersteig?</div>
@@ -197,6 +208,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">E18 Ist es schwierig, sich zu konzentrieren?</div>
@@ -207,6 +219,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">F19 Schwierigkeiten, sich im Dunkeln zu bewegen?</div>
@@ -217,6 +230,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">E20 Angst, alleine zu Hause zu bleiben?</div>
@@ -227,6 +241,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">E21 Fühlen Sie sich eingeschränkt oder behindert?</div>
@@ -237,6 +252,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">E22 Belasten Ihre Probleme Ihre Beziehungen?</div>
@@ -247,6 +263,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">E23 Fühlen Sie sich depressiv aufgrund der Probleme?</div>
@@ -257,6 +274,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">F24 Werden Sie bei Arbeit/Haushalt beeinträchtigt?</div>
@@ -267,6 +285,7 @@
 </div>
 </div>
 </div>
+
 <div class="question-block">
 <div class="question-line">
 <div class="question-text">P25 Verstärken sich Ihre Probleme beim nach vorne Beugen?</div>
@@ -277,52 +296,36 @@
 </div>
 </div>
 </div>
+
 <button onclick="calculateDHI()" type="button">✅ Score berechnen</button>
 <button onclick="generatePDF()" type="button">📄 PDF exportieren</button>
+
 </form>
+
 <div id="result"></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <script>
   function calculateDHI() {
     let total = 0, physical = 0, functional = 0, emotional = 0;
     const mapping = {
-      q0: "P",
-      q1: "E",
-      q2: "F",
-      q3: "P",
-      q4: "F",
-      q5: "F",
-      q6: "F",
-      q7: "P",
-      q8: "E",
-      q9: "E",
-      q10: "P",
-      q11: "F",
-      q12: "P",
-      q13: "F",
-      q14: "E",
-      q15: "F",
-      q16: "P",
-      q17: "E",
-      q18: "F",
-      q19: "E",
-      q20: "E",
-      q21: "E",
-      q22: "E",
-      q23: "F",
-      q24: "P",
-
+      q0:"P", q1:"E", q2:"F", q3:"P", q4:"F", q5:"F", q6:"F", q7:"P", q8:"E", q9:"E",
+      q10:"P", q11:"F", q12:"P", q13:"F", q14:"E", q15:"F", q16:"P", q17:"E", q18:"F",
+      q19:"E", q20:"E", q21:"E", q22:"E", q23:"F", q24:"P"
     };
+
     for (let i = 0; i < 25; i++) {
       const selected = document.querySelector(`input[name="q${i}"]:checked`);
       if (!selected) return alert("Bitte alle Fragen beantworten.");
+
       const val = parseInt(selected.value);
       total += val;
+
       const domain = mapping[`q${i}`];
       if (domain === "P") physical += val;
       if (domain === "F") functional += val;
       if (domain === "E") emotional += val;
     }
+
     document.getElementById("result").innerText =
       `Functional Score: ${functional}\nEmotional Score: ${emotional}\nPhysical Score: ${physical}\n\nGesamtscore: ${total} / 100`;
   }
@@ -337,94 +340,53 @@
     doc.setFont("helvetica", "normal");
     doc.setFontSize(16);
     doc.text("Dizziness Handicap Inventory (DHI)", 10, 15);
-    doc.setFontSize(12);
 
     let y = 25, total = 0, physical = 0, functional = 0, emotional = 0;
-    const mapping = {
-      q0: "P",
-      q1: "E",
-      q2: "F",
-      q3: "P",
-      q4: "F",
-      q5: "F",
-      q6: "F",
-      q7: "P",
-      q8: "E",
-      q9: "E",
-      q10: "P",
-      q11: "F",
-      q12: "P",
-      q13: "F",
-      q14: "E",
-      q15: "F",
-      q16: "P",
-      q17: "E",
-      q18: "F",
-      q19: "E",
-      q20: "E",
-      q21: "E",
-      q22: "E",
-      q23: "F",
-      q24: "P",
 
+    const mapping = {
+      q0:"P", q1:"E", q2:"F", q3:"P", q4:"F", q5:"F", q6:"F", q7:"P", q8:"E", q9:"E",
+      q10:"P", q11:"F", q12:"P", q13:"F", q14:"E", q15:"F", q16:"P", q17:"E", q18:"F",
+      q19:"E", q20:"E", q21:"E", q22:"E", q23:"F", q24:"P"
     };
+
     for (let i = 0; i < 25; i++) {
       const selected = document.querySelector(`input[name="q${i}"]:checked`);
       const val = selected ? parseInt(selected.value) : 0;
+
       total += val;
+
       const domain = mapping[`q${i}`];
       if (domain === "P") physical += val;
       if (domain === "F") functional += val;
       if (domain === "E") emotional += val;
+
       doc.text(`${i + 1}.`, 10, y);
       doc.text(`${val} Pkt`, 180, y, { align: "right" });
       y += 7;
+
       if (y > 270) { doc.addPage(); y = 20; }
     }
+
     y += 10;
     doc.setFontSize(13);
     doc.text(`Functional Score: ${functional}`, 10, y); y += 7;
     doc.text(`Emotional Score: ${emotional}`, 10, y); y += 7;
     doc.text(`Physical Score: ${physical}`, 10, y); y += 7;
     doc.text(`Gesamtscore: ${total} / 100`, 10, y + 5);
+
     doc.save("DHI_Auswertung.pdf");
   }
 </script>
-    <p></p>
-<div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
-  <!-- Zurück zur letzten Seite -->
-  <button onclick="goBack()" style="
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: none;
-    background-color: #f0f0f0;
-    font-size: 1rem;
-    cursor: pointer;
-  ">
-    ⬅️ Zurück
-  </button>
+<!-- CONTENT-LOCK END -->
 
-  <!-- Zurück zur Hauptseite -->
-  <button onclick="window.location.href='index.html'" style="
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: none;
-    background-color: #d0eaff;
-    font-size: 1rem;
-    cursor: pointer;
-  ">
-    🏠 Hauptseite
-  </button>
-</div>
+  <!-- Einheitlicher Footer -->
+  <div class="footer-nav">
+    <button class="secondary" onclick="goBack()">⬅️ Zurück</button>
+    <button class="primary" onclick="goHome()">🏠 Hauptseite</button>
+  </div>
 
-<script>
-function goBack() {
-  if (document.referrer && document.referrer !== window.location.href) {
-    history.back();
-  } else {
-    window.location.href = 'index.html';
-  }
-}
-</script>
+  <!-- Zentrales Verhalten -->
+  <script src="app-core.js"></script>
+
 </body>
 </html>
