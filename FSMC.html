@@ -1,33 +1,34 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FSMC – Fatigue Skala für Motorik und Kognition</title>
-
-  <!-- Zentrale Dateien -->
-  <link rel="stylesheet" href="app-style.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="robotoBase64.js"></script>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; font-size: 16px; max-width: 900px; }
+    .question-block { margin-bottom: 1.5rem; }
+    .question { font-weight: bold; margin-bottom: 0.5rem; }
+    .options { display: flex; flex-wrap: wrap; gap: 10px; }
+    .option-item { display: flex; align-items: center; gap: 5px; }
+    button { margin-top: 20px; padding: 10px 15px; font-size: 16px; }
+    #result { margin-top: 2rem; font-weight: bold; white-space: pre-line; }
+  </style>
 </head>
-
-<body class="assessment-page">
-
+<body>
   <h1>FSMC – Fatigue Skala für Motorik und Kognition</h1>
   <p>Abklärung von motorischer und kognitiver Fatigue-Symptomatik bei Patienten mit Multipler Sklerose.</p>
   <p>Im Cenplex Behandlungsplan als <strong>Messung</strong> vorhanden. Hier ausfüllen und Scores übertragen.</p>
 
-  <!-- Originaler Form-/Inhaltsbereich -->
   <form id="fsmcForm">
     <div id="questions"></div>
-
-    <button class="primary" type="button" onclick="calculateFSMC()">✅ Score berechnen</button>
-    <button class="secondary" type="button" onclick="generatePDF()">📄 PDF erstellen</button>
+    <button type="button" onclick="calculateFSMC()">✅ Score berechnen</button>
+    <button type="button" onclick="generatePDF()">📄 PDF erstellen</button>
   </form>
 
   <div id="result"></div>
 
-  <!-- CONTENT-LOCK START -->
   <script>
     const questions = [
       "Wenn ich mich längere Zeit konzentriere, erschöpft es mich schneller als andere Menschen in meinem Alter.",
@@ -64,41 +65,29 @@
     const motorIndexes = [1, 2, 4, 5, 8, 9, 11, 13, 15, 18];
 
     const container = document.getElementById("questions");
-
-    // Render original questionnaire
     questions.forEach((text, i) => {
       const block = document.createElement("div");
       block.className = "question-block";
-      block.innerHTML = `
-        <div class="question">${i + 1}. ${text}</div>
+      block.innerHTML = `<div class="question">${i + 1}. ${text}</div>
         <div class="options">
-          ${labels
-            .map(
-              (label, idx) => `
+          ${labels.map((label, idx) => `
             <div class="option-item">
               <input type="radio" name="q${i}" value="${idx + 1}" id="q${i}_${idx}">
               <label for="q${i}_${idx}">${label}</label>
             </div>
-          `
-            )
-            .join("")}
+          `).join('')}
         </div>`;
       container.appendChild(block);
     });
 
     function calculateFSMC() {
-      let cognitive = 0;
-      let motoric = 0;
-
+      let cognitive = 0, motoric = 0;
       for (let i = 0; i < 20; i++) {
-        const selected = document.querySelector(`input[name='q${i}']:checked`);
-        if (!selected) return alert("Bitte alle Fragen beantworten.");
-        const val = parseInt(selected.value);
-
+        const val = parseInt(document.querySelector(`input[name='q${i}']:checked`)?.value);
+        if (!val) return alert("Bitte alle Fragen beantworten.");
         if (cognitiveIndexes.includes(i)) cognitive += val;
         else motoric += val;
       }
-
       const total = cognitive + motoric;
 
       const level = (value, thresholds) => {
@@ -124,9 +113,9 @@
         doc.setFont("Roboto", "normal");
       }
 
+      const lineHeight = 8;
       const left = 15;
       const right = 190;
-      const lineHeight = 8;
       let y = 20;
 
       doc.setFontSize(16);
@@ -134,21 +123,15 @@
       y += lineHeight;
 
       doc.setFontSize(12);
-      doc.line(left, y, right, y);
-      y += 5;
+      doc.line(left, y, right, y); y += 5;
 
-      let cognitive = 0;
-      let motoric = 0;
-
+      let cognitive = 0, motoric = 0;
       questions.forEach((q, i) => {
-        const selected = document.querySelector(`input[name='q${i}']:checked`);
-        if (!selected) return;
-        const val = parseInt(selected.value);
-
+        const val = parseInt(document.querySelector(`input[name='q${i}']:checked`)?.value);
+        if (!val) return;
         if (cognitiveIndexes.includes(i)) cognitive += val;
         else motoric += val;
       });
-
       const total = cognitive + motoric;
 
       const level = (value, thresholds) => {
@@ -158,12 +141,9 @@
         return "Keine";
       };
 
-      doc.text(`FSMC Gesamt: ${total} (${level(total, [43, 53, 63])})`, left, y);
-      y += lineHeight;
-      doc.text(`Kognitive Fatigue: ${cognitive} (${level(cognitive, [22, 28, 34])})`, left, y);
-      y += lineHeight;
-      doc.text(`Motorische Fatigue: ${motoric} (${level(motoric, [22, 27, 32])})`, left, y);
-      y += lineHeight + 5;
+      doc.text(`FSMC Gesamt: ${total} (${level(total, [43, 53, 63])})`, left, y); y += lineHeight;
+      doc.text(`Kognitive Fatigue: ${cognitive} (${level(cognitive, [22, 28, 34])})`, left, y); y += lineHeight;
+      doc.text(`Motorische Fatigue: ${motoric} (${level(motoric, [22, 27, 32])})`, left, y); y += lineHeight + 5;
 
       for (let i = 0; i < questions.length; i++) {
         const qText = `${i + 1}. ${questions[i]}`;
@@ -184,20 +164,48 @@
         }
       }
 
-      const today = new Date().toLocaleDateString("de-CH");
       y += 5;
+      const today = new Date().toLocaleDateString("de-CH");
       doc.text(`Datum: ${today}`, left, y);
 
       doc.save("FSMC_Auswertung.pdf");
     }
   </script>
-  <!-- CONTENT-LOCK END -->
+  <p></p>
+<div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
+  <!-- Zurück zur letzten Seite -->
+  <button onclick="goBack()" style="
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background-color: #f0f0f0;
+    font-size: 1rem;
+    cursor: pointer;
+  ">
+    ⬅️ Zurück
+  </button>
 
-  <div class="footer-nav">
-    <button class="secondary" onclick="goBack()">⬅️ Zurück</button>
-    <button class="primary" onclick="goHome()">🏠 Hauptseite</button>
-  </div>
+  <!-- Zurück zur Hauptseite -->
+  <button onclick="window.location.href='index.html'" style="
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background-color: #d0eaff;
+    font-size: 1rem;
+    cursor: pointer;
+  ">
+    🏠 Hauptseite
+  </button>
+</div>
 
-  <script src="app-core.js"></script>
+<script>
+function goBack() {
+  if (document.referrer && document.referrer !== window.location.href) {
+    history.back();
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+</script>
 </body>
 </html>
