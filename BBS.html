@@ -1,44 +1,27 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BBS - Berg Balance Scale </title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BBS - Berg Balance Scale</title>
+
+  <!-- Zentrale Dateien -->
+  <link rel="stylesheet" href="app-style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="robotoBase64.js"></script>
-  <style>
-    body { font-family: sans-serif; margin: 10px; font-size: 16px; max-width: 600px; }
-    label { display: block; margin: 10px 0 5px; }
-    select {
-      width: 100%;
-      padding: 6px;
-      font-size: 16px;
-      margin-bottom: 10px;
-    }
-    button { padding: 10px 15px; font-size: 16px; margin-top: 10px; }
-    #result { font-weight: bold; margin-top: 20px; }
-    .nav-buttons { margin-top: 30px; }
-    .nav-buttons a {
-      display: inline-block;
-      margin-right: 10px;
-      padding: 10px 15px;
-      background: #eee;
-      border-radius: 8px;
-      text-decoration: none;
-      color: #000;
-    }
-    .nav-buttons a:hover { background: #ddd; }
-    .hidden { display: none; }
-  </style>
+  <script src="robotoBase64.js"></script>
 </head>
-<body>
+
+<body class="assessment-page">
   <h1>Berg Balance Skala (BBS)</h1>
   <p>Einer der am umfassendsten untersuchten Assessments für das Gleichgewicht mit guter Psychometrischer Güte und Reliabilität. Geriatrie, MS, CVI, Parkinson.</p>
   <p>Auch in einer verkürzten Version möglich. Diese ist schneller, benötigt weniger Material, ist aber weniger gut untersucht und bietet keine Norm- oder Cut-Off-Werte.</p>
   <p>Im Cenplex Behandlungsplan als <strong>Messung</strong> hinterlegt. Hier durchführen und Summenscore übertragen.</p>
 
-  <p>Ausführliches Protokoll hier: <a href="https://probstjano.github.io/OpenPdf/BBS_Protokoll.pdf" target="_blank" rel="noopener">BBS Protokoll (PDF)</a></p>
+  <p>Ausführliches Protokoll hier: 
+    <a href="https://probstjano.github.io/OpenPdf/BBS_Protokoll.pdf" target="_blank" rel="noopener">BBS Protokoll (PDF)</a>
+  </p>
 
+  <!-- Originaler Form-/Inhaltsbereich -->
   <button type="button" id="toggleBtn" onclick="toggleForm()">👉 Zur Kurzversion (7 Items) wechseln</button>
 
   <form id="bbsForm">
@@ -58,7 +41,7 @@
   <div id="result"></div>
   <div id="normInfo"></div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- CONTENT-LOCK START -->
   <script>
     const fullQuestions = [
       { text: "Vom Sitzen zum Stehen", options: [
@@ -107,7 +90,7 @@
         "4 – kann sst. Füsse nebeneinander stellen und 1 Minute sicher",
         "3 – kann sst. Füsse nebeneinander stellen 1 Minute unter Supervision",
         "2 – kann sst. Füsse nebeneinander stellen und 30 Sekunden",
-        "1 – Hilfe um Füsse nebeneinander zus tellen, kann aber 15 Sekunden stehen",
+        "1 – Hilfe um Füsse nebeneinander zu stellen, kann aber 15 Sekunden stehen",
         "0 – nicht möglich"
       ]},
       { text: "Mit ausgestrecktem Arm nach vorne reichen/greifen", options: [
@@ -120,8 +103,8 @@
       { text: "Gegenstand (Schuh) vom Boden aufheben", options: [
         "4 – sicher und mit Leichtigkeit",
         "3 – mit Supervision",
-        "2 – kann nicht sst. reicht aber bis auf 2-5cm an den Schuh heran und hällt sst. GGW",
-        "1 – nicht möglich, und benötigt Unterstützung beim Versuch",
+        "2 – kann nicht sst. reicht aber bis auf 2-5cm an den Schuh heran und hält sst. GGW",
+        "1 – nicht möglich, benötigt Unterstützung beim Versuch",
         "0 – nicht möglich, Gleichgewichtsverlust/benötigt Hilfe um nicht zu fallen"
       ]},
       { text: "Sich umdrehen und nach hinten schauen", options: [
@@ -139,16 +122,16 @@
         "0 – braucht Hilfe beim Drehen/nicht möglich"
       ]},
       { text: "Abwechselnd die Füsse auf eine Fussbank stellen (4x/Seite)", options: [
-        "4 – sicher und kontrolliert innerhalb 20s ",
-        "3 – kann sicher und selbständig stehen und in mehr als 20 Sekunden die acht Schrittfolgen/Stufen absolvieren ",
-        "2 – kann vier Schrittfolgen/Stufen ohne Hilfe unter Supervision ",
-        "1 – kann mehr als zwei Stufen/Schrittfolgen mit minimaler Hilfe absolvieren ",
-        "0 – braucht Hilfe um nicht zu fallen/ schon der Versuch scheitert "
+        "4 – sicher und kontrolliert innerhalb 20s",
+        "3 – kann sicher und selbständig stehen und in mehr als 20 Sekunden die acht Schrittfolgen/Stufen absolvieren",
+        "2 – kann vier Schrittfolgen/Stufen ohne Hilfe unter Supervision",
+        "1 – kann mehr als zwei Stufen/Schrittfolgen mit minimaler Hilfe absolvieren",
+        "0 – braucht Hilfe um nicht zu fallen/schon der Versuch scheitert"
       ]},
       { text: "Tandemstand", options: [
         "4 – kann selbständig die Füße in den Tandemstand bringen und 30 Sekunden halten",
-        "3 – kann selbständig einen Fuß vor den anderen stellen und diese Position 30 Sekunden halten ",
-        "2 – kann selbständig einen kleinen Schritt nach vorne machen und diese Position 30 Sekunden halten",
+        "3 – kann selbständig einen Fuß vor den anderen stellen und 30 Sekunden halten",
+        "2 – kann selbständig einen kleinen Schritt nach vorne machen und 30 Sekunden halten",
         "1 – braucht Hilfe für den Schritt, kann aber Position 15 Sekunden beibehalten",
         "0 – verliert Gleichgewicht während des Schritts oder des Stehens"
       ]},
@@ -156,7 +139,7 @@
         "4 – 10 Sekunden sicher",
         "3 – 5-10s",
         "2 – 3 Sekunden",
-        "1 – versucht ein Bein anzuheben, kann Position nicht drei Sekunden lang beibe halten, bleibt aber selbständig stehen ",
+        "1 – versucht ein Bein anzuheben, kann Position nicht drei Sekunden lang beibehalten, bleibt aber selbständig stehen",
         "0 – schon der Versuch scheitert oder Proband braucht Hilfe, um nicht zu fallen"
       ]}
     ];
@@ -239,118 +222,90 @@
       }
     }
 
-    
-async function generatePDF() {
-  if (currentScore === null) {
-    alert("Bitte zuerst auf 'Score berechnen' klicken.");
-    return;
-  }
-
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  doc.addFileToVFS("Roboto-Regular.ttf", window.robotoBase64);
-  doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
-  doc.setFont("Roboto", "normal");
-
-  const left = 15;
-  const right = 190;
-  const lineHeight = 8;
-  let y = 15;
-  let questionNumber = 1;
-
-  doc.setFontSize(16);
-  doc.text("Berg Balance Scale (BBS) – Auswertung", left, y);
-  y += lineHeight;
-
-  doc.setFontSize(12);
-  doc.line(left, y, right, y);
-  y += 5;
-
-  const items = useShort ? shortIndexes.map(i => fullQuestions[i]) : fullQuestions;
-
-  for (let idx = 0; idx < items.length; idx++) {
-    const fullIndex = useShort ? shortIndexes[idx] : idx;
-    const sel = document.querySelector(`select[name='q${fullIndex}']`);
-    if (!sel || sel.value === "") continue;
-
-    const val = parseInt(sel.value);
-    const rawText = items[idx].text;
-    const fullLine = `${questionNumber}. ${rawText}`;
-    const wrapped = doc.splitTextToSize(fullLine, 160);
-
-    wrapped.forEach((line, i) => {
-      doc.text(line, left, y);
-      if (i === 0) {
-        doc.text(`${val}`, right, y, { align: "right" });
+    async function generatePDF() {
+      if (currentScore === null) {
+        alert("Bitte zuerst auf 'Score berechnen' klicken.");
+        return;
       }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.addFileToVFS("Roboto-Regular.ttf", window.robotoBase64);
+      doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+      doc.setFont("Roboto", "normal");
+
+      const left = 15;
+      const right = 190;
+      const lineHeight = 8;
+      let y = 15;
+      let questionNumber = 1;
+
+      doc.setFontSize(16);
+      doc.text("Berg Balance Scale (BBS) – Auswertung", left, y);
       y += lineHeight;
-    });
 
-    y += 2;
-    questionNumber++;
+      doc.setFontSize(12);
+      doc.line(left, y, right, y);
+      y += 5;
 
-    if (y > 270) {
-      doc.addPage();
-      y = 20;
+      const items = useShort ? shortIndexes.map(i => fullQuestions[i]) : fullQuestions;
+
+      for (let idx = 0; idx < items.length; idx++) {
+        const fullIndex = useShort ? shortIndexes[idx] : idx;
+        const sel = document.querySelector(`select[name='q${fullIndex}']`);
+        if (!sel || sel.value === "") continue;
+
+        const val = parseInt(sel.value);
+        const rawText = items[idx].text;
+        const fullLine = `${questionNumber}. ${rawText}`;
+        const wrapped = doc.splitTextToSize(fullLine, 160);
+
+        wrapped.forEach((line, i) => {
+          doc.text(line, left, y);
+          if (i === 0) {
+            doc.text(`${val}`, right, y, { align: "right" });
+          }
+          y += lineHeight;
+        });
+
+        y += 2;
+        questionNumber++;
+
+        if (y > 270) {
+          doc.addPage();
+          y = 20;
+        }
+      }
+
+      const max = useShort ? 28 : 56;
+      const today = new Date().toLocaleDateString("de-CH");
+
+      y += 5;
+      doc.setFontSize(13);
+      doc.setFont(undefined, "bold");
+      doc.text("Gesamtergebnis:", left, y); 
+      y += lineHeight;
+
+      doc.setFont(undefined, "normal");
+      doc.setFontSize(12);
+      doc.text(`Gesamtscore: ${currentScore} / ${max}`, left, y); 
+      y += lineHeight;
+      doc.text(`Datum: ${today}`, left, y);
+
+      doc.save("BBS_Auswertung.pdf");
     }
-  }
 
-  const max = useShort ? 28 : 56;
-  const today = new Date().toLocaleDateString("de-CH");
-
-  y += 5;
-  doc.setFontSize(13);
-  doc.setFont(undefined, "bold");
-  doc.text("Gesamtergebnis:", left, y); y += lineHeight;
-
-  doc.setFont(undefined, "normal");
-  doc.setFontSize(12);
-  doc.text(`Gesamtscore: ${currentScore} / ${max}`, left, y); y += lineHeight;
-  doc.text(`Datum: ${today}`, left, y);
-
-  doc.save("BBS_Auswertung.pdf");
-}
     renderForm();
   </script>
+  <!-- CONTENT-LOCK END -->
 
-<div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
-  <!-- Zurück zur letzten Seite -->
-  <button onclick="goBack()" style="
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: none;
-    background-color: #f0f0f0;
-    font-size: 1rem;
-    cursor: pointer;
-  ">
-    ⬅️ Zurück
-  </button>
+  <!-- Einheitlicher Footer -->
+  <div class="footer-nav">
+    <button class="secondary" onclick="goBack()">⬅️ Zurück</button>
+    <button class="primary" onclick="goHome()">🏠 Hauptseite</button>
+  </div>
 
-  <!-- Zurück zur Hauptseite -->
-  <button onclick="window.location.href='index.html'" style="
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: none;
-    background-color: #d0eaff;
-    font-size: 1rem;
-    cursor: pointer;
-  ">
-    🏠 Hauptseite
-  </button>
-</div>
-
-<script>
-function goBack() {
-  // Prüft, ob es eine vorherige Seite gibt
-  if (document.referrer && document.referrer !== window.location.href) {
-    history.back();
-  } else {
-    // Falls keine History vorhanden → zur Startseite
-    window.location.href = 'index.html';
-  }
-}
-</script>
-
-  
+  <!-- Zentrales Verhalten -->
+  <script src="app-core.js"></script>
 </body>
 </html>
