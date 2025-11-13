@@ -1,12 +1,24 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>FSMC – Fatigue Skala für Motorik und Kognition</title>
+
+  <!-- Zentrale Dateien -->
+  <link rel="stylesheet" href="app-style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="robotoBase64.js"></script>
-  <style>
+</head>
+
+<body class="assessment-page">
+
+<h1>FSMC – Fatigue Skala für Motorik und Kognition</h1>
+<p>Abklärung von motorischer und kognitiver Fatigue-Symptomatik bei Patienten mit Multipler Sklerose.</p>
+<p>Im Cenplex Behandlungsplan als <strong>Messung</strong> vorhanden. Hier ausfüllen und Scores übertragen.</p>
+
+<!-- CONTENT-LOCK START: Original vollständig & unverändert -->
+<style>
     body { font-family: sans-serif; margin: 2rem; font-size: 16px; max-width: 900px; }
     .question-block { margin-bottom: 1.5rem; }
     .question { font-weight: bold; margin-bottom: 0.5rem; }
@@ -14,22 +26,17 @@
     .option-item { display: flex; align-items: center; gap: 5px; }
     button { margin-top: 20px; padding: 10px 15px; font-size: 16px; }
     #result { margin-top: 2rem; font-weight: bold; white-space: pre-line; }
-  </style>
-</head>
-<body>
-  <h1>FSMC – Fatigue Skala für Motorik und Kognition</h1>
-  <p>Abklärung von motorischer und kognitiver Fatigue-Symptomatik bei Patienten mit Multipler Sklerose.</p>
-  <p>Im Cenplex Behandlungsplan als <strong>Messung</strong> vorhanden. Hier ausfüllen und Scores übertragen.</p>
+</style>
 
-  <form id="fsmcForm">
-    <div id="questions"></div>
-    <button type="button" onclick="calculateFSMC()">✅ Score berechnen</button>
-    <button type="button" onclick="generatePDF()">📄 PDF erstellen</button>
-  </form>
+<form id="fsmcForm">
+  <div id="questions"></div>
+  <button type="button" onclick="calculateFSMC()">✅ Score berechnen</button>
+  <button type="button" onclick="generatePDF()">📄 PDF erstellen</button>
+</form>
 
-  <div id="result"></div>
+<div id="result"></div>
 
-  <script>
+<script>
     const questions = [
       "Wenn ich mich längere Zeit konzentriere, erschöpft es mich schneller als andere Menschen in meinem Alter.",
       "Meine Bewegungen werden im Zustand der Erschöpfung deutlich ungeschickter und unkoordinierter.",
@@ -170,10 +177,10 @@
 
       doc.save("FSMC_Auswertung.pdf");
     }
-  </script>
-  <p></p>
+</script>
+
+<p></p>
 <div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
-  <!-- Zurück zur letzten Seite -->
   <button onclick="goBack()" style="
     padding: 10px 18px;
     border-radius: 8px;
@@ -181,11 +188,8 @@
     background-color: #f0f0f0;
     font-size: 1rem;
     cursor: pointer;
-  ">
-    ⬅️ Zurück
-  </button>
+  ">⬅️ Zurück</button>
 
-  <!-- Zurück zur Hauptseite -->
   <button onclick="window.location.href='index.html'" style="
     padding: 10px 18px;
     border-radius: 8px;
@@ -193,9 +197,7 @@
     background-color: #d0eaff;
     font-size: 1rem;
     cursor: pointer;
-  ">
-    🏠 Hauptseite
-  </button>
+  ">🏠 Hauptseite</button>
 </div>
 
 <script>
@@ -207,5 +209,15 @@ function goBack() {
   }
 }
 </script>
+<!-- CONTENT-LOCK END -->
+
+<!-- Einheitlicher Footer -->
+<div class="footer-nav">
+  <button class="secondary" onclick="goBack()">⬅️ Zurück</button>
+  <button class="primary" onclick="goHome()">🏠 Hauptseite</button>
+</div>
+
+<script src="app-core.js"></script>
+
 </body>
 </html>
