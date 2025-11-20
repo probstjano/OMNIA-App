@@ -5,35 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>QuickDASH – Fragebogen</title>
 
-  <!-- Zentrale Dateien -->
   <link rel="stylesheet" href="app-style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="robotoBase64.js"></script>
 
   <style>
-    .table-scroll {
-      overflow-x: auto;
-      margin: 14px 0;
-    }
-    table {
-      border-collapse: collapse;
-      min-width: 700px;
-      width: 100%;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 6px;
-      text-align: center;
-      vertical-align: middle;
-    }
-    th {
-      background: #f0f0f0;
-    }
-    .section-title {
-      margin-top: 24px;
-      font-size: 1.2rem;
-      font-weight: bold;
-    }
+    .table-scroll { overflow-x: auto; margin: 14px 0; }
+    table { border-collapse: collapse; min-width: 700px; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: center; vertical-align: middle; }
+    th { background: #f0f0f0; }
+    .section-title { margin-top: 24px; font-size: 1.2rem; font-weight: bold; }
   </style>
 </head>
 
@@ -42,13 +23,14 @@
 <h1>Quick-Disabilities of the Arm, Shoulder and Hand (QuickDASH)</h1>
 
 <p>
-Bitte beantworten Sie alle Fragen gemäß Ihrem Zustand in der vergangenen Woche, indem Sie das entsprechende Feld ankreuzen.  
-Wenn Sie in der vergangenen Woche keine Gelegenheit gehabt haben, eine der aufgeführten Tätigkeiten durchzuführen,  
-wählen Sie die Antwort aus, die Ihrer Meinung nach am ehesten zutreffen würde. Es ist nicht entscheidend, mit welchem Arm oder welcher Hand  
-Sie diese Tätigkeiten ausüben. Antworten Sie Ihrer Fähigkeit entsprechend, ungeachtet, wie Sie die Aufgaben durchführen konnten.
+Bitte beantworten Sie alle Fragen gemäß Ihrem Zustand in der vergangenen Woche, indem Sie das entsprechende Feld ankreuzen.
+Wenn Sie in der vergangenen Woche keine Gelegenheit gehabt haben, eine der aufgeführten Tätigkeiten durchzuführen,
+wählen Sie die Antwort aus, die Ihrer Meinung nach am ehesten zutreffen würde.
+Es ist nicht entscheidend, mit welchem Arm oder welcher Hand Sie diese Tätigkeiten ausüben.
+Antworten Sie Ihrer Fähigkeit entsprechend, ungeachtet, wie Sie die Aufgaben durchführen konnten.
 </p>
 
-<p><strong>Wichtig:</strong> Im QuickDASH darf maximal eine Antwort fehlen.  
+<p><strong>Wichtig:</strong> Im QuickDASH darf maximal eine Antwort fehlen.
 Im Arbeits- und Berufs-Modul sowie im Sport- und Musik-Modul darf jeweils keine Antwort fehlen.</p>
 
 <p>Bitte schätzen Sie Ihre Fähigkeit ein, wie Sie folgende Tätigkeiten in der vergangenen Woche durchgeführt haben:</p>
@@ -108,7 +90,7 @@ Im Arbeits- und Berufs-Modul sowie im Sport- und Musik-Modul darf jeweils keine 
     <td><input type="radio" name="q5" value="5"></td>
   </tr>
 
-  <tr><td>6. Freizeitaktivitäten mit Druck/ Stoß auf Arm/Schulter/Hand (z. B. Golf, Hämmern, Tennis)</td>
+  <tr><td>6. Freizeitaktivitäten mit Druck/Stoß (z. B. Golf, Hämmern, Tennis)</td>
     <td><input type="radio" name="q6" value="1"></td>
     <td><input type="radio" name="q6" value="2"></td>
     <td><input type="radio" name="q6" value="3"></td>
@@ -171,8 +153,6 @@ Im Arbeits- und Berufs-Modul sowie im Sport- und Musik-Modul darf jeweils keine 
 </table>
 </div>
 
-<!-- ================== OPTIONAL MODULE: WORK ================== -->
-
 <h2 class="section-title">Arbeits- und Berufs-Modul (optional)</h2>
 
 <p>Bitte geben Sie Ihre/n Arbeit/Beruf hier an:</p>
@@ -224,8 +204,6 @@ Im Arbeits- und Berufs-Modul sowie im Sport- und Musik-Modul darf jeweils keine 
   </tr>
 </table>
 </div>
-
-<!-- ================== OPTIONAL MODULE: SPORT ================== -->
 
 <h2 class="section-title">Sport- und Musik-Modul (optional)</h2>
 
@@ -279,14 +257,12 @@ Im Arbeits- und Berufs-Modul sowie im Sport- und Musik-Modul darf jeweils keine 
 </table>
 </div>
 
+</form>
+
 <button type="button" class="primary" onclick="calculateQD()">✅ Score berechnen</button>
 <button type="button" class="secondary" onclick="generatePDF()">📄 PDF erstellen</button>
 
 <div id="result"></div>
-
-<!-- ============================================================= -->
-<!-- ==================== CONTENT-LOCK START ===================== -->
-<!-- ============================================================= -->
 
 <script>
 function calculateScale(values) {
@@ -299,7 +275,7 @@ function calculateScale(values) {
 function calculateQD() {
   let main = [];
   for (let i = 1; i <= 11; i++) {
-    const el = document.querySelector("input[name='q"+i+"']:checked");
+    const el = document.querySelector("input[name='q" + i + "']:checked");
     main.push(el ? parseInt(el.value) : null);
   }
   const quickdash = calculateScale(main);
@@ -314,7 +290,7 @@ function calculateQD() {
   if (!document.getElementById("workNone").checked) {
     let w = [];
     for (let i = 12; i <= 15; i++) {
-      const el = document.querySelector("input[name='w"+i+"']:checked");
+      const el = document.querySelector("input[name='w" + i + "']:checked");
       w.push(el ? parseInt(el.value) : null);
     }
     if (w.every(v => v !== null)) workScore = calculateScale(w);
@@ -324,7 +300,7 @@ function calculateQD() {
   if (!document.getElementById("sportNone").checked) {
     let s = [];
     for (let i = 16; i <= 19; i++) {
-      const el = document.querySelector("input[name='s"+i+"']:checked");
+      const el = document.querySelector("input[name='s" + i + "']:checked");
       s.push(el ? parseInt(el.value) : null);
     }
     if (s.every(v => v !== null)) sportScore = calculateScale(s);
@@ -375,7 +351,6 @@ function generatePDF() {
     ensureSpace();
   }
 
-  // HEADER
   doc.setFontSize(16);
   doc.setFont(undefined, "bold");
   doc.text("QuickDASH – Auswertung", left, y);
@@ -383,7 +358,6 @@ function generatePDF() {
   doc.setFontSize(12);
   doc.setFont(undefined, "normal");
 
-  // MAIN ITEMS
   addSectionTitle("Hauptskala (QuickDASH)");
 
   const questionsMain = {
@@ -396,8 +370,8 @@ function generatePDF() {
     q7: "7. Beeinträchtigung sozialer Aktivitäten",
     q8: "8. Einschränkung in Arbeit/Alltag",
     q9: "9. Schmerzen in Schulter / Arm / Hand",
-    q10:"10. Kribbeln in Schulter / Arm / Hand",
-    q11:"11. Schlafstörungen wegen Schmerzen"
+    q10: "10. Kribbeln in Schulter / Arm / Hand",
+    q11: "11. Schlafstörungen wegen Schmerzen"
   };
 
   for (let k in questionsMain) {
@@ -408,7 +382,6 @@ function generatePDF() {
 
   y += 6; ensureSpace();
 
-  // WORK MODULE
   if (!document.getElementById("workNone").checked) {
     addSectionTitle("Arbeits- / Berufs-Modul");
 
@@ -428,7 +401,6 @@ function generatePDF() {
     y += 6; ensureSpace();
   }
 
-  // SPORT MODULE
   if (!document.getElementById("sportNone").checked) {
     addSectionTitle("Sport- / Musik-Modul");
 
@@ -448,7 +420,6 @@ function generatePDF() {
     y += 6; ensureSpace();
   }
 
-  // SCORES
   addSectionTitle("Ergebnisse");
 
   const resultLines = document.getElementById("result").innerText.split("\n");
@@ -466,8 +437,6 @@ function generatePDF() {
   doc.save("QuickDASH_Auswertung.pdf");
 }
 </script>
-
-<!-- ====================== CONTENT-LOCK END ====================== -->
 
 <div class="footer-nav">
   <button class="secondary" onclick="goBack()">⬅️ Zurück</button>
