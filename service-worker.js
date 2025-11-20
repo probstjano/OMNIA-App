@@ -4,6 +4,8 @@ const ASSETS_TO_CACHE = [
   'index.html',
   'manifest.json',
   'icon.png',
+  'app-style.css',
+  'app-core.js',
   // Assessment-Dateien
   '30s_assissted.html',
   '6MWT.html',
@@ -30,6 +32,9 @@ const ASSETS_TO_CACHE = [
   'Braincheck.html',
   'CTSIB_full.html',
   'PRTEE.html',
+  'KOOS.html',
+  'HOOS.html',
+  'DASH.html',
   // PDFs
   'BBS_Protokoll.pdf',
   'DEMMI_Protokoll.pdf',
@@ -39,7 +44,6 @@ const ASSETS_TO_CACHE = [
   'ISI-Deutsch.pdf',
   'PSFS_GAS_Kurzmanual.pdf',
   'SPPB_Protokoll.pdf',
-  '6MWT_Protokoll.pdf',
   'MiniBEST_Protokoll.pdf' // ✅ Tippfehler korrigiert!
 ];
 
