@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>STarT Back Screening Tool</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="robotoBase64.js"></script>
+
+  <style>
+    body { font-family: sans-serif; margin: 2rem; font-size: 16px; max-width: 920px; }
+
+    h1 { margin-bottom: .25rem; }
+    .intro { margin: .8rem 0 1.4rem; }
+
+    .qblock { margin: 1.4rem 0 1.8rem; }
+    .qtitle { font-weight: 700; margin-bottom: .55rem; }
+
+    .box {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 0.8rem;
+      background: #fafafa;
+      margin-top: .65rem;
+    }
+
+    table.grid {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: .3rem;
+    }
+
+    table.grid th,
+    table.grid td {
+      padding: .5rem .5rem;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+
+    #result { margin-top: 20px; font-weight:700; white-space: pre-line; }
+
+    button { padding: 10px 15px; margin-top:18px; font-size:16px; cursor:pointer; }
+
+    .footer-nav {
+      display:flex; justify-content:center; gap:1rem; margin-top:2rem;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>STarT Back Screening Tool</h1>
+<div class="intro">
+  Denken Sie bitte an die vergangenen zwei Wochen beim Beantworten der folgenden Fragen.
+</div>
+
+<form id="startForm">
+
+<!-- ========================================== -->
+<!--                Fragen 1–8                  -->
+<!-- ========================================== -->
+
+<script>
+const qTexts = [
+  "1. Mein Schmerz hat während der letzten 2 Wochen zeitweise in die Beine ausgestrahlt.",
+  "2. Zusätzlich zum Hauptschmerz hatte ich in den letzten 2 Wochen auch noch an anderen Stellen des Rückens Schmerzen.",
+  "3. In den letzten 2 Wochen bin ich wegen meiner Schmerzen nur kurze Strecken gegangen.",
+  "4. In den letzten 2 Wochen habe ich mich wegen meiner Schmerzen langsamer als gewöhnlich angezogen.",
+  "5. Körperliche Aktivitäten sind für Menschen in meinem Zustand eventuell gefährlich.",
+  "6. In den letzten 2 Wochen hatte ich viele Sorgen.",
+  "7. Mein Schmerz ist sehr schlimm und ich habe das Gefühl, dass er sich wahrscheinlich nie mehr bessern wird.",
+  "8. In den letzten 2 Wochen hatte ich ganz allgemein nicht mehr so viel Freude an den Dingen, die mir sonst Freude bereiten."
+];
+</script>
+
+<div id="q1to8"></div>
+
+<script>
+let html="";
+for(let i=0;i<qTexts.length;i++){
+  const n=i+1;
+  html += `
+    <div class="qblock">
+      <div class="qtitle">${qTexts[i]}</div>
+      <div class="box">
+        <table class="grid">
+          <tr><th>Trifft nicht zu (0)</th><th>Trifft zu (1)</th></tr>
+          <tr>
+            <td><input type="radio" name="q${n}" value="0"></td>
+            <td><input type="radio" name="q${n}" value="1"></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  `;
+}
+document.getElementById("q1to8").innerHTML = html;
+</script>
+
+<!-- ========================================== -->
+<!--                   Frage 9                  -->
+<!-- ========================================== -->
+
+<div class="qblock">
+  <div class="qtitle">9. Wie störend war Ihr Schmerz in den letzten 2 Wochen?</div>
+
+  <div class="box">
+    <table class="grid">
+      <tr>
+        <th>überhaupt nicht (0)</th>
+        <th>ein wenig (0)</th>
+        <th>mäßig (0)</th>
+        <th>sehr (1)</th>
+        <th>extrem (1)</th>
+      </tr>
+      <tr>
+        <td><input type="radio" name="q9" value="0"></td>
+        <td><input type="radio" name="q9" value="0"></td>
+        <td><input type="radio" name="q9" value="0"></td>
+        <td><input type="radio" name="q9" value="1"></td>
+        <td><input type="radio" name="q9" value="1"></td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+</form>
+
+<button onclick="calcStart()">✅ Score berechnen</button>
+<button onclick="pdfStart()">📄 PDF erstellen</button>
+
+<div id="result"></div>
+
+<!-- ========================================== -->
+<!--             SCORE BERECHNUNG               -->
+<!-- ========================================== -->
+
+<script>
+function calcStart(){
+  let total = 0;
+  let psycho = 0; // Fragen 5–9
+
+  for(let i=1;i<=9;i++){
+    const el = document.querySelector(`input[name="q${i}"]:checked`);
+    if(!el){
+      document.getElementById("result").textContent="Bitte alle Fragen beantworten.";
+      return;
+    }
+    const val = Number(el.value);
+    total += val;
+    if(i>=5) psycho += val;
+  }
+
+  document.getElementById("result").textContent =
+    `Gesamtpunktzahl: ${total}\nTeilsumme (Fragen 5–9): ${psycho}`;
+}
+</script>
+
+<!-- ========================================== -->
+<!--                PDF EXPORT                  -->
+<!-- ========================================== -->
+
+<script>
+function pdfStart(){
+  const { jsPDF } = window.jspdf;
+  const doc=new jsPDF();
+
+  if(window.robotoBase64){
+    doc.addFileToVFS("Roboto-Regular.ttf", window.robotoBase64);
+    doc.addFont("Roboto-Regular.ttf","Roboto","normal");
+    doc.setFont("Roboto");
+  }
+
+  let y=15;
+  doc.setFontSize(16);
+  doc.text("STarT Back Screening Tool – Auswertung",15,y);
+  y+=12;
+
+  const lines = document.getElementById("result").innerText.split("\n");
+  doc.setFontSize(12);
+  lines.forEach(line=>{
+    doc.text(line,15,y);
+    y+=8;
+  });
+
+  doc.save("STarT_Back.pdf");
+}
+</script>
+
+<!-- ========================================== -->
+<!--                 FOOTER NAV                 -->
+<!-- ========================================== -->
+
+<div class="footer-nav">
+  <button class="secondary" onclick="goBack()">⬅️ Zurück</button>
+  <button class="primary" onclick="goHome()">🏠 Hauptseite</button>
+</div>
+
+<script src="app-core.js"></script>
+
+</body>
+</html>
