@@ -1,4 +1,4 @@
-const CACHE_NAME = 'OMNIA-App-v4'; // Version hochzählen bei jedem Update
+const CACHE_NAME = 'OMNIA-App-v4.1'; // Version hochzählen bei jedem Update
 
 const ASSETS_TO_CACHE = [
   'index.html',
@@ -35,6 +35,8 @@ const ASSETS_TO_CACHE = [
   'KOOS.html',
   'HOOS.html',
   'DASH.html',
+  'ACL-RSI.html',
+  'START-Back.html',
   // PDFs
   'BBS_Protokoll.pdf',
   'DEMMI_Protokoll.pdf',
