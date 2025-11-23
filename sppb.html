@@ -127,8 +127,7 @@
 
 <div id="stopwatch">
   <span id="swDisplay">00:00.0</span>
-  <button onclick="swStart()">▶</button>
-  <button onclick="swStop()">⏸</button>
+  <button id="swMainBtn" onclick="swToggle()">▶</button>
   <button onclick="swReset()">⟳</button>
 </div>
 
@@ -545,6 +544,7 @@ function goBack() {
 let swInterval = null;
 let swStartTime = null;
 let swElapsed = 0;
+let swRunning = false;
 
 function swUpdate() {
   const now = Date.now();
@@ -558,25 +558,33 @@ function swUpdate() {
     `${String(min).padStart(2,"0")}:${String(sec).padStart(2,"0")}.${ms}`;
 }
 
-function swStart() {
-  if (swInterval) return;
-  swStartTime = Date.now();
-  swInterval = setInterval(swUpdate, 100);
-}
-
-function swStop() {
-  if (!swInterval) return;
-  swElapsed += Date.now() - swStartTime;
-  clearInterval(swInterval);
-  swInterval = null;
+function swToggle() {
+  if (!swRunning) {
+    // STARTEN
+    swStartTime = Date.now();
+    swInterval = setInterval(swUpdate, 100);
+    swRunning = true;
+    document.getElementById("swMainBtn").textContent = "⏸";
+  } else {
+    // STOPPEN
+    swElapsed += Date.now() - swStartTime;
+    clearInterval(swInterval);
+    swInterval = null;
+    swRunning = false;
+    document.getElementById("swMainBtn").textContent = "▶";
+  }
 }
 
 function swReset() {
-  swStop();
   swElapsed = 0;
+  if (swInterval) clearInterval(swInterval);
+  swInterval = null;
+  swRunning = false;
   document.getElementById("swDisplay").textContent = "00:00.0";
+  document.getElementById("swMainBtn").textContent = "▶";
 }
 </script>
+
 
 </body>
 </html>
