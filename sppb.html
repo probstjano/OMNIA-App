@@ -98,12 +98,40 @@
       color: #000;
     }
 
+    #stopwatch {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: #fff;
+  border: 2px solid #444;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  z-index: 9999;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+#stopwatch button {
+  margin-left: 4px;
+  padding: 3px 6px;
+  font-size: 12px;
+}
+
     .nav-buttons a:hover {
       background: #ddd;
     }
   </style>
 </head>
 <body>
+
+<div id="stopwatch">
+  <span id="swDisplay">00:00.0</span>
+  <button onclick="swStart()">▶</button>
+  <button onclick="swStop()">⏸</button>
+  <button onclick="swReset()">⟳</button>
+</div>
+
   <h1>SPPB – Short Physical Performance Battery</h1>
   <p>Test für physische Leistungsfähigkeit der unteren Extremitäten.</p>
   <p>Im Cenplex Behandlungsplan als <strong>„Messung“</strong> mit Einzelwerten eintragen.</p>
@@ -513,5 +541,42 @@ function goBack() {
   }
 }
 </script>
+  <script>
+let swInterval = null;
+let swStartTime = null;
+let swElapsed = 0;
+
+function swUpdate() {
+  const now = Date.now();
+  const diff = now - swStartTime + swElapsed;
+
+  const ms = Math.floor((diff % 1000) / 100);
+  const sec = Math.floor(diff / 1000) % 60;
+  const min = Math.floor(diff / 60000);
+
+  document.getElementById("swDisplay").textContent =
+    `${String(min).padStart(2,"0")}:${String(sec).padStart(2,"0")}.${ms}`;
+}
+
+function swStart() {
+  if (swInterval) return;
+  swStartTime = Date.now();
+  swInterval = setInterval(swUpdate, 100);
+}
+
+function swStop() {
+  if (!swInterval) return;
+  swElapsed += Date.now() - swStartTime;
+  clearInterval(swInterval);
+  swInterval = null;
+}
+
+function swReset() {
+  swStop();
+  swElapsed = 0;
+  document.getElementById("swDisplay").textContent = "00:00.0";
+}
+</script>
+
 </body>
 </html>
