@@ -5,56 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ACL-RSI – Return to Sports</title>
 
-  <!-- zentrale Dateien -->
   <link rel="stylesheet" href="app-style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="robotoBase64.js"></script>
 
   <style>
     .question-block {
-      margin: 25px 0;
-      padding-bottom: 10px;
+      margin-bottom: 28px;
       border-bottom: 1px solid #ccc;
+      padding-bottom: 16px;
     }
-
-    .scale-container {
-      width: 100%;
-      overflow-x: auto;
-      margin-top: 12px;
+    .scale-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 12px 0 4px 0;
+      flex-wrap: wrap;
     }
-
-    table.scale-table {
-      width: 100%;
-      min-width: 650px;
-      border-collapse: collapse;
+    .scale-row label {
       text-align: center;
-      margin-bottom: 5px;
+      margin: 2px;
+      font-size: 14px;
     }
-
-    table.scale-table td {
-      padding: 6px;
-      border: 1px solid #ccc;
-      width: 50px;
-    }
-
-    .label-row {
+    .scale-labels {
       display: flex;
       justify-content: space-between;
       font-size: 14px;
-      margin-top: 4px;
       font-weight: bold;
+      margin-top: 6px;
     }
   </style>
 </head>
 
 <body class="assessment-page">
 
-<h1>ACL-RSI-Skala (Return to Sports)</h1>
+<h1>ACL-RSI – Return to Sports</h1>
+
+  <p> Die Skala "Anterior Cruciate Ligament-Return to Sport after Injury" (ACL-RSI) wurde entwickelt, um die psychologische Bereitschaft zur Rückkehr in den Sport zu bewerten, 
+    und hat psychologische Aspekte identifiziert, für die Patienten parallel zur physischen Rehabilitation eine Beratung benötigen, 
+    um ihre Chancen auf eine erfolgreiche Rückkehr zum Sport zu erhöhen. </p>
+  
 
 <p>
-Dieser Fragebogen dient der Erfassung von Beschwerden und Problemen, die durch Ihr Kniegelenk verursacht werden. 
-Beantworten Sie die folgenden Fragen zu der Sportart, die Sie als Hauptsportart vor Ihrer Verletzung ausgeübt haben. 
-Kreuzen Sie dasjenige Kästchen an, das Ihr derzeitiges Befinden am besten wiedergibt.
+Instruktion für Patient:innen: Dieser Fragebogen dient der Erfassung von Beschwerden und Problemen, die durch Ihr Kniegelenk verursacht werden.
+Bitte beantworten Sie jede Frage entsprechend Ihrem aktuellen Befinden.
 </p>
 
 <p><strong>Hauptsportart:</strong></p>
@@ -62,7 +55,71 @@ Kreuzen Sie dasjenige Kästchen an, das Ihr derzeitiges Befinden am besten wiede
 
 <form id="aclForm">
 
-<div id="questions"></div>
+<script>
+const qData = [
+  { q:"1. Sind Sie zuversichtlich, dass Sie den Sport auf demselben Niveau wie vorher ausüben können?",
+    L:"Überhaupt nicht zuversichtlich", R:"völlig zuversichtlich" },
+
+  { q:"2. Halten Sie es für wahrscheinlich, Ihr Knie durch die Teilnahme an Ihrem Sport wieder verletzen zu können?",
+    L:"Sehr wahrscheinlich", R:"völlig unwahrscheinlich" },
+
+  { q:"3. Macht Sie der Gedanke an die Ausübung Ihres Sports nervös?",
+    L:"Sehr nervös", R:"gar nicht nervös" },
+
+  { q:"4. Sind Sie zuversichtlich, dass Ihr Knie bei der Ausübung Ihres Sports nicht nachgeben wird?",
+    L:"Überhaupt nicht zuversichtlich", R:"völlig zuversichtlich" },
+
+  { q:"5. Sind Sie zuversichtlich, dass Sie Ihren Sport ausüben können, ohne Bedenken wegen Ihres Knies zu haben?",
+    L:"Überhaupt nicht zuversichtlich", R:"völlig zuversichtlich" },
+
+  { q:"6. Finden Sie es frustrierend, dass Sie in Bezug auf Ihren Sport Ihr Knie berücksichtigen müssen?",
+    L:"Sehr frustrierend", R:"Überhaupt nicht frustrierend" },
+
+  { q:"7. Befürchten Sie, dass Sie Ihr Knie bei der Ausübung Ihres Sports wieder verletzen könnten?",
+    L:"Habe große Sorge", R:"Habe überhaupt keine Sorge" },
+
+  { q:"8. Sind Sie zuversichtlich, dass Ihr Knie unter Belastung standhält?",
+    L:"Überhaupt nicht zuversichtlich", R:"völlig zuversichtlich" },
+
+  { q:"9. Haben Sie Angst, dass Sie Ihr Knie bei der Ausübung Ihres Sports versehentlich wieder verletzen könnten?",
+    L:"Habe große Angst", R:"Habe überhaupt keine Angst" },
+
+  { q:"10. Hält Sie der Gedanke daran, nochmals operiert und nachbehandelt werden zu müssen, davon ab, Ihren Sport auszuüben?",
+    L:"Die ganze Zeit", R:"Zu keinem Zeitpunkt" },
+
+  { q:"11. Sind Sie zuversichtlich, Ihren Sport gut ausüben zu können?",
+    L:"Überhaupt nicht zuversichtlich", R:"völlig zuversichtlich" },
+
+  { q:"12. Sind Sie gelassen, wenn es um die Ausübung Ihres Sports geht?",
+    L:"Gar nicht gelassen", R:"völlig gelassen" }
+];
+
+const values = [0,10,20,30,40,50,60,70,80,90,100];
+
+let html = "";
+for(let i=0;i<qData.length;i++){
+  const qn = i+1;
+  html += `
+    <div class="question-block">
+      <p><strong>${qData[i].q}</strong></p>
+
+      <div class="scale-row">
+        ${values.map(v =>
+          `<label>${v}<br><input type="radio" name="q${qn}" value="${v}"></label>`
+        ).join("")}
+      </div>
+
+      <div class="scale-labels">
+        <span>${qData[i].L}</span>
+        <span>↔</span>
+        <span>${qData[i].R}</span>
+      </div>
+    </div>
+  `;
+}
+
+document.write(html);
+</script>
 
 </form>
 
@@ -71,123 +128,65 @@ Kreuzen Sie dasjenige Kästchen an, das Ihr derzeitiges Befinden am besten wiede
 
 <div id="result" style="margin-top:20px;"></div>
 
+<!-- ============================================================= -->
+<!-- ==================== SCORE + PDF ============================ -->
+<!-- ============================================================= -->
+
 <script>
-
-const qTexts = [
-"1. Sind Sie zuversichtlich, dass Sie den Sport auf demselben Niveau wie vorher ausüben können?",
-"2. Halten Sie es für wahrscheinlich, Ihr Knie durch die Teilnahme an Ihrem Sport wieder verletzen zu können?",
-"3. Macht Sie der Gedanke an die Ausübung Ihres Sports nervös?",
-"4. Sind Sie zuversichtlich, dass Ihr Knie bei der Ausübung Ihres Sports nicht nachgeben wird?",
-"5. Sind Sie zuversichtlich, dass Sie Ihren Sport ausüben können, ohne Bedenken wegen Ihres Knies zu haben?",
-"6. Finden Sie es frustrierend, dass Sie in Bezug auf Ihren Sport Ihr Knie berücksichtigen müssen?",
-"7. Befürchten Sie, dass Sie Ihr Knie bei der Ausübung Ihres Sports wieder verletzen könnten?",
-"8. Sind Sie zuversichtlich, dass Ihr Knie unter Belastung standhält?",
-"9. Haben Sie Angst, dass Sie Ihr Knie bei der Ausübung Ihres Sports versehentlich wieder verletzen könnten?",
-"10. Hält Sie der Gedanke daran, nochmals operiert und nachbehandelt werden zu müssen, davon ab, Ihren Sport auszuüben?",
-"11. Sind Sie zuversichtlich, Ihren Sport gut ausüben zu können?",
-"12. Sind Sie gelassen, wenn es um die Ausübung Ihres Sports geht?"
-];
-
-const container = document.getElementById("questions");
-
-function buildScale(name) {
-  const values = [0,10,20,30,40,50,60,70,80,90,100];
-
-  let html = `
-  <div class="scale-container">
-    <table class="scale-table">
-      <tr>
-        ${values.map(v => `<td>${v}</td>`).join("")}
-      </tr>
-      <tr>
-        ${values.map(v => `<td><input type="radio" name="${name}" value="${v}"></td>`).join("")}
-      </tr>
-    </table>
-  </div>
-  `;
-
-  return html;
-}
-
-qTexts.forEach((q, i) => {
-  const nr = i+1;
-
-  const block = document.createElement("div");
-  block.className = "question-block";
-
-  block.innerHTML = `
-    <p><strong>${q}</strong></p>
-    ${buildScale("q" + nr)}
-  `;
-
-  container.appendChild(block);
-});
-
-
 function calcACL() {
   let sum = 0;
+  let answered = 0;
 
   for (let i = 1; i <= 12; i++) {
     const el = document.querySelector(`input[name='q${i}']:checked`);
-    if (!el) {
-      document.getElementById("result").innerHTML = "<p>Bitte alle 12 Fragen beantworten.</p>";
-      return;
-    }
-    sum += parseInt(el.value);
+    if (el) { sum += parseInt(el.value); answered++; }
+  }
+
+  if (answered !== 12) {
+    document.getElementById("result").innerHTML = "<p>Bitte alle 12 Fragen beantworten.</p>";
+    return;
   }
 
   const score = ((sum / 1200) * 100).toFixed(1);
 
-  document.getElementById("result").innerHTML = `
-    <p><strong>ACL-RSI-Score:</strong> ${score}%</p>
-    <p>(( ${sum} ) erreichte Punkte) / (1200 maximale Punkte) × 100 = ${score}%</p>
-  `;
+  document.getElementById("result").innerHTML =
+    `<p><strong>ACL-RSI-Score:</strong> ${score} %</p>
+     <p>(( ${sum} ) erreichte Punkte) / ((1200) maximale Punkte) × 100 = ${score} %</p>`;
 }
-
 
 function pdfACL() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
   doc.addFileToVFS("Roboto-Regular.ttf", window.robotoBase64);
   doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
-  doc.setFont("Roboto");
-  doc.setFontSize(12);
-
+  doc.setFont("Roboto", "normal");
   let y = 15;
-  const lh = 8;
 
   doc.setFontSize(16);
   doc.text("ACL-RSI – Return to Sports", 15, y);
-  y += 14;
+  y += 12;
+
   doc.setFontSize(12);
 
-  for (let i = 1; i <= 12; i++) {
-    const el = document.querySelector(`input[name='q${i}']:checked`);
+  for (let i = 0; i < qData.length; i++) {
+    const qn = i+1;
+    const el = document.querySelector(`input[name='q${qn}']:checked`);
     const val = el ? el.value : "-";
-
-    doc.text(qTexts[i-1], 15, y);
-    y += lh;
-    doc.text("Wert: " + val, 15, y);
-    y += lh + 2;
-
-    if (y > 260) { doc.addPage(); y = 20; }
+    doc.text(`${qData[i].q}`, 15, y); y += 7;
+    doc.text(`Wert: ${val}`, 15, y); y += 10;
+    if (y > 270) { doc.addPage(); y = 20; }
   }
 
-  y += 8;
-
+  y += 4;
   const lines = document.getElementById("result").innerText.split("\n");
-  lines.forEach(line => {
-    doc.text(line, 15, y);
-    y += lh;
-    if (y > 270) { doc.addPage(); y = 20; }
-  });
+  lines.forEach(line => { doc.text(line, 15, y); y += 7; });
 
   doc.save("ACL-RSI.pdf");
 }
-
 </script>
 
-<!-- FOOTER -->
+<!-- ====================== FOOTER ====================== -->
+
 <div class="footer-nav">
   <button class="secondary" onclick="goBack()">⬅️ Zurück</button>
   <button class="primary" onclick="goHome()">🏠 Hauptseite</button>
