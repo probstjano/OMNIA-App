@@ -37,6 +37,7 @@ const ASSETS_TO_CACHE = [
   'DASH.html',
   'ACL-RSI.html',
   'START-Back.html',
+  'NDI.html',
   // PDFs
   'BBS_Protokoll.pdf',
   'DEMMI_Protokoll.pdf',
