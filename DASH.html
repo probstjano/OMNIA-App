@@ -5,16 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>QuickDASH – Fragebogen</title>
 
+  <!-- Zentrale Dateien -->
   <link rel="stylesheet" href="app-style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="robotoBase64.js"></script>
 
   <style>
-    .table-scroll { overflow-x: auto; margin: 14px 0; }
-    table { border-collapse: collapse; min-width: 700px; width: 100%; }
-    th, td { border: 1px solid #ccc; padding: 6px; text-align: center; vertical-align: middle; }
-    th { background: #f0f0f0; }
-    .section-title { margin-top: 24px; font-size: 1.2rem; font-weight: bold; }
+    .table-scroll {
+      overflow-x: auto;
+      margin: 14px 0;
+    }
+    table {
+      border-collapse: collapse;
+      min-width: 700px;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      text-align: center;
+      vertical-align: middle;
+    }
+    th {
+      background: #f0f0f0;
+    }
+    .section-title {
+      margin-top: 24px;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .patient-box {
+      padding: 15px;
+      border: 1px solid #bbb;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      background: #fafafa;
+    }
+    .patient-box input {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
   </style>
 </head>
 
@@ -24,18 +57,25 @@
 
 <p>
 Bitte beantworten Sie alle Fragen gemäß Ihrem Zustand in der vergangenen Woche, indem Sie das entsprechende Feld ankreuzen.
-Wenn Sie in der vergangenen Woche keine Gelegenheit gehabt haben, eine der aufgeführten Tätigkeiten durchzuführen,
-wählen Sie die Antwort aus, die Ihrer Meinung nach am ehesten zutreffen würde.
-Es ist nicht entscheidend, mit welchem Arm oder welcher Hand Sie diese Tätigkeiten ausüben.
-Antworten Sie Ihrer Fähigkeit entsprechend, ungeachtet, wie Sie die Aufgaben durchführen konnten.
 </p>
 
-<p><strong>Wichtig:</strong> Im QuickDASH darf maximal eine Antwort fehlen.
-Im Arbeits- und Berufs-Modul sowie im Sport- und Musik-Modul darf jeweils keine Antwort fehlen.</p>
-
-<p>Bitte schätzen Sie Ihre Fähigkeit ein, wie Sie folgende Tätigkeiten in der vergangenen Woche durchgeführt haben:</p>
-
 <form id="qdForm">
+
+<!-- ------------------------------------------- -->
+<!-- PATIENT INFORMATION -->
+<!-- ------------------------------------------- -->
+<div class="patient-box">
+  <h3>Patientenangaben</h3>
+
+  <label>Vorname:</label>
+  <input type="text" id="pVorname" />
+
+  <label>Nachname:</label>
+  <input type="text" id="pNachname" />
+
+  <label>Geburtsdatum:</label>
+  <input type="date" id="pDOB" />
+</div>
 
 <!-- ================= MAIN 11 ITEMS ================= -->
 
@@ -90,7 +130,7 @@ Im Arbeits- und Berufs-Modul sowie im Sport- und Musik-Modul darf jeweils keine 
     <td><input type="radio" name="q5" value="5"></td>
   </tr>
 
-  <tr><td>6. Freizeitaktivitäten mit Druck/Stoß (z. B. Golf, Hämmern, Tennis)</td>
+  <tr><td>6. Freizeitaktivitäten mit Druck/Stoss (z. B. Golf, Hämmern, Tennis)</td>
     <td><input type="radio" name="q6" value="1"></td>
     <td><input type="radio" name="q6" value="2"></td>
     <td><input type="radio" name="q6" value="3"></td>
@@ -135,7 +175,7 @@ Im Arbeits- und Berufs-Modul sowie im Sport- und Musik-Modul darf jeweils keine 
     <td><input type="radio" name="q9" value="5"></td>
   </tr>
 
-  <tr><td>10. Kribbeln (Nadelstiche) in Schulter/Arm/Hand</td>
+  <tr><td>10. Kribbeln in Schulter/Arm/Hand</td>
     <td><input type="radio" name="q10" value="1"></td>
     <td><input type="radio" name="q10" value="2"></td>
     <td><input type="radio" name="q10" value="3"></td>
@@ -152,6 +192,8 @@ Im Arbeits- und Berufs-Modul sowie im Sport- und Musik-Modul darf jeweils keine 
   </tr>
 </table>
 </div>
+
+<!-- ================== OPTIONAL MODULE: WORK ================== -->
 
 <h2 class="section-title">Arbeits- und Berufs-Modul (optional)</h2>
 
@@ -183,10 +225,10 @@ Im Arbeits- und Berufs-Modul sowie im Sport- und Musik-Modul darf jeweils keine 
     <td><input type="radio" name="w13" value="1"></td>
     <td><input type="radio" name="w13" value="2"></td>
     <td><input type="radio" name="w13" value="3"></td>
-    <td><input type="radio" name="w13" value="4"></td>
+    <td><input type="radio" name="wიკ"><input type="radio" name="w13" value="4"></td>
     <td><input type="radio" name="w13" value="5"></td>
   </tr>
-
+  
   <tr><td>14. so gut zu arbeiten, wie Sie es möchten?</td>
     <td><input type="radio" name="w14" value="1"></td>
     <td><input type="radio" name="w14" value="2"></td>
@@ -204,6 +246,8 @@ Im Arbeits- und Berufs-Modul sowie im Sport- und Musik-Modul darf jeweils keine 
   </tr>
 </table>
 </div>
+
+<!-- ================== OPTIONAL MODULE: SPORT ================== -->
 
 <h2 class="section-title">Sport- und Musik-Modul (optional)</h2>
 
@@ -257,12 +301,14 @@ Im Arbeits- und Berufs-Modul sowie im Sport- und Musik-Modul darf jeweils keine 
 </table>
 </div>
 
-</form>
-
 <button type="button" class="primary" onclick="calculateQD()">✅ Score berechnen</button>
 <button type="button" class="secondary" onclick="generatePDF()">📄 PDF erstellen</button>
 
 <div id="result"></div>
+
+<!-- ============================================================= -->
+<!-- ==================== CONTENT-LOCK START ===================== -->
+<!-- ============================================================= -->
 
 <script>
 function calculateScale(values) {
@@ -275,7 +321,7 @@ function calculateScale(values) {
 function calculateQD() {
   let main = [];
   for (let i = 1; i <= 11; i++) {
-    const el = document.querySelector("input[name='q" + i + "']:checked");
+    const el = document.querySelector("input[name='q"+i+"']:checked");
     main.push(el ? parseInt(el.value) : null);
   }
   const quickdash = calculateScale(main);
@@ -290,7 +336,7 @@ function calculateQD() {
   if (!document.getElementById("workNone").checked) {
     let w = [];
     for (let i = 12; i <= 15; i++) {
-      const el = document.querySelector("input[name='w" + i + "']:checked");
+      const el = document.querySelector("input[name='w"+i+"']:checked");
       w.push(el ? parseInt(el.value) : null);
     }
     if (w.every(v => v !== null)) workScore = calculateScale(w);
@@ -300,7 +346,7 @@ function calculateQD() {
   if (!document.getElementById("sportNone").checked) {
     let s = [];
     for (let i = 16; i <= 19; i++) {
-      const el = document.querySelector("input[name='s" + i + "']:checked");
+      const el = document.querySelector("input[name='s"+i+"']:checked");
       s.push(el ? parseInt(el.value) : null);
     }
     if (s.every(v => v !== null)) sportScore = calculateScale(s);
@@ -314,6 +360,18 @@ function calculateQD() {
 }
 
 function generatePDF() {
+
+  const vorname = document.getElementById("pVorname").value.trim();
+  const nachname = document.getElementById("pNachname").value.trim();
+  const dob = document.getElementById("pDOB").value;
+
+  if (!vorname || !nachname || !dob) {
+    alert("Bitte Vorname, Nachname und Geburtsdatum eingeben.");
+    return;
+  }
+
+  const dobClean = dob.replaceAll("-", "_");
+
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
   doc.addFileToVFS("Roboto-Regular.ttf", window.robotoBase64);
@@ -339,6 +397,26 @@ function generatePDF() {
     if (y > 270) { doc.addPage(); y = 20; }
   }
 
+  async function savePDFDirect(pdfBlob) {
+  try {
+    const handle = await window.showSaveFilePicker({
+      suggestedName: "QuickDASH.pdf",
+      types: [{
+        description: "PDF",
+        accept: { "application/pdf": [".pdf"] }
+      }]
+    });
+
+    const writable = await handle.createWritable();
+    await writable.write(pdfBlob);
+    await writable.close();
+
+    alert("PDF wurde erfolgreich gespeichert.");
+  } catch (err) {
+    console.log("Speichern abgebrochen:", err);
+  }
+}
+
   function addQuestion(label, value) {
     const wrapped = doc.splitTextToSize(label, 150);
     wrapped.forEach((line, idx) => {
@@ -351,13 +429,18 @@ function generatePDF() {
     ensureSpace();
   }
 
+  // HEADER
   doc.setFontSize(16);
   doc.setFont(undefined, "bold");
   doc.text("QuickDASH – Auswertung", left, y);
   y += 12;
+
   doc.setFontSize(12);
   doc.setFont(undefined, "normal");
+  doc.text(`Name: ${vorname} ${nachname}`, left, y); y += 8;
+  doc.text(`Geburtsdatum: ${dob}`, left, y); y += 12;
 
+  // MAIN ITEMS
   addSectionTitle("Hauptskala (QuickDASH)");
 
   const questionsMain = {
@@ -370,8 +453,8 @@ function generatePDF() {
     q7: "7. Beeinträchtigung sozialer Aktivitäten",
     q8: "8. Einschränkung in Arbeit/Alltag",
     q9: "9. Schmerzen in Schulter / Arm / Hand",
-    q10: "10. Kribbeln in Schulter / Arm / Hand",
-    q11: "11. Schlafstörungen wegen Schmerzen"
+    q10:"10. Kribbeln in Schulter / Arm / Hand",
+    q11:"11. Schlafstörungen wegen Schmerzen"
   };
 
   for (let k in questionsMain) {
@@ -382,6 +465,7 @@ function generatePDF() {
 
   y += 6; ensureSpace();
 
+  // WORK MODULE
   if (!document.getElementById("workNone").checked) {
     addSectionTitle("Arbeits- / Berufs-Modul");
 
@@ -401,6 +485,7 @@ function generatePDF() {
     y += 6; ensureSpace();
   }
 
+  // SPORT MODULE
   if (!document.getElementById("sportNone").checked) {
     addSectionTitle("Sport- / Musik-Modul");
 
@@ -420,6 +505,7 @@ function generatePDF() {
     y += 6; ensureSpace();
   }
 
+  // SCORES
   addSectionTitle("Ergebnisse");
 
   const resultLines = document.getElementById("result").innerText.split("\n");
@@ -434,9 +520,38 @@ function generatePDF() {
   const today = new Date().toLocaleDateString("de-CH");
   doc.text("Datum: " + today, left, y);
 
-  doc.save("QuickDASH_Auswertung.pdf");
+  // FILENAME
+  const fileName = `QuickDASH_${vorname}_${nachname}_${dobClean}.pdf`;
+ const pdfBlob = doc.output("blob");
+savePDFDirect(pdfBlob);
+
+
+  // RESET EVERYTHING
+  resetQDForm();
 }
+
+
+function resetQDForm() {
+
+  document.getElementById("pVorname").value = "";
+  document.getElementById("pNachname").value = "";
+  document.getElementById("pDOB").value = "";
+
+  const inputs = document.querySelectorAll("input[type=radio], input[type=checkbox]");
+  inputs.forEach(i => i.checked = false);
+
+  const texts = document.querySelectorAll("input[type=text], input[type=number]");
+  texts.forEach(t => {
+    if (t.id !== "pVorname" && t.id !== "pNachname" && t.id !== "pDOB")
+      t.value = "";
+  });
+
+  document.getElementById("result").innerHTML = "";
+}
+
 </script>
+
+<!-- ====================== CONTENT-LOCK END ====================== -->
 
 <div class="footer-nav">
   <button class="secondary" onclick="goBack()">⬅️ Zurück</button>
