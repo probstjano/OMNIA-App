@@ -521,9 +521,8 @@ function generatePDF() {
   doc.text("Datum: " + today, left, y);
 
   // FILENAME
-  const fileName = `QuickDASH_${vorname}_${nachname}_${dobClean}.pdf`;
- const pdfBlob = doc.output("blob");
-savePDFDirect(pdfBlob);
+ const fileName = `QuickDASH_${vorname}_${nachname}_${dobClean}.pdf`;
+doc.save(fileName);
 
 
   // RESET EVERYTHING
