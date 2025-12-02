@@ -356,7 +356,7 @@
       else if (age < 90) ageGroup = "80–89";
 
       const b = bohannon[sex][ageGroup];
-      norms.innerHTML += `<h3>Mittelwert  & Anteil der Personen, die den Sitz-Stand-Test nicht durchführen können – ${ageGroup}</h3>
+      norms.innerHTML += `<h3>Mittelwert  & Anteil der Personen, die den Sitz-Stand-Test nicht durchführen können (inkl. Pflegeheime) – ${ageGroup}</h3>
         <table><tr><th>Geschlecht</th><th>MW (s)</th><th>% nicht fähig</th></tr>
         <tr><td>${sex === 'men' ? 'Männer' : 'Frauen'}</td><td>${b.mean}</td><td>${b.unable}</td></tr>
       </table>`;
