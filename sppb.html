@@ -367,6 +367,92 @@
     }
 
 
+function toggleNormsSPPB() {
+  const btn = document.getElementById("toggleBtnSPPB");
+  const norms = document.getElementById("normwerteSPPB");
+
+  if (sppbVisible) {
+    norms.classList.add("hidden");
+    btn.innerText = "📊 Normwerte SPPB anzeigen";
+    sppbVisible = false;
+    return;
+  }
+
+  const age = parseInt(document.getElementById("age").value, 10);
+  const sex = document.getElementById("sex").value;
+  const resultText = document.getElementById("result").innerText;
+  const totalMatch = resultText.match(/Gesamt-Score: (\d+)/);
+  const score = totalMatch ? parseInt(totalMatch[1]) : null;
+
+  norms.innerHTML = "";
+
+  if (isNaN(age) || score === null) {
+    norms.innerText = "Bitte zuerst Alter eingeben und Score berechnen.";
+    norms.classList.remove("hidden");
+    return;
+  }
+
+  // Tromsø norms for SPPB total score
+  const sppbNorms = {
+    men: {
+      60: { mean: 11.74, P5: 10.6, P10: 11.0, P25: 12, P50: 12, P75: 12, P90: 12, P95: 12 },
+      65: { mean: 11.70, P5: 10.1, P10: 11.0, P25: 12, P50: 12, P75: 12, P90: 12, P95: 12 },
+      70: { mean: 11.49, P5: 9.3, P10: 10.5, P25: 11.5, P50: 11.9, P75: 12, P90: 12, P95: 12 },
+      75: { mean: 11.01, P5: 8.0, P10: 9.3, P25: 10.5, P50: 11.6, P75: 12, P90: 12, P95: 12 },
+      80: { mean: 10.41, P5: 6.6, P10: 7.7, P25: 9.3, P50: 11.2, P75: 12, P90: 12, P95: 12 },
+      85: { mean: 9.80, P5: 5.1, P10: 6.2, P25: 8.0, P50: 10.8, P75: 12, P90: 12, P95: 12 }
+    },
+    women: {
+      60: { mean: 11.65, P5: 10.3, P10: 10.8, P25: 11.6, P50: 12, P75: 12, P90: 12, P95: 12 },
+      65: { mean: 11.43, P5: 9.4, P10: 10.2, P25: 11.1, P50: 12, P75: 12, P90: 12, P95: 12 },
+      70: { mean: 11.02, P5: 8.3, P10: 9.2, P25: 10.4, P50: 11.7, P75: 12, P90: 12, P95: 12 },
+      75: { mean: 10.43, P5: 6.9, P10: 8.0, P25: 9.6, P50: 11, P75: 12, P90: 12, P95: 12 },
+      80: { mean: 9.75, P5: 5.4, P10: 6.6, P25: 8.7, P50: 10.2, P75: 12, P90: 12, P95: 12 },
+      85: { mean: 9.06, P5: 3.9, P10: 5.3, P25: 7.8, P50: 9.3, P75: 12, P90: 12, P95: 12 }
+    }
+  };
+
+  const nearest = [60, 65, 70, 75, 80, 85].reduce((a, b) =>
+    Math.abs(b - age) < Math.abs(a - age) ? b : a
+  );
+  const normData = sppbNorms[sex][nearest];
+
+  // Find nearest percentile
+  const percentiles = [5, 10, 25, 50, 75, 90, 95];
+  let nearestP = "n.v.";
+  for (let p of percentiles) {
+    if (score <= normData["P" + p]) {
+      nearestP = `${p}`;
+      break;
+    }
+  }
+
+  norms.innerHTML = `<h3>SPPB Gesamt-Score – norwegische Referenzwerte (${nearest} Jahre – ${sex === "men" ? "Männer" : "Frauen"})</h3>`;
+  norms.innerHTML += `<table><tr><th>Perzentil</th><th>Score</th></tr>
+    ${percentiles.map(p => `<tr><td>P${p}</td><td>${normData["P" + p]}</td></tr>`).join("")}
+  </table><p>→ Dieser Score ist nahe am <strong>${nearestP}</strong> Perzentil der Referenzgruppe. Dies bedeutet der Score ist besser als bei ca <strong>${nearestP}</strong> % der Vergleichsgruppe </p>`;
+
+  // ---------------------------------------------------------
+  // ✅ GURALNIK–INTERPRETATION hinzufügen
+  // ---------------------------------------------------------
+  let interp = "<h3>Interpretationshilfe (Guralnik et al.)</h3>";
+
+  if (score <= 3) {
+    interp += `<p><strong style="color:red;">0–3 Punkte → schwere funktionelle Einschränkung </strong></p>`;
+  } else if (score <= 6) {
+    interp += `<p><strong style="color:#cc6600;">4–6 Punkte → moderate funktionelle Einschränkung, erhöhtes Risiko</strong></p>`;
+  } else if (score <= 9) {
+    interp += `<p><strong style="color:#666;">7–9 Punkte → leichte funktionelle Einschränkung, ehöhtes Risiko für funktionelle zukünftige Mobilitätseinbussen </strong></p>`;
+  } else {
+    interp += `<p><strong style="color:green;">10–12 Punkte → gute / robuste physische Funktion</strong></p>`;
+  }
+
+  norms.innerHTML += interp;
+
+  norms.classList.remove("hidden");
+  btn.innerText = "📉 Normwerte SPPB verbergen";
+  sppbVisible = true;
+}
 
 
 function toggleNormsGait() {
