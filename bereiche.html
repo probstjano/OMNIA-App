@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bereichs-Assessments</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 10px;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    h1 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    details {
+      margin-bottom: 12px;
+    }
+    summary {
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    a {
+      color: #0077cc;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>Bereichs-Assessments</h1>
+
+  <details>
+    <summary>💪 Kraft</summary>
+     <li><a href="5xsit-stand.html">🔹 5x sit-stand </a></li>
+     <li><a href="30s_assissted.html">🔹 30s assisted sit-stand </a></li>
+  </details>
+
+  <details>
+    <summary>🏃‍♂️ Ausdauer</summary>
+     <li><a href="1MSTS.html">🔹 1min Sit-stand </a></li>
+     <li><a href="2MST.html">🔹 2min Step-Test </a></li>
+  </details>
+
+  <details>
+    <summary>⚖️ Gleichgewicht</summary>
+    <li><a href="BBS.html">🔹 Berg Balance Scale (BBS) & shortBBS </a></li>
+    <li><a href="tinetti.html">🔹 Tinetti/POMA </a></li>
+    <li><a href="FES-I.html">🔹 Falls Efficacy Scale International (FES-I) </a></li>
+     <li><a href="FSST.html">🔹 Modified Four Square Step Test</a></li>
+    
+  </details>
+
+  <details>
+    <summary>🚶‍♀️ Gang</summary>
+    <li><a href="tinetti.html">🔹 Tinetti/POMA </a></li>
+     <li><a href="Gaitspeed.html">🔹 Gehgeschwindigkeit </a></li>
+  </details>
+
+
+  <details>
+    <summary>🧠 Mental & Kognition </summary>
+    <li><a href="Braincheck.html">🔹 BrainCheck - Screening Demenzielle Symptome </a></li>
+    <li><a href="ISI.html">🔹 Insomnia Severity Index - Screening Insomnie </a></li>
+    <li><a href="GDS.html">🔹 Geriatric Depression Scale (GDS) - Screening Depression </a></li>
+  </details>
+
+
+  <details>
+    <summary>🧬 Neurologie</summary>
+    <li><a href="FSMC.html">🔹 Fatigue Skala für Mototorik und Kognition (FSMC) </a></li>
+    <li><a href="SARA.html">🔹 Scale for Assessment and Rating of Ataxia (SARA) </a></li>
+    <li><a href="trunk_impairment_scale.html">🔹 Trunk Impairment Scale </a></li>
+    <li><a href="FOG.html">Freezing of Gait (FOG)</a></li>
+  </details>
+
+  <details>
+    <summary>🫁 Pneumologie</summary>
+    <li><a href="1MSTS.html">🔹 1min Sit-stand </a></li>
+  </details>
+
+  <details>
+    <summary> 📋 Weitere </summary>
+    <li><a href="TUG.html">🔹 Timed "Up and Go" (TUG) </a></li>
+    <li><a href="MCTSIB.html">🔹 Modified Clinical Test of Sensory Interaction on Balance (CTSIB) </a></li>
+  </details>
+
+<p></p>
+<div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
+  <!-- Zurück zur letzten Seite -->
+  <button onclick="goBack()" style="
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background-color: #f0f0f0;
+    font-size: 1rem;
+    cursor: pointer;
+  ">
+    ⬅️ Zurück
+  </button>
+
+  <!-- Zurück zur Hauptseite -->
+  <button onclick="window.location.href='index.html'" style="
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background-color: #d0eaff;
+    font-size: 1rem;
+    cursor: pointer;
+  ">
+    🏠 Hauptseite
+  </button>
+</div>
+
+<script>
+function goBack() {
+  if (document.referrer && document.referrer !== window.location.href) {
+    history.back();
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+</script>
+</body>
+</html>

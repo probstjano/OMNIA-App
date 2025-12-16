@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neck Disability Index (NDI)</title>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 2rem;
+      font-size: 16px;
+      max-width: 900px;
+    }
+
+    h1 { margin-bottom: .5rem; }
+
+    .qblock {
+      margin: 2rem 0;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .qtitle {
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .opt {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: .5rem 0;
+    }
+
+    .opt input {
+      margin-top: 4px;
+      transform: scale(1.3);
+    }
+
+    button {
+      padding: 12px 18px;
+      margin-top: 1.6rem;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #result {
+      margin-top: 2rem;
+      font-weight: bold;
+      white-space: pre-line;
+    }
+
+    .footer-nav {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 3rem;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Neck Disability Index (NDI)</h1>
+
+<p>
+Beantworten Sie alle Fragen gemäß Ihrem aktuellen Zustand.  
+Sollten zwei Aussagen zutreffen, wählen Sie diejenige, die am ehesten zutrifft.
+</p>
+
+<form id="ndiForm">
+
+<!-- QUESTIONS WILL BE INJECTED -->
+
+<div id="ndiContainer"></div>
+
+</form>
+
+<button type="button" onclick="calcNDI()">✅ Score berechnen</button>
+
+<div id="result"></div>
+
+<div class="footer-nav">
+  <button class="secondary" onclick="goBack()">⬅️ Zurück</button>
+  <button class="primary" onclick="goHome()">🏠 Hauptseite</button>
+</div>
+
+<script src="app-core.js"></script>
+
+<script>
+// ------------------ DATA ------------------
+
+const ndi = [
+  {
+    q: "1. Schmerzintensität",
+    opts: [
+      "Momentan habe ich keine Schmerzen",
+      "Ich habe im Moment sehr geringe Schmerzen",
+      "Ich habe im Moment mässige Schmerzen",
+      "Ich habe im Moment ziemlich starke Schmerzen",
+      "Ich habe im Moment sehr starke Schmerzen",
+      "Ich habe im Moment die stärksten Schmerzen, die ich mir vorstellen kann"
+    ]
+  },
+  {
+    q: "2. Persönliche Körperpflege (z.B. Waschen, Anziehen)",
+    opts: [
+      "Ich kann meine Körperpflege erledigen, ohne dass dies zusätzliche Schmerzen verursacht",
+      "Ich kann meine Körperpflege erledigen, aber es verursacht mir zusätzliche Schmerzen",
+      "Das Erledigen der Körperpflege ist schmerzhaft und ich bin dabei langsam und vorsichtig",
+      "Ich brauche Hilfe, aber ich kann den grössten Teil meiner Körperpflege selbst besorgen",
+      "Ich brauche täglich Hilfe bei den meisten Verrichtungen meiner Körperpflege",
+      "Ich ziehe mich nicht an, wasche mich nur mit Mühe und bleibe im Bett"
+    ]
+  },
+  {
+    q: "3. Heben",
+    opts: [
+      "Ich kann schwere Gegenstände ohne zusätzliche Schmerzen heben",
+      "Ich kann schwere Gegenstände heben, aber dies verursacht zusätzliche Schmerzen",
+      "Meine Schmerzen hindern mich daran, schwere Gegenstände vom Boden aufzuheben, aber ich kann schwere Gegenstände heben, wenn sie günstig positioniert sind (z.B. auf dem Tisch)",
+      "Meine Schmerzen hindern mich daran, schwere Gegenstände vom Boden aufzuheben, aber ich kann mittelschwere Gegenstände heben, wenn sie günstig positioniert sind",
+      "Ich kann nur sehr leichte Gegenstände heben",
+      "Ich kann überhaupt nichts heben oder tragen"
+    ]
+  },
+  {
+    q: "4. Lesen",
+    opts: [
+      "Ich kann lesen so viel ich will, ohne Nackenschmerzen zu bekommen",
+      "Ich kann lesen so viel ich will, aber ich bekomme davon leichte Nackenschmerzen",
+      "Ich kann lesen so viel ich will, aber ich bekomme davon mäßige Nackenschmerzen",
+      "Ich kann wegen mäßiger Nackenschmerzen nicht so viel lesen, wie ich will",
+      "Ich kann wegen starker Nackenschmerzen kaum lesen",
+      "Ich kann überhaupt nicht mehr lesen"
+    ]
+  },
+  {
+    q: "5. Kopfschmerzen",
+    opts: [
+      "Ich habe überhaupt keine Kopfschmerzen",
+      "Ich habe leichte Kopfschmerzen, die unregelmäßig auftreten",
+      "Ich habe mäßige Kopfschmerzen, die unregelmäßig auftreten",
+      "Ich habe mäßige Kopfschmerzen, die regelmäßig auftreten",
+      "Ich habe starke Kopfschmerzen, die regelmäßig auftreten",
+      "Ich habe die meiste Zeit Kopfschmerzen"
+    ]
+  },
+  {
+    q: "6. Konzentration",
+    opts: [
+      "Ich kann mich, wenn ich will, ohne Schwierigkeiten voll konzentrieren",
+      "Ich kann mich, wenn ich will, mit leichten Schwierigkeiten voll konzentrieren",
+      "Ich habe ziemliche Schwierigkeiten, mich zu konzentrieren, wenn ich es will",
+      "Ich habe große Schwierigkeiten, mich zu konzentrieren, wenn ich es will",
+      "Ich habe sehr große Schwierigkeiten, mich zu konzentrieren, wenn ich es will",
+      "Ich kann mich überhaupt nicht konzentrieren"
+    ]
+  },
+  {
+    q: "7. Arbeit",
+    opts: [
+      "Ich kann so viel Arbeit erledigen, wie ich möchte",
+      "Ich kann nur meine übliche Arbeit erledigen, aber nicht mehr",
+      "Ich kann den größten Teil meiner üblichen Arbeit verrichten, aber nicht mehr",
+      "Ich kann meine übliche Arbeit nicht erledigen",
+      "Ich kann kaum eine Arbeit erledigen",
+      "Ich kann überhaupt keine Arbeit erledigen"
+    ]
+  },
+  {
+    q: "8. Auto fahren",
+    opts: [
+      "Ich kann Auto fahren, ohne Nackenschmerzen zu bekommen",
+      "Ich kann Auto fahren, so lange ich will, mit leichten Nackenschmerzen",
+      "Ich kann Auto fahren, so lange ich will, mit mäßigen Nackenschmerzen",
+      "Ich kann wegen mäßiger Nackenschmerzen nicht Auto fahren, so lange ich will",
+      "Ich kann wegen starker Nackenschmerzen kaum Auto fahren",
+      "Ich kann überhaupt nicht Auto fahren"
+    ]
+  },
+  {
+    q: "9. Schlafen",
+    opts: [
+      "Ich habe keine Schlafprobleme",
+      "Mein Schlaf ist kaum gestört (weniger als 1 Stunde schlaflos)",
+      "Mein Schlaf ist leicht gestört (1–2 Stunden schlaflos)",
+      "Mein Schlaf ist mäßig gestört (2–3 Stunden schlaflos)",
+      "Mein Schlaf ist stark gestört (3–5 Stunden schlaflos)",
+      "Mein Schlaf ist komplett gestört (5–7 Stunden schlaflos)"
+    ]
+  },
+  {
+    q: "10. Freizeitaktivität / Erholung",
+    opts: [
+      "Ich kann alle meine Freizeitaktivitäten ohne Nackenschmerzen ausüben",
+      "Ich kann, wenn auch mit einigen Nackenschmerzen, alle meine Freizeitaktivitäten ausüben",
+      "Wegen Nackenschmerzen kann ich die meisten, aber nicht alle meiner täglichen Freizeitaktivitäten ausüben",
+      "Ich kann wegen meiner Nackenschmerzen nur einige meiner Freizeitaktivitäten ausüben",
+      "Ich kann wegen meiner Nackenschmerzen kaum irgendwelche Freizeitaktivitäten ausüben",
+      "Ich kann überhaupt keine Freizeitaktivitäten ausüben"
+    ]
+  }
+];
+
+// ------------------ RENDER ------------------
+
+let html = "";
+ndi.forEach((item, i) => {
+  html += `<div class="qblock">
+      <div class="qtitle">${item.q}</div>
+      ${item.opts.map((txt, idx) => `
+        <div class="opt">
+          <input type="radio" name="q${i+1}" value="${idx}">
+          <div>${txt}</div>
+        </div>`).join("")}
+    </div>`;
+});
+
+document.getElementById("ndiContainer").innerHTML = html;
+
+// ------------------ SCORE ------------------
+
+function calcNDI() {
+  let sum = 0;
+  let unanswered = 0;
+
+  for (let i = 1; i <= 10; i++) {
+    const el = document.querySelector(`input[name="q${i}"]:checked`);
+    if (!el) unanswered++;
+    else sum += Number(el.value);
+  }
+
+  if (unanswered > 1) {
+    document.getElementById("result").innerText =
+      "Bitte max. eine Frage offen lassen.";
+    return;
+  }
+
+  const maxPoints = unanswered === 1 ? 45 : 50;
+  const percent = ((sum / maxPoints) * 100).toFixed(1);
+
+  document.getElementById("result").innerText =
+    `NDI-Score: ${sum} / ${maxPoints} Punkte\n` +
+    `${percent}%`;
+}
+</script>
+
+</body>
+</html>
+

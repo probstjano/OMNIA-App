@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trunk Impairment Scale</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; max-width: 900px; font-size: 16px; }
+    .question-block { margin-bottom: 1.5rem; }
+    .question { font-weight: bold; margin-bottom: 0.5rem; }
+    select { width: 100%; padding: 8px; font-size: 16px; }
+    button { margin-top: 20px; padding: 10px 15px; font-size: 16px; }
+    #result { margin-top: 2rem; font-weight: bold; white-space: pre-line; }
+    .nav-buttons { margin-top: 2rem; }
+    .nav-buttons a {
+      display: inline-block; margin-right: 10px; padding: 10px 15px;
+      background: #eee; border-radius: 8px; text-decoration: none; color: #000;
+    }
+    .nav-buttons a:hover { background: #ddd; }
+  </style>
+</head>
+<body>
+  <h1>Trunk Impairment Scale (TIS)</h1>
+  <p>Assessment zur Erfassung der Rumpfkontrolle, insbesondere nach Schlaganfall.</p>
+  <p> Im Cenplex Behanlungsplan als <strong> Messung </strong> vorhanden. Hier durchführen und Scores übertragen </p>
+  <p> Die Teststruktur ist dynamisch: bestimmte Items werden nur angezeigt, wenn vorherige bestanden wurden.
+    Ausgangsposition für alle Items:<br>
+    Der Patient sitzt auf der Bett- oder Tischkante ohne Rücken- oder Armlehne.<br>
+    – Die Oberschenkel liegen vollständig auf der Unterlage auf.<br>
+    – Die Knie 90°-Winkel gebeugt.<br>
+    – Die Füsse hüftbreit und flach auf dem Boden.<br>
+    – Die Arme ruhen auf den Oberschenkeln falls möglich.<br>
+    – Kopf und Rumpf sind in Mittelstellung.<br>
+   <br><br>
+    Die Testaufgaben werden mündlich erklärt und bei Bedarf demonstriert.<br>
+    Jedes Item darf bis zu 3 Mal wiederholt werden; die <strong>beste Leistung</strong> wird gewertet.<br>
+    Korrekturen zwischen den Versuchen sind erlaubt.<br>
+  </p>
+
+  <div id="form"></div>
+  <button onclick="exportPDF()">📄 Als PDF speichern</button>
+  <div id="result"></div>
+
+  
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    const { jsPDF } = window.jspdf;
+
+    const state = {
+      values: {},
+      score: { static: 0, dynamic: 0, coordination: 0 }
+    };
+
+    const items = [
+      // STATIC
+      { id: "s1", section: "static", text: "1. Patient hält Startposition 10 Sekunden ohne Unterstützung", options: [{ text: "Nein", value: 0 }, { text: "Ja", value: 2 }] },
+      { id: "s2", section: "static", text: "2. Therapeut kreuzt nicht-betroffenes Bein über hemiplegisches", options: [
+        { text: "Fällt oder kann Position nicht halten", value: 0 },
+        { text: "Hält Position 10 Sekunden", value: 2 }
+      ]},
+      { id: "s3", section: "static", text: "3. Patient kreuzt selbst nicht-betroffenes Bein über hemiplegisches", options: [
+        { text: "Fällt", value: 0 },
+        { text: "Kann nicht ohne Armhilfe kreuzen", value: 1 },
+        { text: "Kreuzt mit Oberkörperrücklage von >10cm oder Hilfe", value: 2 },
+        { text: "Kreuzt ohne Rücklage oder Hilfe", value: 3 }
+      ]},
+
+      // DYNAMIC
+      { id: "d1", section: "dynamic", text: "4. Patient berührt mit hemiplegischem Ellbogen Bett/Tisch und kehrt zurück (verkürzt die hemiplegische Seite und verlängert die nicht-betroffene Seite)", options: [
+        { text: "Fällt, benötigt Unterstützung OEx oder berührt Bett nicht", value: 0 },
+        { text: "Ellbogen berührt aktiv, ohne Hilfe", value: 1 }
+      ]},
+      { id: "d2", section: "dynamic", parent: "d1", nextIf: 1, text: "5. Wiederholung Item 4: Ellbogen auf Bett", options: [
+        { text: "Keine verkürzung oder gegesätzliche Verkürzung der Seite", value: 0 },
+        { text: "Bewegung mit verkürzung der Seite", value: 1 }
+      ]},
+      { id: "d3", section: "dynamic", parent: "d2", nextIf: 1, text: "6. Wiederholung Item 4: Kompensation", options: [
+        { text: "Mit Kompensationsbewegung (Arm, Hüfte, Füsse)", value: 0 },
+        { text: "Ohne Kompensation", value: 1 }
+      ]},
+
+      { id: "d4", section: "dynamic", text: "7. Patient berührt mit nicht-betroffenem Ellbogen Bett/Tisch (verkürzt der nicht-betroffene Seite und Verlängerung hemiplegische Seite)", options: [
+        { text: "Fällt oder berührt nicht", value: 0 },
+        { text: "Ellbogen berührt aktiv, ohne Hilfe", value: 1 }
+      ]},
+      { id: "d5", section: "dynamic", parent: "d4", nextIf: 1, text: "8. Wiederholung Item 7: Verkürzung/Verlängerung", options: [
+        { text: "Keine oder Gegesätzliche Verkürzung", value: 0 },
+        { text: "Richtige Bewegung", value: 1 }
+      ]},
+      { id: "d6", section: "dynamic", parent: "d5", nextIf: 1, text: "9. Wiederholung Item 7: Kompensation", options: [
+        { text: "Mit Kompensation (OEx, Hüfte, Knie, Füsse)", value: 0 },
+        { text: "Ohne Kompensation", value: 1 }
+      ]},
+
+      { id: "d7", section: "dynamic", text: "10. Hebt Becken auf hemiplegischer Seite (Verkürzung Hemiplegischer Seite)", options: [
+        { text: "Keine oder Gegesätzliche Verkürzung Seite", value: 0 },
+        { text: "Korrekte Bewegung", value: 1 }
+      ]},
+      { id: "d8", section: "dynamic", parent: "d7", nextIf: 1, text: "11. Wiederholung Item 10: Kompensation", options: [
+        { text: "Mit Kompensation OEx oder Füsse", value: 0 },
+        { text: "Ohne Kompensation", value: 1 }
+      ]},
+
+      { id: "d9", section: "dynamic", text: "12. Hebt Becken auf nicht-betroffener Seite", options: [
+        { text: "Keine oder Gegesätzliche Verkürzung Seite", value: 0 },
+        { text: "Richtige Bewegung", value: 1 }
+      ]},
+      { id: "d10", section: "dynamic", parent: "d9", nextIf: 1, text: "13. Wiederholung Item 12: Kompensation", options: [
+        { text: "Mit Kompensation", value: 0 },
+        { text: "Ohne Kompensation", value: 1 }
+      ]},
+
+      // COORDINATION
+      { id: "c1", section: "coordination", text: "14. Rotation oberer Rumpf 6× (jede Schulter 3x nach vorne), Hemiplegische Seite zuerst, Kopf bleibt in Ausgangsstellung", options: [
+        { text: "Hemiplegische Seite nicht 3× bewegt/rotiert", value: 0 },
+        { text: "Asymmetrische Rotation", value: 1 },
+        { text: "Symmetrische Rotation", value: 2 }
+      ]},
+      { id: "c2", section: "coordination", text: "15. Wiederholung von Item 14 in 6 Sekunden", options: [
+        { text: "Asymmetrisch", value: 0 },
+        { text: "Symmetrisch", value: 1 }
+      ]},
+      { id: "c3", section: "coordination", text: "16. Rotation unterer Rumpf 6× (Jedes Knie bewegt 3x nach vorne), Hemiseite zuerst, oberer Rumpf bleibt in Ausgangsstellung", options: [
+        { text: "Hemiplegische Seite nicht 3× bewegt", value: 0 },
+        { text: "Asymmetrisch", value: 1 },
+        { text: "Symmetrisch", value: 2 }
+      ]},
+      { id: "c4", section: "coordination", text: "17. Wiederholung von Item 16 in 6 Sekunden", options: [
+        { text: "Asymmetrisch", value: 0 },
+        { text: "Symmetrisch", value: 1 }
+      ]}
+    ];
+
+    function renderForm() {
+      const container = document.getElementById("form");
+      container.innerHTML = "";
+
+      // Abbruch nach Item 1 bei "Nein"
+      if (state.values["s1"] === 0) {
+        container.innerHTML = "<p>Test abgebrochen – Patient konnte Startposition nicht halten.</p>";
+        showResults();
+        return;
+      }
+
+      for (let item of items) {
+        // Nur anzeigen, wenn entweder kein parent oder der parent erfüllt ist
+        const parentPassed = !item.parent || state.values[item.parent] === item.nextIf;
+        if (item.id === "s1" || parentPassed) {
+          const value = state.values[item.id];
+          const block = document.createElement("div");
+          block.className = "question-block";
+          block.innerHTML = `
+            <div class="question">${item.text}</div>
+            <select onchange="handleChange('${item.id}', this.value)">
+              <option value="" disabled ${value === undefined ? 'selected' : ''}>Antwort auswählen</option>
+              ${item.options.map(opt => `<option value="${opt.value}" ${value === opt.value ? 'selected' : ''}>${opt.text}</option>`).join("")}
+            </select>`;
+          container.appendChild(block);
+        }
+      }
+
+      showResults();
+    }
+
+    function handleChange(id, val) {
+      const item = items.find(i => i.id === id);
+      val = parseInt(val);
+      if (state.values[id] !== undefined) state.score[item.section] -= state.values[id];
+      state.values[id] = val;
+      state.score[item.section] += val;
+      renderForm();
+    }
+
+    function showResults() {
+      const total = state.score.static + state.score.dynamic + state.score.coordination;
+      document.getElementById("result").innerText =
+        `Gesamtscore: ${total} / 21\n` +
+        `Statische Balance: ${state.score.static} / 5\n` +
+        `Dynamische Balance: ${state.score.dynamic} / 10\n` +
+        `Koordination: ${state.score.coordination} / 6`;
+    }
+async function exportPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // Roboto einbinden, falls verfügbar
+  if (window.robotoBase64) {
+    doc.addFileToVFS("Roboto-Regular.ttf", window.robotoBase64);
+    doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+    doc.setFont("Roboto", "normal");
+  }
+
+  const lineHeight = 8;
+  const left = 15;
+  const right = 190;
+  let y = 20;
+
+  doc.setFontSize(16);
+  doc.text("Trunk Impairment Scale – Auswertung", left, y);
+  y += lineHeight;
+
+  doc.setFontSize(12);
+  doc.line(left, y, right, y);
+  y += 5;
+
+  for (const item of items) {
+    if (state.values[item.id] !== undefined) {
+      const label = `${item.text}`;
+      const valueText = item.options.find(o => o.value === state.values[item.id])?.text || "-";
+
+      const lines = doc.splitTextToSize(label, 160);
+      lines.forEach((line, idx) => {
+        doc.text(line, left, y);
+        if (idx === 0) {
+          doc.text(valueText, right, y, { align: "right" });
+        }
+        y += lineHeight;
+      });
+      y += 2;
+      if (y > 270) {
+        doc.addPage();
+        y = 20;
+      }
+    }
+  }
+
+  y += 5;
+  doc.setFont(undefined, "bold");
+  doc.setFontSize(14);
+  doc.text("Subscores", left, y);
+  y += lineHeight;
+  doc.setFont(undefined, "normal");
+  doc.setFontSize(12);
+
+  doc.text(`Statische Balance: ${state.score.static} / 5`, left, y); y += lineHeight;
+  doc.text(`Dynamische Balance: ${state.score.dynamic} / 10`, left, y); y += lineHeight;
+  doc.text(`Koordination: ${state.score.coordination} / 6`, left, y); y += lineHeight;
+
+  y += 5;
+  const total = state.score.static + state.score.dynamic + state.score.coordination;
+  doc.setFont(undefined, "bold");
+  doc.setFontSize(14);
+  doc.text("Gesamtergebnis", left, y); y += lineHeight;
+  doc.setFont(undefined, "normal");
+  doc.setFontSize(12);
+  doc.text(`TIS Gesamt-Score: ${total} / 21`, left, y); y += lineHeight;
+
+  const today = new Date().toLocaleDateString("de-CH");
+  doc.text(`Datum: ${today}`, left, y);
+
+  doc.save("TIS_Auswertung.pdf");
+}
+    renderForm();
+  </script>
+<p></p>
+<div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
+  <!-- Zurück zur letzten Seite -->
+  <button onclick="goBack()" style="
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background-color: #f0f0f0;
+    font-size: 1rem;
+    cursor: pointer;
+  ">
+    ⬅️ Zurück
+  </button>
+
+  <!-- Zurück zur Hauptseite -->
+  <button onclick="window.location.href='index.html'" style="
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background-color: #d0eaff;
+    font-size: 1rem;
+    cursor: pointer;
+  ">
+    🏠 Hauptseite
+  </button>
+</div>
+
+<script>
+function goBack() {
+  if (document.referrer && document.referrer !== window.location.href) {
+    history.back();
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SPPB</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 2rem;
+      font-size: 16px;
+      max-width: 600px;
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+    }
+
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 6px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px 15px;
+      font-size: 16px;
+    }
+
+    #result,
+    #normwerteSitz,
+    #normwerteSPPB,
+    #normwerteGait {
+      font-weight: bold;
+      margin-top: 20px;
+      white-space: pre-line;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    th,
+    td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      text-align: center;
+    }
+
+    th {
+      background: #f0f0f0;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .checkbox-group,
+    .radio-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 1rem;
+    }
+
+    .checkbox-group label,
+    .radio-group label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .checkbox-group input[type="checkbox"],
+    .radio-group input[type="radio"] {
+      transform: scale(1.2);
+      margin: 0;
+    }
+
+    .nav-buttons {
+      margin-top: 2rem;
+    }
+
+    .nav-buttons a {
+      display: inline-block;
+      margin-right: 10px;
+      padding: 10px 15px;
+      background: #eee;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #000;
+    }
+
+    #stopwatch {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  background: #fff;
+  border: 2px solid #444;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  z-index: 9999;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+#stopwatch button {
+  margin-left: 4px;
+  padding: 3px 6px;
+  font-size: 12px;
+}
+
+    .nav-buttons a:hover {
+      background: #ddd;
+    }
+  </style>
+</head>
+<body>
+
+<div id="stopwatch">
+  <span id="swDisplay">00:00.0</span>
+  <button id="swMainBtn" onclick="swToggle()">▶</button>
+  <button onclick="swReset()">⟳</button>
+</div>
+
+  <h1>SPPB – Short Physical Performance Battery</h1>
+  <p>Test für physische Leistungsfähigkeit der unteren Extremitäten.</p>
+  <p>Im Cenplex Behandlungsplan als <strong>„Messung“</strong> mit Einzelwerten eintragen.</p>
+  <p>Bei Bedarf hier eintragen für Normwerte und Score-Berechnung.</p>
+  <p>
+    Detailliertes Durchführungsprotokoll hier:
+    <a href="https://probstjano.github.io/OpenPdf/SPPB_Protokoll.pdf" target="_blank" rel="noopener">SPPB Protokoll (PDF)</a>
+  </p>
+
+  <form>
+    <div class="checkbox-group">
+      <label>
+        <input type="checkbox" id="standZusammen" />
+        Füße zusammen >10s
+      </label>
+    </div>
+
+    <div class="checkbox-group">
+      <label>
+        <input type="checkbox" id="semitandem" />
+        Semitandem >10s
+      </label>
+    </div>
+
+    <label for="tandemZeit">Tandem-Zeit (Sek.):</label>
+    <input type="number" id="tandemZeit" step="0.01" />
+
+    <label>Strecke:</label>
+    <div class="radio-group">
+      <label>
+        <input type="radio" name="strecke" value="3" checked />
+        3 m
+      </label>
+      <label>
+        <input type="radio" name="strecke" value="4" />
+        4 m
+      </label>
+    </div>
+
+    <label for="gehzeit">Zeit (Sek.):</label>
+    <input type="number" id="gehzeit" step="0.01" />
+
+    <label for="sitzStand">5x Sitz-Stand (Sek.):</label>
+    <input type="number" id="sitzStand" step="0.01" />
+
+    <button type="button" onclick="calculateSPPB()">✅ Score berechnen</button>
+  </form>
+
+  <div id="result"></div>
+
+  <div id="ageSection" class="hidden">
+    <label>Alter:</label>
+    <input type="number" id="age" min="60" max="120">
+    <label>Geschlecht:</label>
+    <select id="sex">
+      <option value="men">Männlich</option>
+      <option value="women">Weiblich</option>
+    </select>
+    <button type="button" onclick="toggleNormsSitz()" id="toggleBtnSitz">📊 Normwerte Sitz-Stand anzeigen</button>
+    <button type="button" onclick="toggleNormsSPPB()" id="toggleBtnSPPB">📊 Normwerte SPPB anzeigen</button>
+    <button type="button" onclick="toggleNormsGait()" id="toggleBtnGait">📊 Normwerte Gehgeschwindigkeit anzeigen</button>
+  </div>
+
+  <div id="normwerteSitz" class="hidden"></div>
+  <div id="normwerteSPPB" class="hidden"></div>
+  <div id="normwerteGait" class="hidden"></div>
+
+  
+
+  <script>
+    let sitzVisible = false;
+    let sppbVisible = false;
+    let gaitVisible = false;
+
+    function calculateSPPB() {
+      let balance = 0;
+      const tandem = parseFloat(document.getElementById("tandemZeit").value);
+      if (document.getElementById("standZusammen").checked) balance += 1;
+      if (document.getElementById("semitandem").checked) balance += 1;
+      if (!isNaN(tandem)) {
+        if (tandem >= 3 && tandem < 10) balance += 1;
+        else if (tandem >= 10) balance += 2;
+      }
+
+      const dist = parseFloat(document.querySelector('input[name="strecke"]:checked').value);
+      const gehzeit = parseFloat(document.getElementById("gehzeit").value);
+      let speed = 0, gangScore = 0;
+      if (!isNaN(dist) && !isNaN(gehzeit) && gehzeit > 0) {
+        speed = dist / gehzeit;
+        if (speed <= 0.45) gangScore = 1;
+        else if (speed <= 0.64) gangScore = 2;
+        else if (speed <= 0.82) gangScore = 3;
+        else gangScore = 4;
+      }
+
+      const sitzZeit = parseFloat(document.getElementById("sitzStand").value);
+      let sitzScore = 0;
+      if (isNaN(sitzZeit) || sitzZeit > 60) sitzScore = 0;
+      else if (sitzZeit > 16.7) sitzScore = 1;
+      else if (sitzZeit >= 13.7) sitzScore = 2;
+      else if (sitzZeit >= 11.2) sitzScore = 3;
+      else sitzScore = 4;
+
+      const total = balance + gangScore + sitzScore;
+      const speedText = (!isNaN(speed)) ? speed.toFixed(2) + " m/s" : "-";
+
+      document.getElementById("result").innerText =
+        `Gesamt-Score: ${total}/12\nBalance: ${balance}/4\nGang: ${gangScore}/4\n5x Sitz-Stand: ${sitzScore}/4\nGehgeschwindigkeit: ${speedText}\n5x Sitz-Stand Zeit: ${sitzZeit || "-"} s`;
+
+      document.getElementById("ageSection").classList.remove("hidden");
+      document.getElementById("normwerteSitz").classList.add("hidden");
+      document.getElementById("normwerteSPPB").classList.add("hidden");
+      document.getElementById("normwerteGait").classList.add("hidden");
+
+      document.getElementById("toggleBtnSitz").innerText = "📊 Normwerte Sitz-Stand anzeigen";
+      document.getElementById("toggleBtnSPPB").innerText = "📊 Normwerte SPPB anzeigen";
+      document.getElementById("toggleBtnGait").innerText = "📊 Normwerte Gehgeschwindigkeit anzeigen";
+
+      sitzVisible = false;
+      sppbVisible = false;
+      gaitVisible = false;
+    }
+
+    function toggleNormsSitz() {
+      const btn = document.getElementById("toggleBtnSitz");
+      const norms = document.getElementById("normwerteSitz");
+
+      if (sitzVisible) {
+        norms.classList.add("hidden");
+        btn.innerText = "📊 Normwerte Sitz-Stand anzeigen";
+        sitzVisible = false;
+        return;
+      }
+
+      const age = parseInt(document.getElementById("age").value, 10);
+      const sex = document.getElementById("sex").value;
+      const sitzZeit = parseFloat(document.getElementById("sitzStand").value);
+      norms.innerHTML = "";
+
+      if (isNaN(age)) {
+        norms.innerText = "Bitte zuerst das Alter eingeben.";
+        norms.classList.remove("hidden");
+        return;
+      }
+
+      const norway = {
+        men: {
+          60: { P5:5.5, P10:5.9, P25:6.9, P50:8.3, P75:9.8, P90:11.5, P95:12.5 },
+          65: { P5:5.7, P10:6.2, P25:7.3, P50:8.7, P75:10.2, P90:11.8, P95:12.9 },
+          70: { P5:6.1, P10:6.6, P25:7.7, P50:9.3, P75:10.9, P90:12.5, P95:13.9 },
+          75: { P5:6.4, P10:7.0, P25:8.3, P50:10.0, P75:12.1, P90:14.0, P95:15.4 },
+          80: { P5:6.6, P10:7.5, P25:8.9, P50:10.7, P75:13.5, P90:15.8, P95:17.2 },
+          85: { P5:6.9, P10:7.9, P25:9.6, P50:11.5, P75:14.9, P90:17.7, P95:19.0 }
+        },
+        women: {
+          60: { P5:5.8, P10:6.3, P25:7.4, P50:8.9, P75:10.5, P90:12.1, P95:13.2 },
+          65: { P5:6.4, P10:7.0, P25:8.2, P50:10.0, P75:11.4, P90:13.3, P95:14.6 },
+          70: { P5:7.0, P10:7.7, P25:8.9, P50:10.5, P75:12.4, P90:14.6, P95:16.1 },
+          75: { P5:7.4, P10:8.2, P25:9.5, P50:11.2, P75:13.1, P90:15.8, P95:17.4 },
+          80: { P5:7.6, P10:8.5, P25:10.0, P50:11.7, P75:13.7, P90:16.8, P95:18.5 },
+          85: { P5:7.9, P10:9.0, P25:10.5, P50:12.3, P75:14.3, P90:17.8, P95:19.7 }
+        }
+      };
+
+      const nearest = [60, 65, 70, 75, 80, 85].reduce((prev, curr) =>
+        Math.abs(curr - age) < Math.abs(prev - age) ? curr : prev
+      );
+
+      let faster = "-";
+      const P = norway[sex][nearest];
+      if (!isNaN(sitzZeit)) {
+        const percentiles = [5,10,25,50,75,90,95];
+        const values = percentiles.map(p => P["P"+p]);
+        if (sitzZeit <= values[0]) faster = 95;
+        else if (sitzZeit >= values[6]) faster = 5;
+        else {
+          for (let i = 0; i < values.length - 1; i++) {
+            if (sitzZeit >= values[i] && sitzZeit <= values[i+1]) {
+              const p0 = percentiles[i], p1 = percentiles[i+1];
+              const v0 = values[i], v1 = values[i+1];
+              const frac = (sitzZeit - v0) / (v1 - v0);
+              faster = Math.round(100 - (p0 + frac * (p1 - p0)));
+              break;
+            }
+          }
+        }
+      }
+
+      // ➤ CUT-OFFS (wie in deinem Sitz-Stand-Tool, ohne die <12-Regel)
+      let cutoffHinweis = "<strong>Interpretationshilfe:</strong><br>";
+      cutoffHinweis += sitzZeit > 15
+        ? '<span style="color:red;">>15 Sek = geringe Muskelkraft (Sarkopenie)</span><br>'
+        : '>15 Sek = geringe Muskelkraft (Sarkopenie)<br>';
+      cutoffHinweis += sitzZeit > 16
+        ? '<span style="color:red;">>16 Sek = Parkinson: erhöhte Sturzgefahr</span><br>'
+        : '>16 Sek = Parkinson: erhöhte Sturzgefahr<br>';
+
+      norms.innerHTML += `<p style="margin-bottom:1rem;font-style:italic;">${cutoffHinweis}</p>`;
+
+      norms.innerHTML += `<h3>Norwegische Referenzwerte zuhause lebender Personen (${nearest} Jahre – ${sex === 'men' ? 'Männer' : 'Frauen'})</h3>`;
+      norms.innerHTML += `<table><tr><th>Perzentil</th><th>Wert (s)</th></tr>
+        ${Object.entries(P).map(([k,v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("")}
+      </table><p>→ Die Sitz-Stand Zeit ist schneller als bei: <strong>${faster}%</strong> der Vergleichsgruppe, die den Test durchführen konnten.</p>`;
+
+      const bohannon = {
+        men: {
+          "60–69": { mean: "13.3", unable: "15.1%" },
+          "70–79": { mean: "13.8", unable: "16.2%" },
+          "80–89": { mean: "15.1", unable: "34.4%" },
+          "90+":   { mean: "16.4", unable: "62.5%" }
+        },
+        women: {
+          "60–69": { mean: "13.9", unable: "13.7%" },
+          "70–79": { mean: "15.1", unable: "22.0%" },
+          "80–89": { mean: "16.9", unable: "46.0%" },
+          "90+":   { mean: "18.5", unable: "83.5%" }
+        }
+      };
+
+      let ageGroup = "90+";
+      if (age < 70) ageGroup = "60–69";
+      else if (age < 80) ageGroup = "70–79";
+      else if (age < 90) ageGroup = "80–89";
+
+      const b = bohannon[sex][ageGroup];
+      norms.innerHTML += `<h3>Mittelwert  & Anteil der Personen, die den Sitz-Stand-Test nicht durchführen können (Gesamtbevölkerung inkl. Pflegeheime) – ${ageGroup}</h3>
+        <table><tr><th>Geschlecht</th><th>MW (s)</th><th>% nicht fähig</th></tr>
+        <tr><td>${sex === 'men' ? 'Männer' : 'Frauen'}</td><td>${b.mean}</td><td>${b.unable}</td></tr>
+      </table>`;
+
+      norms.classList.remove("hidden");
+      btn.innerText = "📉 Normwerte sit-stand verbergen";
+      sitzVisible = true;
+    }
+
+
+function toggleNormsSPPB() {
+  const btn = document.getElementById("toggleBtnSPPB");
+  const norms = document.getElementById("normwerteSPPB");
+
+  if (sppbVisible) {
+    norms.classList.add("hidden");
+    btn.innerText = "📊 Normwerte SPPB anzeigen";
+    sppbVisible = false;
+    return;
+  }
+
+  const age = parseInt(document.getElementById("age").value, 10);
+  const sex = document.getElementById("sex").value;
+  const resultText = document.getElementById("result").innerText;
+  const totalMatch = resultText.match(/Gesamt-Score: (\d+)/);
+  const score = totalMatch ? parseInt(totalMatch[1]) : null;
+
+  norms.innerHTML = "";
+
+  if (isNaN(age) || score === null) {
+    norms.innerText = "Bitte zuerst Alter eingeben und Score berechnen.";
+    norms.classList.remove("hidden");
+    return;
+  }
+
+  // Tromsø norms for SPPB total score
+  const sppbNorms = {
+    men: {
+      60: { mean: 11.74, P5: 10.6, P10: 11.0, P25: 12, P50: 12, P75: 12, P90: 12, P95: 12 },
+      65: { mean: 11.70, P5: 10.1, P10: 11.0, P25: 12, P50: 12, P75: 12, P90: 12, P95: 12 },
+      70: { mean: 11.49, P5: 9.3, P10: 10.5, P25: 11.5, P50: 11.9, P75: 12, P90: 12, P95: 12 },
+      75: { mean: 11.01, P5: 8.0, P10: 9.3, P25: 10.5, P50: 11.6, P75: 12, P90: 12, P95: 12 },
+      80: { mean: 10.41, P5: 6.6, P10: 7.7, P25: 9.3, P50: 11.2, P75: 12, P90: 12, P95: 12 },
+      85: { mean: 9.80, P5: 5.1, P10: 6.2, P25: 8.0, P50: 10.8, P75: 12, P90: 12, P95: 12 }
+    },
+    women: {
+      60: { mean: 11.65, P5: 10.3, P10: 10.8, P25: 11.6, P50: 12, P75: 12, P90: 12, P95: 12 },
+      65: { mean: 11.43, P5: 9.4, P10: 10.2, P25: 11.1, P50: 12, P75: 12, P90: 12, P95: 12 },
+      70: { mean: 11.02, P5: 8.3, P10: 9.2, P25: 10.4, P50: 11.7, P75: 12, P90: 12, P95: 12 },
+      75: { mean: 10.43, P5: 6.9, P10: 8.0, P25: 9.6, P50: 11, P75: 12, P90: 12, P95: 12 },
+      80: { mean: 9.75, P5: 5.4, P10: 6.6, P25: 8.7, P50: 10.2, P75: 12, P90: 12, P95: 12 },
+      85: { mean: 9.06, P5: 3.9, P10: 5.3, P25: 7.8, P50: 9.3, P75: 12, P90: 12, P95: 12 }
+    }
+  };
+
+  const nearest = [60, 65, 70, 75, 80, 85].reduce((a, b) =>
+    Math.abs(b - age) < Math.abs(a - age) ? b : a
+  );
+  const normData = sppbNorms[sex][nearest];
+
+  // Find nearest percentile
+  const percentiles = [5, 10, 25, 50, 75, 90, 95];
+  let nearestP = "n.v.";
+  for (let p of percentiles) {
+    if (score <= normData["P" + p]) {
+      nearestP = `${p}`;
+      break;
+    }
+  }
+
+  norms.innerHTML = `<h3>SPPB Gesamt-Score – norwegische Referenzwerte (${nearest} Jahre – ${sex === "men" ? "Männer" : "Frauen"})</h3>`;
+  norms.innerHTML += `<table><tr><th>Perzentil</th><th>Score</th></tr>
+    ${percentiles.map(p => `<tr><td>P${p}</td><td>${normData["P" + p]}</td></tr>`).join("")}
+  </table><p>→ Dieser Score ist nahe am <strong>${nearestP}</strong> Perzentil der Referenzgruppe. Dies bedeutet der Score ist besser als bei ca <strong>${nearestP}</strong> % der Vergleichsgruppe </p>`;
+
+  // ---------------------------------------------------------
+  // ✅ GURALNIK–INTERPRETATION hinzufügen
+  // ---------------------------------------------------------
+  let interp = "<h3>Interpretationshilfe (Guralnik et al.)</h3>";
+
+  if (score <= 3) {
+    interp += `<p><strong style="color:red;">0–3 Punkte → schwere funktionelle Einschränkung </strong></p>`;
+  } else if (score <= 6) {
+    interp += `<p><strong style="color:#cc6600;">4–6 Punkte → moderate funktionelle Einschränkung</strong></p>`;
+  } else if (score <= 9) {
+    interp += `<p><strong style="color:#666;">7–9 Punkte → leichte funktionelle Einschränkung, ehöhtes Risiko für zukünftige Mobilitätseinbussen </strong></p>`;
+  } else {
+    interp += `<p><strong style="color:green;">10–12 Punkte → gute / robuste physische Funktion</strong></p>`;
+  }
+
+  norms.innerHTML += interp;
+
+  norms.classList.remove("hidden");
+  btn.innerText = "📉 Normwerte SPPB verbergen";
+  sppbVisible = true;
+}
+
+
+function toggleNormsGait() {
+      const btn = document.getElementById("toggleBtnGait");
+      const norms = document.getElementById("normwerteGait");
+
+      if (gaitVisible) {
+        norms.classList.add("hidden");
+        btn.innerText = "📊 Normwerte Gehgeschwindigkeit anzeigen";
+        gaitVisible = false;
+        return;
+      }
+
+      const age = parseInt(document.getElementById("age").value, 10);
+      const sex = document.getElementById("sex").value;
+      const dist = parseFloat(document.querySelector('input[name="strecke"]:checked').value);
+      const gehzeit = parseFloat(document.getElementById("gehzeit").value);
+      norms.innerHTML = "";
+
+      if (isNaN(age) || isNaN(dist) || isNaN(gehzeit) || gehzeit <= 0) {
+        norms.innerText = "Bitte Alter und Gehzeit eingeben.";
+        norms.classList.remove("hidden");
+        return;
+      }
+
+      const speed = dist / gehzeit;
+
+      const gaitNorms = {
+        men: {
+          60: { P5: 0.88, P10: 0.95, P25: 1.08, P50: 1.22, P75: 1.35, P90: 1.50, P95: 1.58 },
+          65: { P5: 0.85, P10: 0.92, P25: 1.04, P50: 1.18, P75: 1.33, P90: 1.47, P95: 1.57 },
+          70: { P5: 0.81, P10: 0.88, P25: 0.99, P50: 1.13, P75: 1.29, P90: 1.44, P95: 1.54 },
+          75: { P5: 0.74, P10: 0.81, P25: 0.91, P50: 1.05, P75: 1.22, P90: 1.37, P95: 1.46 },
+          80: { P5: 0.65, P10: 0.72, P25: 0.83, P50: 0.97, P75: 1.14, P90: 1.30, P95: 1.35 },
+          85: { P5: 0.56, P10: 0.64, P25: 0.74, P50: 0.89, P75: 1.06, P90: 1.22, P95: 1.25 }
+        },
+        women: {
+          60: { P5: 0.89, P10: 0.95, P25: 1.07, P50: 1.22, P75: 1.37, P90: 1.52, P95: 1.61 },
+          65: { P5: 0.82, P10: 0.88, P25: 1.00, P50: 1.16, P75: 1.31, P90: 1.46, P95: 1.56 },
+          70: { P5: 0.74, P10: 0.81, P25: 0.92, P50: 1.09, P75: 1.24, P90: 1.39, P95: 1.48 },
+          75: { P5: 0.67, P10: 0.73, P25: 0.85, P50: 1.02, P75: 1.18, P90: 1.32, P95: 1.41 },
+          80: { P5: 0.60, P10: 0.66, P25: 0.79, P50: 0.96, P75: 1.12, P90: 1.25, P95: 1.33 },
+          85: { P5: 0.54, P10: 0.59, P25: 0.73, P50: 0.90, P75: 1.06, P90: 1.17, P95: 1.25 }
+        }
+      };
+
+      const nearest = [60, 65, 70, 75, 80, 85].reduce((prev, curr) =>
+        Math.abs(curr - age) < Math.abs(prev - age) ? curr : prev
+      );
+
+      let faster = "-";
+      const P = gaitNorms[sex][nearest];
+      if (!isNaN(speed)) {
+        const percentiles = [5,10,25,50,75,90,95];
+        const values = percentiles.map(p => P["P"+p]);
+        if (speed <= values[0]) faster = 5;
+        else if (speed >= values[6]) faster = 95;
+        else {
+          for (let i = 0; i < values.length - 1; i++) {
+            if (speed >= values[i] && speed <= values[i+1]) {
+              const p0 = percentiles[i], p1 = percentiles[i+1];
+              const v0 = values[i], v1 = values[i+1];
+              const frac = (speed - v0) / (v1 - v0);
+              faster = Math.round(p0 + frac * (p1 - p0));
+              break;
+            }
+          }
+        }
+      }
+
+      if (speed <= 0.7) {
+        norms.innerHTML += `<p><strong style="color:red;">⚠️ Gehgeschwindigkeit ≤ 0.7 m/s → Hinweis auf Low Physical Performance & Sturzgefahr</strong></p>`;
+      }
+
+      norms.innerHTML += `<h3>norwegische Referenzwerte zuhause lebender Personen – Gehgeschwindigkeit (${nearest} Jahre – ${sex === 'men' ? 'Männer' : 'Frauen'})</h3>`;
+      norms.innerHTML += `<table><tr><th>Perzentil</th><th>m/s</th></tr>
+        ${Object.entries(P).map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("")}
+      </table><p>→ Die Gehgeschwindigkeit ist schneller als bei: <strong>${faster}%</strong> der Vergleichsgruppe.</p>`;
+
+      norms.classList.remove("hidden");
+      btn.innerText = "📉 Normwerte Gehgeschwindigkeit verbergen";
+      gaitVisible = true;
+    }
+
+
+  </script>
+<p></p>
+<div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
+  <!-- Zurück zur letzten Seite -->
+  <button onclick="goBack()" style="
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background-color: #f0f0f0;
+    font-size: 1rem;
+    cursor: pointer;
+  ">
+    ⬅️ Zurück
+  </button>
+
+  <!-- Zurück zur Hauptseite -->
+  <button onclick="window.location.href='index.html'" style="
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background-color: #d0eaff;
+    font-size: 1rem;
+    cursor: pointer;
+  ">
+    🏠 Hauptseite
+  </button>
+</div>
+
+<script>
+function goBack() {
+  if (document.referrer && document.referrer !== window.location.href) {
+    history.back();
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+</script>
+  <script>
+let swInterval = null;
+let swStartTime = null;
+let swElapsed = 0;
+let swRunning = false;
+
+function swUpdate() {
+  const now = Date.now();
+  const diff = now - swStartTime + swElapsed;
+
+  const ms = Math.floor((diff % 1000) / 100);
+  const sec = Math.floor(diff / 1000) % 60;
+  const min = Math.floor(diff / 60000);
+
+  document.getElementById("swDisplay").textContent =
+    `${String(min).padStart(2,"0")}:${String(sec).padStart(2,"0")}.${ms}`;
+}
+
+function swToggle() {
+  if (!swRunning) {
+    // STARTEN
+    swStartTime = Date.now();
+    swInterval = setInterval(swUpdate, 100);
+    swRunning = true;
+    document.getElementById("swMainBtn").textContent = "⏸";
+  } else {
+    // STOPPEN
+    swElapsed += Date.now() - swStartTime;
+    clearInterval(swInterval);
+    swInterval = null;
+    swRunning = false;
+    document.getElementById("swMainBtn").textContent = "▶";
+  }
+}
+
+function swReset() {
+  swElapsed = 0;
+  if (swInterval) clearInterval(swInterval);
+  swInterval = null;
+  swRunning = false;
+  document.getElementById("swDisplay").textContent = "00:00.0";
+  document.getElementById("swMainBtn").textContent = "▶";
+}
+</script>
+
+
+</body>
+</html>

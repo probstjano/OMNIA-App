@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mini-BESTest – Auswertung</title>
+
+  <!-- Zentrale Dateien -->
+  <link rel="stylesheet" href="app-style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="robotoBase64.js"></script>
+</head>
+
+<body class="assessment-page">
+
+<h1>Mini Balance Evaluation Systems Test (Mini-BESTest)</h1>
+<p>Test dynamisches Gleichgewicht</p>
+<p>Im Cenplex Behandlungsplan als <strong>Messung</strong> vorhanden. Hier durchführen und Score übertragen.</p>
+<p>Empfehlung: Vorwiegend der Gesamt-Score verwenden! Die einzelnen Bereiche für sich alleine sind nicht validiert.</p>
+<p>Detailliertes Durchführungsprotokoll hier: 
+  <a href="https://probstjano.github.io/OpenPdf/MineBEST_Protokoll.pdf" target="_blank" rel="noopener">
+    MiniBEST Protokoll (PDF)
+  </a>
+</p>
+
+<form id="miniBESTForm">
+  <!-- Originaler Inhaltsbereich (unverändert) -->
+  <div class="question-block">
+    <label for="q1">1. VOM SITZEN ZUM STEHEN</label>
+    <p><strong>Anweisung:</strong> „Verschränken Sie die Arme vor Ihrer Brust. Versuchen Sie Ihre Hände nicht einzusetzen, sofern nicht notwendig. Sie sollten den Stuhl nicht mit der Rückseite Ihrer Beine berühren, wenn Sie stehen. Bitte stehen Sie jetzt auf.“</p>
+    <select name="q1" required>
+      <option value="" disabled selected>Bitte auswählen</option>
+      <option value="2">(2) Normal: Steht ohne Einsatz der Hände auf und stabilisiert sich selbstständig.</option>
+      <option value="1">(1) Moderat: Kommt beim ersten Versuch MIT Einsatz der Hände in den Stand.</option>
+      <option value="0">(0) Schwer: Kann nicht ohne Unterstützung vom Stuhl aufstehen ODER benötigt mehrere Versuche mit Einsatz der Hände.</option>
+    </select>
+  </div>
+
+  <div class="question-block">
+    <label for="q2">2. AUF DIE ZEHENSPITZEN STELLEN</label>
+    <p><strong>Anweisung:</strong> „Stellen Sie sich schulterbreit hin. Legen Sie die Hände auf Ihre Hüften. Stellen Sie sich so hoch wie möglich auf Ihre Zehenspitzen. Ich werde laut auf drei Sekunden zählen. Versuchen Sie die Position für mindestens drei Sekunden zu halten. Schauen Sie gerade aus und stellen Sie sich jetzt auf Ihre Zehenspitzen.“</p>
+    <select name="q2" required>
+      <option value="" disabled selected>Bitte auswählen</option>
+      <option value="2">(2) Normal: Stabil für 3 Sek. bei maximaler Höhe.</option>
+      <option value="1">(1) Moderat: Fersen sind vom Boden abgehoben, aber nicht in vollem Ausmaß (weniger als zwei zusammengefaltete Hände) ODER deutliche Instabilität während der 3 Sek.</option>
+      <option value="0">(0) Schwer: ≤ 3 Sek.</option>
+    </select>
+  </div>
+
+  <div class="question-block">
+    <label for="q3">3. AUF EINEM BEIN STEHEN</label>
+    <p><strong>Anweisung:</strong> „Schauen Sie geradeaus. Behalten Sie Ihre Hände auf den Hüften. Heben Sie Ihr Bein vom Boden nach hinten ab, ohne Ihr Standbein mit Ihrem freien Bein zu berühren oder es aufzustützen. Bleiben Sie so lange wie möglich auf einem Bein stehen. Schauen Sie geradeaus. Heben Sie nun Ihr Bein an.“</p>
+    <select name="q3" required>
+      <option value="" disabled selected>Bitte auswählen</option>
+      <option value="2">(2) Normal: 20 Sek.</option>
+      <option value="1">(1) Moderat: < 20 Sek.</option>
+      <option value="0">(0) Schwer: Nicht möglich.</option>
+    </select>
+  </div>
+
+  <div class="question-block">
+    <label for="q4">4. KOMPENSATORISCHE SCHUTZSCHRITTE - VORWÄRTS</label>
+    <p><strong>Anweisung:</strong> „Stellen Sie sich schulterbreit hin, mit den Armen an Ihrer Seite. Lehnen Sie sich nach vorne gegen meine Hände, auch weiter als Sie das ohne meine Unterstützung tun könnten. Wenn ich loslasse, tun Sie was auch immer notwendig ist, einschließlich eines Schrittes, um einen Sturz zu vermeiden.“</p>
+    <select name="q4" required>
+      <option value="" disabled selected>Bitte auswählen</option>
+      <option value="2">(2) Normal: Kompensiert selbstständig mit einem einzelnen, großen Schritt (ein zweiter Schritt zur Anpassung ist erlaubt).</option>
+      <option value="1">(1) Moderat: Mehr als ein Schritt wird benötigt, um das Gleichgewicht wieder herzustellen.</option>
+      <option value="0">(0) Schwer: Kein Schritt ODER würde stürzen, wenn nicht aufgefangen ODER stürzt unwillkürlich.</option>
+    </select>
+  </div>
+
+  <div class="question-block">
+    <label for="q5">5. KOMPENSATORISCHE SCHUTZSCHRITTE - RÜCKWÄRTS</label>
+    <p><strong>Anweisung:</strong> „Stellen Sie sich schulterbreit hin, mit den Armen an Ihrer Seite. Lehnen Sie sich rückwärts gegen meine Hände, auch weiter als Sie das ohne meine Unterstützung tun könnten. Wenn ich loslasse, tun Sie was auch immer notwendig ist, einschließlich eines Schrittes, um einen Sturz zu vermeiden.“</p>
+    <select name="q5" required>
+      <option value="" disabled selected>Bitte auswählen</option>
+      <option value="2">(2) Normal: Kompensiert selbstständig mit einem einzelnen, großen Schritt</option>
+      <option value="1">(1) Moderat: Mehr als ein Schritt wird benötigt, um das Gleichgewicht wieder herzustellen.</option>
+      <option value="0">(0) Schwer: Kein Schritt ODER würde stürzen, wenn nicht aufgefangen ODER stürzt unwillkürlich.</option>
+    </select>
+  </div>
+
+  <div class="question-block">
+    <label for="q6">6. KOMPENSATORISCHE SCHUTZSCHRITTE - SEITWÄRTS</label>
+    <p><strong>Anweisung:</strong> „Stellen Sie sich schulterbreit hin, mit den Armen an Ihrer Seite. Lehnen Sie sich zur Seite in meine Hände, auch weiter als Sie das ohne meine Unterstützung tun könnten. Wenn ich loslasse, tun Sie was auch immer notwendig ist, einschließlich eines Schrittes, um einen Sturz zu vermeiden.“</p>
+    <select name="q6" required>
+      <option value="" disabled selected>Bitte auswählen</option>
+      <option value="2">(2) Normal: Kompensiert selbstständig mit einem Schritt (überkreuzt oder seitwärts ist in Ordnung).</option>
+      <option value="1">(1) Moderat: Mehrere Schritte sind notwendig, um das Gleichgewicht wieder herzustellen.</option>
+      <option value="0">(0) Schwer: Stürzt oder Schritt nicht möglich.</option>
+    </select>
+  </div>
+
+  <div class="question-block">
+    <label for="q7">7. STAND (FÜẞE ZUSAMMEN); AUGEN GEÖFFNET, FESTER UNTERGRUND</label>
+    <p><strong>Anweisung:</strong> „Legen Sie Ihre Hände auf die Hüften. Stellen Sie Ihre Füße zusammen, sodass sie sich beinahe berühren. Schauen Sie geradeaus. Bleiben Sie so stabil und ruhig stehen wie möglich, bis ich Stopp sage.“</p>
+    <select name="q7" required>
+      <option value="" disabled selected>Bitte auswählen</option>
+      <option value="2">(2) Normal: 30 Sek.</option>
+      <option value="1">(1) Moderat: < 30 Sek.</option>
+      <option value="0">(0) Schwer: Nicht möglich.</option>
+    </select>
+  </div>
+
+  <div class="question-block">
+    <label for="q8">8. STAND (FÜẞE ZUSAMMEN); AUGEN GESCHLOSSEN, SCHAUMSTOFF-UNTERGRUND</label>
+    <p><strong>Anweisung:</strong> „Stellen Sie sich auf den Schaumstoff Untergrund. Legen Sie Ihre Hände auf die Hüften. Stellen Sie Ihre Füße zusammen, sodass sie sich beinahe berühren. Bleiben Sie so stabil und ruhig stehen wie möglich, bis ich Stopp sage. Ich werde beginnen, die Zeit zu messen, sobald Sie Ihre Augen schließen.“</p>
+    <select name="q8" required>
+      <option value="" disabled selected>Bitte auswählen</option>
+      <option value="2">(2) Normal: 30 Sek.</option>
+      <option value="1">(1) Moderat: < 30 Sek.</option>
+      <option value="0">(0) Nicht möglich.</option>
+    </select>
+  </div>
+
+  <div class="question-block">
+    <label for="q9">9. STEIGUNG - AUGEN GESCHLOSSEN</label>
+    <p><strong>Anweisung:</strong> „Bitte stellen Sie sich auf die Rampe mit Steigung mit den Zehenspitzen in Richtung Oberkante der Rampe. Stellen Sie sich schulterbreit hin, mit den Armen an Ihrer Seite. Ich werde beginnen, die Zeit zu messen, sobald Sie Ihre Augen schließen.“</p>
+    <select name="q9" required>
+      <option value="" disabled selected>Bitte auswählen</option>
+      <option value="2">(2) Normal: Steht selbstständig 30 Sek. und passt die Körperhaltung der Schwerkraft an.</option>
+      <option value="1">(1) Moderat: Steht selbstständig <30 Sek. ODER passt die Körperhaltung dem Untergrund an.</option>
+      <option value="0">(0) Schwer: Nicht möglich.</option>
+    </select>
+  </div>
+
+  <div class="question-block">
+    <label for="q10">10. ÄNDERUNG DER GEHGESCHWINDIGKEIT</label>
+    <p><strong>Anweisung:</strong> „Beginnen Sie, in Ihrer normalen Geschwindigkeit zu gehen, wenn ich ‚schnell‘ sage, gehen Sie so schnell Sie können. Wenn ich ‚langsam‘ sage, gehen Sie sehr langsam.“</p>
+    <select name="q10" required>
+      <option value="" disabled selected>Bitte auswählen</option>
+      <option value="2">(2) Normal: Ändert deutlich die Gehgeschwindigkeit ohne Anzeichen von Gleichgewichtsbeeinträchtigungen.</option>
+      <option value="1">(1) Moderat: Nicht möglich die Gehgeschwindigkeit zu ändern oder Anzeichen von Gleichgewichtsbeeinträchtigungen.</option>
+      <option value="0">(0) Schwer: Nicht möglich, eine deutliche Änderung der Gehgeschwindigkeit zu erreichen UND Anzeichen von Gleichgewichtsbeeinträchtigungen.</option>
+    </select>
+  </div>
+
+  <div class="question-block">
+    <label for="q11">11. GEHEN MIT KOPFDREHUNGEN - HORIZONTAL</label>
+    <p><strong>Anweisung:</strong> „Beginnen Sie, in Ihrer normalen Geschwindigkeit zu gehen, wenn ich ‚rechts‘ sage, drehen Sie Ihren Kopf und schauen nach rechts. Wenn ich ‚links‘ sage, drehen Sie Ihren Kopf und schauen nach links. Versuchen Sie, auf einer gerade Linie zu gehen.“</p>
+    <select name="q11" required>
+      <option value="" disabled selected>Bitte auswählen</option>
+      <option value="2">(2) Normal: Führt Kopfdrehungen ohne Änderung der Gehgeschwindigkeit und hält das Gleichgewicht.</option>
+      <option value="1">(1) Moderat: Führt Kopfdrehungen bei Verringerung der Gehgeschwindigkeit aus.</option>
+      <option value="0">(0) Schwer: Führt Kopfdrehungen mit Gleichgewichtsbeeinträchtigungen aus.</option>
+    </select>
+  </div>
+
+  <div class="question-block">
+    <label for="q12">12. GEHEN MIT KÖRPERDREHUNG</label>
+    <p><strong>Anweisung:</strong> „Beginnen Sie, in Ihrer normalen Geschwindigkeit zu gehen. Wenn ich Ihnen sage ‚drehen und Stopp‘, drehen Sie sich, so schnell Sie können, um 180° und halten an. Nach der Drehung sollten Ihre Füße eng zusammen stehen.“</p>
+    <select name="q12" required>
+      <option value="" disabled selected>Bitte auswählen</option>
+      <option value="2">(2) Normal: Dreht sich SCHNELL mit geschlossenen Füßen (≤ 3 Schritte) mit gutem Gleichgewicht.</option>
+      <option value="1">(1) Moderat: Dreht sich LANGSAM mit geschlossenen Füßen (≥ 4 Schritte) mit gutem Gleichgewicht.</option>
+      <option value="0">(0) Schwer: Kann sich bei keiner Geschwindigkeit mit geschlossenen Füßen drehen und zeigt Gleichgewichts-beeinträchtigungen.</option>
+    </select>
+  </div>
+
+  <div class="question-block">
+    <label for="q13">13. GEHEN ÜBER EIN HINDERNIS</label>
+    <p><strong>Anweisung:</strong> „Beginnen Sie, in Ihrer normalen Geschwindigkeit zu gehen. Wenn Sie die Kiste erreichen, steigen Sie darüber, nicht daran vorbei und gehen danach weiter.“</p>
+    <select name="q13" required>
+      <option value="" disabled selected>Bitte auswählen</option>
+      <option value="2">(2) Normal: Fähig, über die Kiste zu steigen, bei minimaler Änderung der Gehgeschwindigkeit und mit gutem Gleichgewicht.</option>
+      <option value="1">(1) Moderat: Steigt über die Kiste, aber berührt die Kiste ODER zeigt vorsichtiges Verhalten, indem die Gehgeschwindigkeit verlangsamt wird.</option>
+      <option value="0">(0) Schwer: Nicht möglich, über die Kiste zu steigen ODER geht an der Kiste vorbei.</option>
+    </select>
+  </div>
+
+  <div class="question-block">
+    <label for="q14">14. TIMED UP & GO MIT DUAL TASK</label>
+    <p><strong>Anweisung:</strong> „Zählen Sie laut in Dreierschritten von rückwärts. Wenn ich ‚los‘ sage, stehen Sie vom Stuhl auf, gehen in Ihrer normalen Geschwindigkeit über die Markierung auf dem Boden, drehen sich herum, gehen zurück und setzen Sie sich wieder auf den Stuhl. Zählen Sie die gesamte Zeit über rückwärts.“</p>
+    <select name="q14" required>
+      <option value="" disabled selected>Bitte auswählen</option>
+      <option value="2">(2) Normal: Keine erkennbarer Unterschied im Sitzen, Stehen oder Gehen, während des Rückwärtszählens, im Vergleich zum TUG ohne Dual Task.</option>
+      <option value="1">(1) Moderat: Dual Task beeinflusst entweder das Zählen ODER das Gehen (>10%) im Vergleich zum TUG ohne Dual Task.</option>
+      <option value="0">(0) Schwer: Hört während des Gehens auf zu zählen ODER bleibt während des Zählens stehen.</option>
+    </select>
+  </div>
+</form>
+
+<button type="button" class="primary" onclick="calculateScore()">✅ Score berechnen</button>
+<button type="button" class="secondary" onclick="generatePDF()">📄 PDF erstellen</button>
+
+<div id="result"></div>
+
+<!-- CONTENT-LOCK START: Original JS, Normwerte, PDF-Logik -->
+<script>
+    function calculateScore() {
+      let total = 0;
+      let antizipatorisch = 0, reaktiv = 0, sensorisch = 0, dynamisch = 0;
+      for (let i = 1; i <= 14; i++) {
+        const sel = document.querySelector(`select[name='q${i}']`);
+        if (!sel || sel.value === "") {
+          alert("Bitte alle Aufgaben ausfüllen.");
+          return;
+        }
+        const val = parseInt(sel.value);
+        total += val;
+        if (i >= 1 && i <= 3) antizipatorisch += val;
+        else if (i >= 4 && i <= 6) reaktiv += val;
+        else if (i >= 7 && i <= 9) sensorisch += val;
+        else if (i >= 10 && i <= 14) dynamisch += val;
+      }
+      document.getElementById("result").innerHTML =
+        `<p>Mini-BESTest Gesamtscore: <strong>${total} / 28</strong></p>
+         <p>Antizipatorisch: <strong>${antizipatorisch} / 6</strong></p>
+         <p>Reaktive posturale Kontrolle: <strong>${reaktiv} / 6</strong></p>
+         <p>Sensorische Orientierung: <strong>${sensorisch} / 6</strong></p>
+         <p>Dynamischer Gang: <strong>${dynamisch} / 10</strong></p>`;
+    }
+
+    function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.addFileToVFS("Roboto-Regular.ttf", window.robotoBase64);
+      doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+      doc.setFont("Roboto", "normal");
+      doc.setFontSize(14);
+
+      let y = 15;
+      const left = 15;
+      const right = 190;
+      const lineHeight = 8;
+      let total = 0;
+      let questionNumber = 1;
+      const subscores = { ant: 0, reak: 0, sens: 0, dyn: 0 };
+
+      for (let i = 1; i <= 14; i++) {
+        const sel = document.querySelector(`select[name='q${i}']`);
+        if (!sel || sel.value === "") continue;
+        const rawLabel = document.querySelector(`label[for='q${i}']`).innerText;
+        const labelText = rawLabel.replace(/^[0-9]+\.\s*/, "").trim();
+        const fullLine = `${questionNumber}. ${labelText}`;
+        const wrappedLines = doc.splitTextToSize(fullLine, 160);
+        const val = parseInt(sel.value);
+        total += val;
+        if (i <= 3) subscores.ant += val;
+        else if (i <= 6) subscores.reak += val;
+        else if (i <= 9) subscores.sens += val;
+        else subscores.dyn += val;
+        wrappedLines.forEach((line, idx) => {
+          doc.text(line, left, y);
+          if (idx === 0) {
+            doc.text(`${val}`, right, y, { align: "right" });
+          }
+          y += lineHeight;
+        });
+        y += 2;
+        questionNumber++;
+        if (y > 270) {
+          doc.addPage();
+          y = 20;
+        }
+      }
+
+      y += 5;
+      doc.setFontSize(13);
+      doc.setFont(undefined, "bold");
+      doc.text("Subscores", left, y); y += lineHeight;
+      doc.setFont(undefined, "normal");
+      doc.setFontSize(12);
+      doc.text(`Antizipatorisch: ${subscores.ant} / 6`, left, y); y += lineHeight;
+      doc.text(`Reaktiv-postural: ${subscores.reak} / 6`, left, y); y += lineHeight;
+      doc.text(`Sensorisch: ${subscores.sens} / 6`, left, y); y += lineHeight;
+      doc.text(`Dynamischer Gang: ${subscores.dyn} / 10`, left, y); y += lineHeight;
+
+      y += 5;
+      doc.setFont(undefined, "bold");
+      doc.setFontSize(14);
+      doc.text("Gesamtergebnis", left, y); y += lineHeight;
+      doc.setFont(undefined, "normal");
+      doc.setFontSize(12);
+      doc.text(`Mini-BESTest Gesamtscore: ${total} / 28`, left, y); y += lineHeight;
+      const today = new Date().toLocaleDateString("de-CH");
+      doc.text(`Datum: ${today}`, left, y);
+
+      doc.save("MiniBEST_Auswertung.pdf");
+    }
+</script>
+<!-- CONTENT-LOCK END -->
+
+<!-- Einheitlicher Footer -->
+<div class="footer-nav">
+  <button class="secondary" onclick="goBack()">⬅️ Zurück</button>
+  <button class="primary" onclick="goHome()">🏠 Hauptseite</button>
+</div>
+
+<!-- Zentrales Verhalten -->
+<script src="app-core.js"></script>
+
+</body>
+</html>
