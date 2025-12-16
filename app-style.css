@@ -1,0 +1,115 @@
+
+/* Grundstruktur */
+body {
+  font-family: sans-serif;
+  margin: 20px auto;
+  max-width: 900px;
+  background-color: #fff;
+  color: #111;
+  line-height: 1.5;
+}
+
+h1 {
+  margin-bottom: 6px;
+  font-size: 1.6rem;
+}
+
+.subtitle {
+  color: #555;
+  font-size: 0.95rem;
+  margin-top: -4px;
+  margin-bottom: 12px;
+}
+
+a {
+  color: #0077cc;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* Buttons */
+button {
+  padding: 10px 16px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin: 4px;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+button:hover {
+  transform: scale(1.02);
+}
+
+button.primary {
+  background-color: #d0eaff;
+}
+button.secondary {
+  background-color: #f0f0f0;
+}
+
+/* Inputs, Dropdowns */
+input[type="number"],
+input[type="text"],
+select {
+  width: 100%;
+  padding: 8px;
+  font-size: 16px;
+  margin: 5px 0 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+/* Ergebnisanzeige */
+#result {
+  margin-top: 24px;
+  padding: 12px;
+  background-color: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-weight: bold;
+  white-space: pre-line;
+}
+
+/* Formularbereiche */
+.question-block {
+  margin-bottom: 20px;
+}
+
+/* Navigationsbuttons unten */
+.footer-nav {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* Tabellen (z. B. CTSIB) */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+td, th {
+  border: 1px solid #ccc;
+  padding: 6px;
+  text-align: left;
+}
+
+/* Kleinere Geräte */
+@media (max-width: 600px) {
+  body {
+    margin: 10px;
+    font-size: 15px;
+  }
+  h1 {
+    font-size: 1.3rem;
+  }
+  button {
+    width: 100%;
+    margin-top: 6px;
+  }
+}
