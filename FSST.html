@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FFST - Four Square Step Test </title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body { font-family: sans-serif; margin: 10px; font-size: 16px; max-width: 600px; }
+    label { display: block; margin: 10px 0 5px; }
+    select {
+      width: 100%;
+      padding: 6px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    button { padding: 10px 15px; font-size: 16px; margin-top: 10px; }
+    #result { font-weight: bold; margin-top: 20px; }
+    .nav-buttons { margin-top: 30px; }
+    .nav-buttons a {
+      display: inline-block;
+      margin-right: 10px;
+      padding: 10px 15px;
+      background: #eee;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #000;
+    }
+    .nav-buttons a:hover { background: #ddd; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <h1>Four Square Step Test (FSST)/Modified FFST </h1>
+  <p>Test dynmaischen Gleichgewichts/Schrittsichereit. Gute Reliabilität. Keine Normwerte und Cut-off Werte nur auf Basis sehr kleiner Stichproben!.</p>
+  <p>Ursprünglich mit Kreuz aus 2 Stöcken durchgeführt. Die heute übliche, modifizierte Version mit Klebeband-Kreuz ist beschrieben und reliabel. Es gibt jedoch keine untersuchten Cut-off-Werte. </p>
+  <p>Im Cenplex-Behandlungsplan als <strong>Messung</strong> hinterlegt und dort eintragen.</p>
+  <p>Detailliertes Protokoll hier: 
+    <a href="https://probstjano.github.io/OpenPdf/FSST_Protokoll.pdf" target="_blank" rel="noopener">Four Step Square Test – Protokoll</a>
+  </p>
+
+  <form>
+    <label>Benötigte Zeit für schnelleren von zwei Durchgängen (Sekunden):</label>
+    <input type="number" id="zeit" step="0.01" min="0">
+    <button type="button" onclick="zeigeErgebnis()">✅ Empfohlene cut-offs anzeigen n</button>
+  </form>
+
+  <div id="result"></div>
+
+  
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    function zeigeErgebnis() {
+      const zeit = parseFloat(document.getElementById("zeit").value);
+      if (isNaN(zeit)) {
+        document.getElementById("result").innerText = "Bitte eine gültige Zeit eingeben.";
+        return;
+      }
+
+      document.getElementById("result").innerText = 
+        `Erfasste Zeit: ${zeit} Sekunden\n\nHinweis (nur für Version mit Stöcken):\n– Ältere Erwachsene: >15s = erhöhtes Sturzrisiko\n– Schlaganfall: >15s oder Versuch nicht erfolgreich\n– Parkinson: >9,68s = erhöhtes Sturzrisiko\n– Vestibularstörung: >12s = erhöhtes Sturzrisiko\n– Amputation: >24s = erhöhtes Sturzrisiko`;
+    }
+
+      window.open(doc.output('bloburl'), '_blank');
+    }
+  </script>
+<p></p>
+<div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
+  <!-- Zurück zur letzten Seite -->
+  <button onclick="goBack()" style="
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background-color: #f0f0f0;
+    font-size: 1rem;
+    cursor: pointer;
+  ">
+    ⬅️ Zurück
+  </button>
+
+  <!-- Zurück zur Hauptseite -->
+  <button onclick="window.location.href='index.html'" style="
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background-color: #d0eaff;
+    font-size: 1rem;
+    cursor: pointer;
+  ">
+    🏠 Hauptseite
+  </button>
+</div>
+
+<script>
+function goBack() {
+  if (document.referrer && document.referrer !== window.location.href) {
+    history.back();
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+</script>
+</body>
+</html>

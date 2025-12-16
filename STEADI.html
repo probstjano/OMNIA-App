@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stay Steady – Leitlinie zur Sturzvermeidung</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+      font-size: 16px;
+      line-height: 1.6;
+      max-width: 800px;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 20px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    a {
+      color: #0077cc;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .nav {
+      margin-top: 30px;
+    }
+    .nav a {
+      display: inline-block;
+      margin-right: 10px;
+      padding: 10px 15px;
+      background: #f0f0f0;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #000;
+    }
+    .nav a:hover {
+      background: #ddd;
+    }
+  </style>
+</head>
+<body>
+  <h1> CDC STEADI – Leitlinie zur Sturzvermeidung center of diseas control </h1>
+  <p>
+    Die Stay STEADI-Guideline richtet sich an Gesundheitsfachpersonen in den USA und gibt empfehlungen zu Screening, Untersuchung und management des Sturzrisikos von älteren Menschen. <strong> wichitgster Unterschied </strong> World Guidleines: 
+    STEADI empfiehlt Sturzrisiko-Screening und Untersuchung auch bei Personen ohne bereits ereigente Stürze
+  </p>
+  <p>
+
+  <h2>📊Algorithmus</h2>
+  <p>
+    Die Zusammenfassung ist hier einzusehen:
+    <br>
+    📄 <a href="https://probstjano.github.io/OpenPdf/STEADI_Algorithm.pdf" target="_blank" rel="noopener">STEADI (PDF)</a>
+  </p>
+
+<p></p>
+<div style="display:flex; justify-content:center; gap:1rem; margin-top:2rem;">
+  <!-- Zurück zur letzten Seite -->
+  <button onclick="goBack()" style="
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background-color: #f0f0f0;
+    font-size: 1rem;
+    cursor: pointer;
+  ">
+    ⬅️ Zurück
+  </button>
+
+  <!-- Zurück zur Hauptseite -->
+  <button onclick="window.location.href='index.html'" style="
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background-color: #d0eaff;
+    font-size: 1rem;
+    cursor: pointer;
+  ">
+    🏠 Hauptseite
+  </button>
+</div>
+
+<script>
+function goBack() {
+  if (document.referrer && document.referrer !== window.location.href) {
+    history.back();
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+</script>
+</body>
+</html>
