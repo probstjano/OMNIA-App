@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>MNA®-SF – Mini Nutritional Assessment</title>
 
-  <!-- Zentrale Dateien der OMNIA-App -->
+  <!-- Zentrale OMNIA-Dateien -->
   <link rel="stylesheet" href="app-style.css">
 
   <!-- PDF -->
@@ -18,54 +18,73 @@
     }
 
     .question-block {
-      padding-bottom: 1rem;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
       border-bottom: 1px solid #ddd;
     }
 
     .question-title {
       font-weight: bold;
-      margin-bottom: 0.6rem;
+      margin-bottom: 10px;
     }
 
     .question-code {
       display: inline-block;
-      min-width: 2.3rem;
+      min-width: 2.5rem;
     }
 
     .options {
       display: grid;
-      gap: 0.45rem;
-      margin-left: 2.3rem;
+      gap: 8px;
+      margin-left: 2.5rem;
     }
 
-    .options label {
+    .options label,
+    .method-choice label {
       display: flex;
       align-items: flex-start;
-      gap: 0.55rem;
+      gap: 8px;
       cursor: pointer;
     }
 
-    .options input[type="radio"] {
-      margin-top: 0.25rem;
-      transform: scale(1.2);
+    .options input[type="radio"],
+    .method-choice input[type="radio"] {
+      margin-top: 4px;
+      transform: scale(1.15);
     }
 
-    .bmi-box {
+    .method-box {
       padding: 15px;
       border: 1px solid #bbb;
       border-radius: 8px;
       background: #fafafa;
-      margin-top: 1rem;
+      margin-top: 10px;
     }
 
-    .bmi-grid {
+    .method-choice {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-bottom: 18px;
+      font-weight: bold;
+    }
+
+    .method-panel {
+      display: none;
+    }
+
+    .method-panel.active {
+      display: block;
+    }
+
+    .input-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
     }
 
-    .bmi-output {
-      margin-top: 0.8rem;
+    .method-result {
+      margin-top: 12px;
       padding: 10px;
       background: #fff;
       border: 1px solid #ddd;
@@ -73,9 +92,9 @@
       font-weight: bold;
     }
 
-    .cutoffs {
-      margin-top: 0.8rem;
-      margin-bottom: 0;
+    .score-info {
+      margin-top: 12px;
+      font-size: 0.95rem;
     }
 
     .action-row {
@@ -85,10 +104,14 @@
       margin-top: 1.5rem;
     }
 
-    .copyright {
-      margin-top: 2rem;
-      font-size: 0.85rem;
-      color: #555;
+    #result {
+      font-weight: normal;
+    }
+
+    #result strong.result-title {
+      display: block;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
     }
 
     #result.normal {
@@ -106,13 +129,30 @@
       border-color: #d79a9a;
     }
 
+    #result ul {
+      margin-top: 8px;
+      margin-bottom: 0;
+      padding-left: 1.3rem;
+    }
+
+    .copyright {
+      margin-top: 2rem;
+      font-size: 0.85rem;
+      color: #555;
+    }
+
     @media (max-width: 600px) {
-      .bmi-grid {
+      .options {
+        margin-left: 0;
+      }
+
+      .input-grid {
         grid-template-columns: 1fr;
       }
 
-      .options {
-        margin-left: 0;
+      .method-choice {
+        flex-direction: column;
+        gap: 0.7rem;
       }
 
       .action-row {
@@ -129,28 +169,40 @@
 <body class="assessment-page">
 
   <h1>MNA®-SF</h1>
-  <p class="subtitle">Mini Nutritional Assessment</p>
+  <p class="subtitle">Mini Nutritional Assessment – Short Form</p>
 
   <p class="intro">
-Das MNA-SF13 ist ein einfacher Screening-Bogen für geriatrische Patienten. Er kann in der häuslichen Pflege genauso angewendet werden, wie im Krankenhaus oder Pflegeheim. Fragebogen ist durch den Therapeuten auszufüllen.
+    Wählen Sie bei jeder Frage die zutreffende Antwort aus.
+    Für den letzten Punkt wird entweder der BMI oder alternativ der Wadenumfang verwendet.
   </p>
 
   <form id="mnaForm">
 
+    <!-- A -->
     <div class="question-block">
       <div class="question-title">
         <span class="question-code">A</span>
-        Hat der Patient während der letzten 3 Monate wegen Appetitverlust, Verdauungsproblemen,
-        Schwierigkeiten beim Kauen oder Schlucken weniger gegessen?
+        Hat der Patient während der letzten 3 Monate wegen Appetitverlust,
+        Verdauungsproblemen, Schwierigkeiten beim Kauen oder Schlucken weniger gegessen?
       </div>
 
       <div class="options">
-        <label><input type="radio" name="qA" value="0">0 = starke Abnahme der Nahrungsaufnahme</label>
-        <label><input type="radio" name="qA" value="1">1 = leichte Abnahme der Nahrungsaufnahme</label>
-        <label><input type="radio" name="qA" value="2">2 = keine Abnahme der Nahrungsaufnahme</label>
+        <label>
+          <input type="radio" name="qA" value="0">
+          <span>0 = starke Abnahme der Nahrungsaufnahme</span>
+        </label>
+        <label>
+          <input type="radio" name="qA" value="1">
+          <span>1 = leichte Abnahme der Nahrungsaufnahme</span>
+        </label>
+        <label>
+          <input type="radio" name="qA" value="2">
+          <span>2 = keine Abnahme der Nahrungsaufnahme</span>
+        </label>
       </div>
     </div>
 
+    <!-- B -->
     <div class="question-block">
       <div class="question-title">
         <span class="question-code">B</span>
@@ -158,13 +210,26 @@ Das MNA-SF13 ist ein einfacher Screening-Bogen für geriatrische Patienten. Er k
       </div>
 
       <div class="options">
-        <label><input type="radio" name="qB" value="0">0 = Gewichtsverlust &gt; 3 kg</label>
-        <label><input type="radio" name="qB" value="1">1 = nicht bekannt</label>
-        <label><input type="radio" name="qB" value="2">2 = Gewichtsverlust zwischen 1 und 3 kg</label>
-        <label><input type="radio" name="qB" value="3">3 = kein Gewichtsverlust</label>
+        <label>
+          <input type="radio" name="qB" value="0">
+          <span>0 = Gewichtsverlust &gt; 3 kg</span>
+        </label>
+        <label>
+          <input type="radio" name="qB" value="1">
+          <span>1 = nicht bekannt</span>
+        </label>
+        <label>
+          <input type="radio" name="qB" value="2">
+          <span>2 = Gewichtsverlust zwischen 1 und 3 kg</span>
+        </label>
+        <label>
+          <input type="radio" name="qB" value="3">
+          <span>3 = kein Gewichtsverlust</span>
+        </label>
       </div>
     </div>
 
+    <!-- C -->
     <div class="question-block">
       <div class="question-title">
         <span class="question-code">C</span>
@@ -172,12 +237,22 @@ Das MNA-SF13 ist ein einfacher Screening-Bogen für geriatrische Patienten. Er k
       </div>
 
       <div class="options">
-        <label><input type="radio" name="qC" value="0">0 = bettlägerig oder in einem Stuhl mobilisiert</label>
-        <label><input type="radio" name="qC" value="1">1 = in der Lage, sich in der Wohnung zu bewegen</label>
-        <label><input type="radio" name="qC" value="2">2 = verlässt die Wohnung</label>
+        <label>
+          <input type="radio" name="qC" value="0">
+          <span>0 = bettlägerig oder in einem Stuhl mobilisiert</span>
+        </label>
+        <label>
+          <input type="radio" name="qC" value="1">
+          <span>1 = in der Lage, sich in der Wohnung zu bewegen</span>
+        </label>
+        <label>
+          <input type="radio" name="qC" value="2">
+          <span>2 = verlässt die Wohnung</span>
+        </label>
       </div>
     </div>
 
+    <!-- D -->
     <div class="question-block">
       <div class="question-title">
         <span class="question-code">D</span>
@@ -185,11 +260,18 @@ Das MNA-SF13 ist ein einfacher Screening-Bogen für geriatrische Patienten. Er k
       </div>
 
       <div class="options">
-        <label><input type="radio" name="qD" value="0">0 = ja</label>
-        <label><input type="radio" name="qD" value="2">2 = nein</label>
+        <label>
+          <input type="radio" name="qD" value="0">
+          <span>0 = ja</span>
+        </label>
+        <label>
+          <input type="radio" name="qD" value="2">
+          <span>2 = nein</span>
+        </label>
       </div>
     </div>
 
+    <!-- E -->
     <div class="question-block">
       <div class="question-title">
         <span class="question-code">E</span>
@@ -197,51 +279,90 @@ Das MNA-SF13 ist ein einfacher Screening-Bogen für geriatrische Patienten. Er k
       </div>
 
       <div class="options">
-        <label><input type="radio" name="qE" value="0">0 = schwere Demenz oder Depression</label>
-        <label><input type="radio" name="qE" value="1">1 = leichte Demenz</label>
-        <label><input type="radio" name="qE" value="2">2 = keine psychologischen Probleme</label>
+        <label>
+          <input type="radio" name="qE" value="0">
+          <span>0 = schwere Demenz oder Depression</span>
+        </label>
+        <label>
+          <input type="radio" name="qE" value="1">
+          <span>1 = leichte Demenz</span>
+        </label>
+        <label>
+          <input type="radio" name="qE" value="2">
+          <span>2 = keine psychologischen Probleme</span>
+        </label>
       </div>
     </div>
 
+    <!-- F1 / F2 -->
     <div class="question-block">
       <div class="question-title">
-        <span class="question-code">F1</span>
-        Body Mass Index (BMI): Körpergewicht (kg) / Körpergröße² (m²)
+        <span class="question-code">F</span>
+        BMI oder Wadenumfang
       </div>
 
-      <div class="bmi-box">
-        <div class="bmi-grid">
-          <div>
-            <label for="weight"><strong>Körpergewicht (kg)</strong></label>
-            <input
-              type="text"
-              id="weight"
-              inputmode="decimal"
-              placeholder="z. B. 68,5"
-            />
+      <div class="method-box">
+        <div class="method-choice">
+          <label>
+            <input type="radio" name="measureMode" value="bmi" checked>
+            <span>F1 – BMI verwenden</span>
+          </label>
+
+          <label>
+            <input type="radio" name="measureMode" value="calf">
+            <span>F2 – Wadenumfang verwenden</span>
+          </label>
+        </div>
+
+        <div id="bmiPanel" class="method-panel active">
+          <div class="input-grid">
+            <div>
+              <label for="weight"><strong>Körpergewicht (kg)</strong></label>
+              <input
+                type="text"
+                id="weight"
+                inputmode="decimal"
+                placeholder="z. B. 68,5"
+              >
+            </div>
+
+            <div>
+              <label for="height"><strong>Körpergröße (cm)</strong></label>
+              <input
+                type="text"
+                id="height"
+                inputmode="decimal"
+                placeholder="z. B. 172"
+              >
+            </div>
           </div>
 
-          <div>
-            <label for="height"><strong>Körpergröße (cm)</strong></label>
-            <input
-              type="text"
-              id="height"
-              inputmode="decimal"
-              placeholder="z. B. 172"
-            />
+          <div class="score-info">
+            0 = BMI &lt; 19<br>
+            1 = 19 ≤ BMI &lt; 21<br>
+            2 = 21 ≤ BMI &lt; 23<br>
+            3 = BMI ≥ 23
           </div>
         </div>
 
-        <div class="bmi-output" id="bmiResult">
-          BMI: –<br>
+        <div id="calfPanel" class="method-panel">
+          <label for="calf"><strong>Wadenumfang dickste Stelle (cm) - Cave Ödeme!</strong></label>
+          <input
+            type="text"
+            id="calf"
+            inputmode="decimal"
+            placeholder="z. B. 30,5"
+          >
+
+          <div class="score-info">
+            0 = Wadenumfang &lt; 31 cm<br>
+            3 = Wadenumfang ≥ 31 cm
+          </div>
+        </div>
+
+        <div class="method-result" id="measureResult">
+          Messwert: –<br>
           Punkte: –
-        </div>
-
-        <div class="cutoffs">
-          0 = BMI &lt; 19<br>
-          1 = 19 ≤ BMI &lt; 21<br>
-          2 = 21 ≤ BMI &lt; 23<br>
-          3 = BMI ≥ 23
         </div>
       </div>
     </div>
@@ -273,7 +394,44 @@ Das MNA-SF13 ist ein einfacher Screening-Bogen für geriatrische Patienten. Er k
       return Number(String(value).trim().replace(",", "."));
     }
 
-    function getBMIData() {
+    function getSelectedValue(name) {
+      const selected = document.querySelector(`input[name="${name}"]:checked`);
+      return selected ? parseInt(selected.value, 10) : null;
+    }
+
+    function getMeasureMode() {
+      const selected = document.querySelector('input[name="measureMode"]:checked');
+      return selected ? selected.value : "bmi";
+    }
+
+    function updateMethodPanels() {
+      const mode = getMeasureMode();
+
+      document.getElementById("bmiPanel").classList.toggle("active", mode === "bmi");
+      document.getElementById("calfPanel").classList.toggle("active", mode === "calf");
+
+      updateMeasureResult();
+    }
+
+    function getMeasureData() {
+      const mode = getMeasureMode();
+
+      if (mode === "calf") {
+        const calf = parseDecimal(document.getElementById("calf").value);
+
+        if (!Number.isFinite(calf) || calf <= 0) {
+          return null;
+        }
+
+        return {
+          mode: "calf",
+          label: "Wadenumfang",
+          value: calf,
+          displayValue: calf.toFixed(1).replace(".", ",") + " cm",
+          points: calf < 31 ? 0 : 3
+        };
+      }
+
       const weight = parseDecimal(document.getElementById("weight").value);
       const heightCm = parseDecimal(document.getElementById("height").value);
 
@@ -295,26 +453,65 @@ Das MNA-SF13 ist ein einfacher Screening-Bogen für geriatrische Patienten. Er k
       else if (bmi < 23) points = 2;
       else points = 3;
 
-      return { bmi, points };
+      return {
+        mode: "bmi",
+        label: "BMI",
+        value: bmi,
+        displayValue: bmi.toFixed(1).replace(".", ",") + " kg/m²",
+        points: points
+      };
     }
 
-    function updateBMI() {
-      const data = getBMIData();
-      const output = document.getElementById("bmiResult");
+    function updateMeasureResult() {
+      const data = getMeasureData();
+      const output = document.getElementById("measureResult");
 
       if (!data) {
-        output.innerHTML = "BMI: –<br>Punkte: –";
+        output.innerHTML = "Messwert: –<br>Punkte: –";
         return;
       }
 
       output.innerHTML =
-        "BMI: " + data.bmi.toFixed(1).replace(".", ",") +
-        " kg/m²<br>Punkte: " + data.points;
+        data.label + ": " + data.displayValue +
+        "<br>Punkte: " + data.points;
     }
 
-    function getSelectedValue(name) {
-      const selected = document.querySelector(`input[name="${name}"]:checked`);
-      return selected ? parseInt(selected.value, 10) : null;
+    function getRecommendation(total) {
+      if (total >= 12) {
+        return `
+          <strong>Empfehlungen</strong>
+          <ul>
+            <li>Keine spezifischen Massnahmen.</li>
+            <li>Auf ausgewogene und proteinreiche Ernährung hinweisen.</li>
+            <li>Bei Veränderungen wie Gewichtsverlust, Appetitverlust oder Erkrankung erneut screenen.</li>
+          </ul>
+        `;
+      }
+
+      if (total >= 8) {
+        return `
+          <strong>Empfehlungen</strong>
+          <ul>
+            <li>Ursachen explorieren: Appetit, Gewichtsverlust, Kau- oder Schluckprobleme sowie Schwierigkeiten beim Einkaufen oder Kochen.</li>
+            <li>Dringlichkeit beurteilen und Hausarzt informieren.</li>
+            <li>Ernährungsberatung empfehlen bzw. organisieren.</li>
+            <li>Erste allgemeine Empfehlungen geben: ausreichende Energie- und Proteinzufuhr, Zwischenmahlzeiten und ausreichende Trinkmenge.</li>
+            <li>Verlauf beobachten und MNA-SF nach einigen Wochen erneut durchführen.</li>
+          </ul>
+        `;
+      }
+
+      return `
+        <strong>Empfehlungen</strong>
+        <ul>
+          <li>Zeitnahe Information an den Hausarzt.</li>
+          <li>Ernährungsberatung bzw. Ernährungstherapie veranlassen.</li>
+          <li>Hinweisen auf Dysphagie? Erstes mini Schluckscreening durchführen, sofern kompetenzen vorhanden. Bei Bedarf an Logopädie oder ärztliche Abklärung weiterleiten.</li>
+          <li>Bis zur fachlichen Abklärung kurzfristige Massnahmen unterstützen: Essensstruktur, energiereiche und proteinreiche Kost sowie Unterstützung bei Mahlzeiten im Rahmen der eigenen Kompetenz.</li>
+          <li>Therapieplanung anpassen und die Belastbarkeit berücksichtigen.</li>
+          <li>Engmaschig kontrollieren!</li>
+        </ul>
+      `;
     }
 
     function getMNAData(showAlert = true) {
@@ -326,12 +523,12 @@ Das MNA-SF13 ist ein einfacher Screening-Bogen für geriatrische Patienten. Er k
         E: getSelectedValue("qE")
       };
 
-      const missing = Object.values(scores).some(value => value === null);
-      const bmiData = getBMIData();
+      const missingQuestion = Object.values(scores).some(value => value === null);
+      const measure = getMeasureData();
 
-      if (missing || !bmiData) {
+      if (missingQuestion || !measure) {
         if (showAlert) {
-          alert("Bitte alle Fragen beantworten sowie Gewicht und Körpergröße eingeben.");
+          alert("Bitte alle Fragen beantworten und den gewählten Messwert vollständig eingeben.");
         }
         return null;
       }
@@ -342,7 +539,7 @@ Das MNA-SF13 ist ein einfacher Screening-Bogen für geriatrische Patienten. Er k
         scores.C +
         scores.D +
         scores.E +
-        bmiData.points;
+        measure.points;
 
       let interpretation;
       let cssClass;
@@ -359,12 +556,11 @@ Das MNA-SF13 ist ein einfacher Screening-Bogen für geriatrische Patienten. Er k
       }
 
       return {
-        scores,
-        bmi: bmiData.bmi,
-        bmiPoints: bmiData.points,
-        total,
-        interpretation,
-        cssClass
+        scores: scores,
+        measure: measure,
+        total: total,
+        interpretation: interpretation,
+        cssClass: cssClass
       };
     }
 
@@ -374,10 +570,14 @@ Das MNA-SF13 ist ein einfacher Screening-Bogen für geriatrische Patienten. Er k
 
       const result = document.getElementById("result");
       result.className = data.cssClass;
-      result.innerHTML =
-        "<strong>Ergebnis des Screenings</strong><br>" +
-        data.total + " / 14 Punkte<br><br>" +
-        data.interpretation;
+
+      result.innerHTML = `
+        <strong class="result-title">Ergebnis des Screenings</strong>
+        <strong>${data.total} / 14 Punkte</strong><br>
+        ${data.measure.label}: ${data.measure.displayValue}<br><br>
+        <strong>${data.interpretation}</strong><br><br>
+        ${getRecommendation(data.total)}
+      `;
     }
 
     function generatePDF() {
@@ -399,73 +599,81 @@ Das MNA-SF13 ist ein einfacher Screening-Bogen für geriatrische Patienten. Er k
       let y = 18;
       const lineHeight = 8;
 
-      function addLine(text, bold = false) {
+      function ensureSpace() {
+        if (y > 275) {
+          doc.addPage();
+          y = 20;
+        }
+      }
+
+      function addLine(text, bold = false, fontSize = 12) {
+        doc.setFontSize(fontSize);
         doc.setFont(undefined, bold ? "bold" : "normal");
+
         const lines = doc.splitTextToSize(text, 175);
         lines.forEach(line => {
-          if (y > 275) {
-            doc.addPage();
-            y = 20;
-          }
+          ensureSpace();
           doc.text(line, left, y);
           y += lineHeight;
         });
       }
 
-      doc.setFontSize(16);
-      addLine("MNA®-SF – Mini Nutritional Assessment", true);
-      y += 3;
+      addLine("MNA®-SF – Mini Nutritional Assessment", true, 16);
+      y += 4;
 
-      doc.setFontSize(12);
       addLine("A  Nahrungsaufnahme: " + data.scores.A + " Punkte");
       addLine("B  Gewichtsverlust: " + data.scores.B + " Punkte");
       addLine("C  Mobilität: " + data.scores.C + " Punkte");
       addLine("D  Akute Krankheit / psychischer Stress: " + data.scores.D + " Punkte");
       addLine("E  Neuropsychologische Probleme: " + data.scores.E + " Punkte");
       addLine(
-        "F1 BMI: " +
-        data.bmi.toFixed(1).replace(".", ",") +
-        " kg/m² (" +
-        data.bmiPoints +
-        " Punkte)"
+        (data.measure.mode === "bmi" ? "F1  BMI: " : "F2  Wadenumfang: ") +
+        data.measure.displayValue +
+        " (" + data.measure.points + " Punkte)"
       );
 
-      y += 5;
-      addLine("Ergebnis des Screenings", true);
+      y += 6;
+      addLine("Ergebnis", true, 14);
       addLine(data.total + " / 14 Punkte", true);
       addLine(data.interpretation, true);
 
-      y += 5;
+      y += 6;
       addLine("12–14 Punkte: Normaler Ernährungszustand");
       addLine("8–11 Punkte: Risiko für Mangelernährung");
       addLine("0–7 Punkte: Mangelernährung");
 
       y += 8;
-      addLine("Datum: " + currentDateCH());
-      y += 5;
+      addLine("Datum: " + currentDateCH(), true);
 
-      doc.setFontSize(9);
-      addLine("® Société des Produits Nestlé, S.A., Vevey, Switzerland, Trademark Owners");
-      addLine("© Nestlé, 1994, Revision 2009. N67200 12/99 10M");
-      addLine("Mehr Informationen unter: www.mna-elderly.com");
+      y += 8;
+      addLine("® Société des Produits Nestlé, S.A., Vevey, Switzerland, Trademark Owners", false, 9);
+      addLine("© Nestlé, 1994, Revision 2009. N67200 12/99 10M", false, 9);
+      addLine("Mehr Informationen unter: www.mna-elderly.com", false, 9);
 
-      doc.save("MNA_SF_" + new Date().toISOString().slice(0, 10) + ".pdf");
+      const fileName = "MNA_SF_" + new Date().toISOString().slice(0, 10) + ".pdf";
+      doc.save(fileName);
     }
 
     function resetMNA() {
       document.getElementById("mnaForm").reset();
+      document.querySelector('input[name="measureMode"][value="bmi"]').checked = true;
+
       document.getElementById("result").innerHTML = "";
       document.getElementById("result").className = "";
-      updateBMI();
+
+      updateMethodPanels();
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    document.getElementById("weight").addEventListener("input", updateBMI);
-    document.getElementById("height").addEventListener("input", updateBMI);
-    document.getElementById("weight").addEventListener("change", updateBMI);
-    document.getElementById("height").addEventListener("change", updateBMI);
+    document.querySelectorAll('input[name="measureMode"]').forEach(element => {
+      element.addEventListener("change", updateMethodPanels);
+    });
 
-    updateBMI();
+    document.getElementById("weight").addEventListener("input", updateMeasureResult);
+    document.getElementById("height").addEventListener("input", updateMeasureResult);
+    document.getElementById("calf").addEventListener("input", updateMeasureResult);
+
+    updateMethodPanels();
   </script>
 
   <script src="app-core.js"></script>
