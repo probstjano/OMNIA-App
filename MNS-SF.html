@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MNA®-SF – Mini Nutritional Assessment</title>
+
+  <!-- Zentrale Dateien der OMNIA-App -->
+  <link rel="stylesheet" href="app-style.css">
+
+  <!-- PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="robotoBase64.js"></script>
+
+  <style>
+    .intro {
+      margin-bottom: 1.5rem;
+    }
+
+    .question-block {
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .question-title {
+      font-weight: bold;
+      margin-bottom: 0.6rem;
+    }
+
+    .question-code {
+      display: inline-block;
+      min-width: 2.3rem;
+    }
+
+    .options {
+      display: grid;
+      gap: 0.45rem;
+      margin-left: 2.3rem;
+    }
+
+    .options label {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+      cursor: pointer;
+    }
+
+    .options input[type="radio"] {
+      margin-top: 0.25rem;
+      transform: scale(1.2);
+    }
+
+    .bmi-box {
+      padding: 15px;
+      border: 1px solid #bbb;
+      border-radius: 8px;
+      background: #fafafa;
+      margin-top: 1rem;
+    }
+
+    .bmi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .bmi-output {
+      margin-top: 0.8rem;
+      padding: 10px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+
+    .cutoffs {
+      margin-top: 0.8rem;
+      margin-bottom: 0;
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .copyright {
+      margin-top: 2rem;
+      font-size: 0.85rem;
+      color: #555;
+    }
+
+    #result.normal {
+      background: #edf8ef;
+      border-color: #9bc9a3;
+    }
+
+    #result.risk {
+      background: #fff6e2;
+      border-color: #e0bd70;
+    }
+
+    #result.malnutrition {
+      background: #fdecec;
+      border-color: #d79a9a;
+    }
+
+    @media (max-width: 600px) {
+      .bmi-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .options {
+        margin-left: 0;
+      }
+
+      .action-row {
+        flex-direction: column;
+      }
+
+      .action-row button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body class="assessment-page">
+
+  <h1>MNA®-SF</h1>
+  <p class="subtitle">Mini Nutritional Assessment</p>
+
+  <p class="intro">
+Das MNA-SF13 ist ein einfacher Screening-Bogen für geriatrische Patienten. Er kann in der häuslichen Pflege genauso angewendet werden, wie im Krankenhaus oder Pflegeheim. Fragebogen ist durch den Therapeuten auszufüllen.
+  </p>
+
+  <form id="mnaForm">
+
+    <div class="question-block">
+      <div class="question-title">
+        <span class="question-code">A</span>
+        Hat der Patient während der letzten 3 Monate wegen Appetitverlust, Verdauungsproblemen,
+        Schwierigkeiten beim Kauen oder Schlucken weniger gegessen?
+      </div>
+
+      <div class="options">
+        <label><input type="radio" name="qA" value="0">0 = starke Abnahme der Nahrungsaufnahme</label>
+        <label><input type="radio" name="qA" value="1">1 = leichte Abnahme der Nahrungsaufnahme</label>
+        <label><input type="radio" name="qA" value="2">2 = keine Abnahme der Nahrungsaufnahme</label>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-title">
+        <span class="question-code">B</span>
+        Gewichtsverlust in den letzten 3 Monaten
+      </div>
+
+      <div class="options">
+        <label><input type="radio" name="qB" value="0">0 = Gewichtsverlust &gt; 3 kg</label>
+        <label><input type="radio" name="qB" value="1">1 = nicht bekannt</label>
+        <label><input type="radio" name="qB" value="2">2 = Gewichtsverlust zwischen 1 und 3 kg</label>
+        <label><input type="radio" name="qB" value="3">3 = kein Gewichtsverlust</label>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-title">
+        <span class="question-code">C</span>
+        Mobilität
+      </div>
+
+      <div class="options">
+        <label><input type="radio" name="qC" value="0">0 = bettlägerig oder in einem Stuhl mobilisiert</label>
+        <label><input type="radio" name="qC" value="1">1 = in der Lage, sich in der Wohnung zu bewegen</label>
+        <label><input type="radio" name="qC" value="2">2 = verlässt die Wohnung</label>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-title">
+        <span class="question-code">D</span>
+        Akute Krankheit oder psychischer Stress während der letzten 3 Monate?
+      </div>
+
+      <div class="options">
+        <label><input type="radio" name="qD" value="0">0 = ja</label>
+        <label><input type="radio" name="qD" value="2">2 = nein</label>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-title">
+        <span class="question-code">E</span>
+        Neuropsychologische Probleme
+      </div>
+
+      <div class="options">
+        <label><input type="radio" name="qE" value="0">0 = schwere Demenz oder Depression</label>
+        <label><input type="radio" name="qE" value="1">1 = leichte Demenz</label>
+        <label><input type="radio" name="qE" value="2">2 = keine psychologischen Probleme</label>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-title">
+        <span class="question-code">F1</span>
+        Body Mass Index (BMI): Körpergewicht (kg) / Körpergröße² (m²)
+      </div>
+
+      <div class="bmi-box">
+        <div class="bmi-grid">
+          <div>
+            <label for="weight"><strong>Körpergewicht (kg)</strong></label>
+            <input
+              type="text"
+              id="weight"
+              inputmode="decimal"
+              placeholder="z. B. 68,5"
+            />
+          </div>
+
+          <div>
+            <label for="height"><strong>Körpergröße (cm)</strong></label>
+            <input
+              type="text"
+              id="height"
+              inputmode="decimal"
+              placeholder="z. B. 172"
+            />
+          </div>
+        </div>
+
+        <div class="bmi-output" id="bmiResult">
+          BMI: –<br>
+          Punkte: –
+        </div>
+
+        <div class="cutoffs">
+          0 = BMI &lt; 19<br>
+          1 = 19 ≤ BMI &lt; 21<br>
+          2 = 21 ≤ BMI &lt; 23<br>
+          3 = BMI ≥ 23
+        </div>
+      </div>
+    </div>
+
+    <div class="action-row">
+      <button type="button" class="primary" onclick="calculateMNA()">✅ Score berechnen</button>
+      <button type="button" class="secondary" onclick="generatePDF()">📄 PDF erstellen</button>
+      <button type="button" class="secondary" onclick="resetMNA()">↺ Zurücksetzen</button>
+    </div>
+
+  </form>
+
+  <div id="result"></div>
+
+  <div class="copyright">
+    ® Société des Produits Nestlé, S.A., Vevey, Switzerland, Trademark Owners<br>
+    © Nestlé, 1994, Revision 2009. N67200 12/99 10M<br>
+    Mehr Informationen unter: www.mna-elderly.com
+  </div>
+
+  <div class="footer-nav">
+    <button class="secondary" onclick="goBack()">⬅️ Zurück</button>
+    <button class="primary" onclick="goHome()">🏠 Hauptseite</button>
+  </div>
+
+  <script>
+    function parseDecimal(value) {
+      if (!value) return NaN;
+      return Number(String(value).trim().replace(",", "."));
+    }
+
+    function getBMIData() {
+      const weight = parseDecimal(document.getElementById("weight").value);
+      const heightCm = parseDecimal(document.getElementById("height").value);
+
+      if (
+        !Number.isFinite(weight) ||
+        !Number.isFinite(heightCm) ||
+        weight <= 0 ||
+        heightCm <= 0
+      ) {
+        return null;
+      }
+
+      const heightM = heightCm / 100;
+      const bmi = weight / (heightM * heightM);
+
+      let points;
+      if (bmi < 19) points = 0;
+      else if (bmi < 21) points = 1;
+      else if (bmi < 23) points = 2;
+      else points = 3;
+
+      return { bmi, points };
+    }
+
+    function updateBMI() {
+      const data = getBMIData();
+      const output = document.getElementById("bmiResult");
+
+      if (!data) {
+        output.innerHTML = "BMI: –<br>Punkte: –";
+        return;
+      }
+
+      output.innerHTML =
+        "BMI: " + data.bmi.toFixed(1).replace(".", ",") +
+        " kg/m²<br>Punkte: " + data.points;
+    }
+
+    function getSelectedValue(name) {
+      const selected = document.querySelector(`input[name="${name}"]:checked`);
+      return selected ? parseInt(selected.value, 10) : null;
+    }
+
+    function getMNAData(showAlert = true) {
+      const scores = {
+        A: getSelectedValue("qA"),
+        B: getSelectedValue("qB"),
+        C: getSelectedValue("qC"),
+        D: getSelectedValue("qD"),
+        E: getSelectedValue("qE")
+      };
+
+      const missing = Object.values(scores).some(value => value === null);
+      const bmiData = getBMIData();
+
+      if (missing || !bmiData) {
+        if (showAlert) {
+          alert("Bitte alle Fragen beantworten sowie Gewicht und Körpergröße eingeben.");
+        }
+        return null;
+      }
+
+      const total =
+        scores.A +
+        scores.B +
+        scores.C +
+        scores.D +
+        scores.E +
+        bmiData.points;
+
+      let interpretation;
+      let cssClass;
+
+      if (total >= 12) {
+        interpretation = "Normaler Ernährungszustand";
+        cssClass = "normal";
+      } else if (total >= 8) {
+        interpretation = "Risiko für Mangelernährung";
+        cssClass = "risk";
+      } else {
+        interpretation = "Mangelernährung";
+        cssClass = "malnutrition";
+      }
+
+      return {
+        scores,
+        bmi: bmiData.bmi,
+        bmiPoints: bmiData.points,
+        total,
+        interpretation,
+        cssClass
+      };
+    }
+
+    function calculateMNA() {
+      const data = getMNAData(true);
+      if (!data) return;
+
+      const result = document.getElementById("result");
+      result.className = data.cssClass;
+      result.innerHTML =
+        "<strong>Ergebnis des Screenings</strong><br>" +
+        data.total + " / 14 Punkte<br><br>" +
+        data.interpretation;
+    }
+
+    function generatePDF() {
+      const data = getMNAData(true);
+      if (!data) return;
+
+      calculateMNA();
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      if (window.robotoBase64) {
+        doc.addFileToVFS("Roboto-Regular.ttf", window.robotoBase64);
+        doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+        doc.setFont("Roboto", "normal");
+      }
+
+      const left = 15;
+      let y = 18;
+      const lineHeight = 8;
+
+      function addLine(text, bold = false) {
+        doc.setFont(undefined, bold ? "bold" : "normal");
+        const lines = doc.splitTextToSize(text, 175);
+        lines.forEach(line => {
+          if (y > 275) {
+            doc.addPage();
+            y = 20;
+          }
+          doc.text(line, left, y);
+          y += lineHeight;
+        });
+      }
+
+      doc.setFontSize(16);
+      addLine("MNA®-SF – Mini Nutritional Assessment", true);
+      y += 3;
+
+      doc.setFontSize(12);
+      addLine("A  Nahrungsaufnahme: " + data.scores.A + " Punkte");
+      addLine("B  Gewichtsverlust: " + data.scores.B + " Punkte");
+      addLine("C  Mobilität: " + data.scores.C + " Punkte");
+      addLine("D  Akute Krankheit / psychischer Stress: " + data.scores.D + " Punkte");
+      addLine("E  Neuropsychologische Probleme: " + data.scores.E + " Punkte");
+      addLine(
+        "F1 BMI: " +
+        data.bmi.toFixed(1).replace(".", ",") +
+        " kg/m² (" +
+        data.bmiPoints +
+        " Punkte)"
+      );
+
+      y += 5;
+      addLine("Ergebnis des Screenings", true);
+      addLine(data.total + " / 14 Punkte", true);
+      addLine(data.interpretation, true);
+
+      y += 5;
+      addLine("12–14 Punkte: Normaler Ernährungszustand");
+      addLine("8–11 Punkte: Risiko für Mangelernährung");
+      addLine("0–7 Punkte: Mangelernährung");
+
+      y += 8;
+      addLine("Datum: " + currentDateCH());
+      y += 5;
+
+      doc.setFontSize(9);
+      addLine("® Société des Produits Nestlé, S.A., Vevey, Switzerland, Trademark Owners");
+      addLine("© Nestlé, 1994, Revision 2009. N67200 12/99 10M");
+      addLine("Mehr Informationen unter: www.mna-elderly.com");
+
+      doc.save("MNA_SF_" + new Date().toISOString().slice(0, 10) + ".pdf");
+    }
+
+    function resetMNA() {
+      document.getElementById("mnaForm").reset();
+      document.getElementById("result").innerHTML = "";
+      document.getElementById("result").className = "";
+      updateBMI();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    document.getElementById("weight").addEventListener("input", updateBMI);
+    document.getElementById("height").addEventListener("input", updateBMI);
+    document.getElementById("weight").addEventListener("change", updateBMI);
+    document.getElementById("height").addEventListener("change", updateBMI);
+
+    updateBMI();
+  </script>
+
+  <script src="app-core.js"></script>
+
+</body>
+</html>
