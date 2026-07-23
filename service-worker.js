@@ -42,6 +42,7 @@ const ASSETS_TO_CACHE = [
   'START-Back.html',
   'NDI.html',
     'geriatrie_screening.html',
+   'MNA-SF.html.html',
   
   // PDFs
   'BBS_Protokoll.pdf',
