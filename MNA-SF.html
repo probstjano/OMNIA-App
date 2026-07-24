@@ -298,7 +298,7 @@
     <div class="question-block">
       <div class="question-title">
         <span class="question-code">F</span>
-        BMI oder Wadenumfang
+        BMI falls möglich. Alernativ Wadenumfang Messen.
       </div>
 
       <div class="method-box">
@@ -378,8 +378,6 @@
   <div id="result"></div>
 
   <div class="copyright">
-    ® Société des Produits Nestlé, S.A., Vevey, Switzerland, Trademark Owners<br>
-    © Nestlé, 1994, Revision 2009. N67200 12/99 10M<br>
     Mehr Informationen unter: www.mna-elderly.com
   </div>
 
@@ -645,9 +643,7 @@
       y += 8;
       addLine("Datum: " + currentDateCH(), true);
 
-      y += 8;
-      addLine("® Société des Produits Nestlé, S.A., Vevey, Switzerland, Trademark Owners", false, 9);
-      addLine("© Nestlé, 1994, Revision 2009. N67200 12/99 10M", false, 9);
+      y += 8;;
       addLine("Mehr Informationen unter: www.mna-elderly.com", false, 9);
 
       const fileName = "MNA_SF_" + new Date().toISOString().slice(0, 10) + ".pdf";
